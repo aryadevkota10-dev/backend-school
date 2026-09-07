@@ -1,0 +1,28 @@
+DEVDAHA SCHOOL CMS — MONGODB SETUP
+
+1. Create a MongoDB Atlas database/cluster and replace <db_password> in .env with the database user's real password. Do not put the real password into source control.
+
+2. Copy .env.example to .env and set:
+   MONGODB_URI=...
+   MONGODB_DB=devdaha_school_cms
+   SESSION_SECRET=<32+ random characters>
+   PUBLIC_BASE_URL=http://localhost:3000 (or your production HTTPS URL)
+
+3. Configure SMTP so Forgot Password can send reset links:
+   SMTP_HOST=...
+   SMTP_PORT=587
+   SMTP_USER=...
+   SMTP_PASS=...
+   SMTP_FROM=Devdaha School <noreply@your-domain>
+
+4. Install and create the admin:
+   npm install
+   npm run create-admin -- devdaha "YourStrongPassword123" admin@your-domain.com
+
+5. Start:
+   npm start
+
+6. Open:
+   http://localhost:3000/admin-login.html
+
+Forgot Password is available from Admin Login. Reset links expire after 15 minutes.
