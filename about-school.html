@@ -1,3 +1,36 @@
+
+<style id="devdaha-premium-subpage-motion">
+:root{--ds-blue:#0b3f78;--ds-deep:#082847;--ds-gold:#d4af37;--ds-gold2:#f1cf5e;--ds-ink:#17324d;--ds-muted:#687b8f;--ds-card:rgba(255,255,255,.88)}
+html{scroll-behavior:smooth}
+body{overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-15%;pointer-events:none;z-index:-2;background:radial-gradient(circle at 10% 10%,rgba(212,175,55,.10),transparent 27%),radial-gradient(circle at 90% 15%,rgba(11,63,120,.10),transparent 30%),radial-gradient(circle at 50% 90%,rgba(29,112,160,.07),transparent 35%);filter:blur(18px);animation:dsAura 14s ease-in-out infinite alternate}
+@keyframes dsAura{from{transform:translate3d(-1%,0,0) scale(1)}to{transform:translate3d(1%,1%,0) scale(1.04)}}
+:is(header,main,footer,.hero,.section,.wrap,.container,.page-shell,.top,.eca-page)>*{animation:dsFadeUp .75s cubic-bezier(.2,.7,.2,1) both}
+@keyframes dsFadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.ds-reveal{opacity:0!important;transform:translateY(28px) scale(.985)!important;transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1)!important}
+.ds-reveal.is-visible{opacity:1!important;transform:none!important}
+.ds-stagger>*{--ds-i:0;transition-delay:calc(var(--ds-i)*90ms)}
+.ds-stagger>*:nth-child(1){--ds-i:1}.ds-stagger>*:nth-child(2){--ds-i:2}.ds-stagger>*:nth-child(3){--ds-i:3}.ds-stagger>*:nth-child(4){--ds-i:4}.ds-stagger>*:nth-child(5){--ds-i:5}.ds-stagger>*:nth-child(6){--ds-i:6}.ds-stagger>*:nth-child(7){--ds-i:7}.ds-stagger>*:nth-child(8){--ds-i:8}
+:is(.feature,.card,.notice-card,.principle,.life-card,.download-card,.photo-card,.eca-card,.hero-card,.contact-box,.testimonial,.testimonial-card,.timeline-item){transition:transform .38s ease,box-shadow .38s ease,border-color .38s ease,background .38s ease;will-change:transform}
+:is(.feature,.card,.notice-card,.principle,.life-card,.download-card,.photo-card,.eca-card,.hero-card,.contact-box,.testimonial,.testimonial-card,.timeline-item):hover{transform:translateY(-7px);box-shadow:0 22px 48px rgba(8,43,87,.13)}
+:is(.back,.home-btn,.download-btn,a.button,button){transition:transform .25s ease,box-shadow .25s ease,background .25s ease,border-color .25s ease}
+:is(.back,.home-btn,.download-btn,a.button,button):hover{transform:translateY(-2px)}
+:is(h1,h2,h3){text-wrap:balance}
+img{transition:transform .55s cubic-bezier(.2,.7,.2,1),filter .4s ease}
+:is(.photo-card,.download-card,.feature,.life-card,.principle,.notice-card,.eca-card) img:hover{transform:scale(1.035)}
+/* Keep admin-added CMS content visually native to each sub-page */
+.devdaha-managed-blocks,.devdaha-managed-media,.devdaha-managed-notices,.devdaha-managed-testimonials{position:relative}
+.devdaha-managed-block{background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,250,253,.92))!important;border:1px solid rgba(11,63,120,.10)!important;box-shadow:0 16px 40px rgba(8,43,87,.08)!important;border-radius:24px!important;transition:transform .35s ease,box-shadow .35s ease,border-color .35s ease!important}
+.devdaha-managed-block:hover{transform:translateY(-7px)!important;box-shadow:0 24px 52px rgba(8,43,87,.14)!important;border-color:rgba(212,175,55,.42)!important}
+.devdaha-managed-block h2{color:var(--ds-blue,#0b3f78)}
+.devdaha-managed-block p{color:var(--ds-muted,#687b8f);line-height:1.75}
+.devdaha-gallery-managed-grid .photo-card{transition:transform .4s ease,box-shadow .4s ease!important}
+.devdaha-gallery-managed-grid .photo-card:hover{transform:translateY(-9px) scale(1.01)!important;box-shadow:0 24px 50px rgba(8,43,87,.24)!important}
+.devdaha-managed-testimonials{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2rem;max-width:1180px;margin:0 auto 5rem;padding:0 4%}
+@media(max-width:900px){.devdaha-managed-testimonials{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.devdaha-managed-testimonials{grid-template-columns:1fr;gap:1.5rem;padding:0 4%}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.ds-reveal{opacity:1!important;transform:none!important}}
+</style>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,8 +55,7 @@
 <main>
 <section class="hero"><div class="hero-inner"><div><div class="eyebrow">About Devdaha E.B.H. School</div><h1>Rooted in <span>values.</span><br>Focused on the future.</h1><p>Devdaha English Boarding High School is presented as a learning community built around academic growth, character, discipline and the confidence to take on a changing world.</p></div><aside class="hero-card"><div class="big">2053</div><h3>A story that continues to grow.</h3><p>The school's own website identity marks its establishment as 2053 B.S. / 1996 A.D. Government school records also list Devdaha English Boarding School in Devdaha Municipality, Rupandehi as a private school.</p><div class="facts"><div class="fact"><b>850+</b><span>Students</span></div><div class="fact"><b>37+</b><span>Educators</span></div><div class="fact"><b>29+</b><span>Years</span></div></div></aside></div></section>
 <section class="section" id="story"><div class="container"><div class="section-head"><div class="eyebrow">Our Story</div><h2>From a local school to a wider vision for learning.</h2><p>The school's story can be understood through the values already reflected across its website: a strong academic foundation, responsible character, practical experiences and a close connection with the community.</p></div><div class="story"><div class="timeline"><div class="timeline-item"><h3>2053 B.S. / 1996 A.D.</h3><p>The school identity dates its establishment to 2053 B.S. / 1996 A.D., marking the beginning of its long-running educational journey.</p></div><div class="timeline-item"><h3>Growing with Devdaha</h3><p>Government records place Devdaha English Boarding School in Devdaha Municipality, Rupandehi, connecting the institution with the wider local education community.</p></div><div class="timeline-item"><h3>Learning beyond the classroom</h3><p>The current website emphasizes School life, sports, extracurricular activities, student development and opportunities to build confidence alongside academic learning.</p></div></div><div><div class="section-head" style="margin-bottom:0"><div class="eyebrow">Our Promise</div><h2>Education with purpose.</h2><p>We want students to leave school not only knowing more, but also thinking more clearly, working with others, taking responsibility and contributing positively to society.</p></div></div></div></div></section>
-<section class="section alt" id="approach"><div class="container"><div class="section-head"><div class="eyebrow">Our Approach</div><h2>Learning that connects knowledge with character.</h2><p>These principles translate the school's existing website themes into a clear, student-friendly school philosophy.</p></div><div class="principles"><article class="principle"><div class="icon">01</div><h3>Academic Growth</h3><p>Build strong foundations, curiosity and the confidence to apply knowledge rather than simply memorize it.</p></article><article class="principle"><div class="icon">02</div><h3>Character & Values</h3><p>Encourage discipline, respect, responsibility and empathy as essential parts of a complete education.</p></article><article class="principle"><div class="icon">03</div><h3>Future Readiness</h3><p>Develop communication, collaboration, creativity and practical confidence for the opportunities ahead.</p></article></div></div></section>
-<section class="section" id="life"><div class="container"><div class="section-head"><div class="eyebrow">School Life</div><h2>More than lessons on a timetable.</h2><p>The main website already gives school life a broad role, with School facilities, sports, extracurricular activities, achievements and student-focused experiences.</p></div><div class="life"><article class="life-card"><h3>School & Facilities</h3><p>Spaces designed to support classroom learning, reading, technology, collaboration and everyday school life.</p></article><article class="life-card"><h3>Sports & Fitness</h3><p>Physical activity provides opportunities to develop teamwork, discipline, confidence and healthy habits.</p></article><article class="life-card"><h3>Creative & ECA</h3><p>Weekly extracurricular activities give students room to explore interests, creativity, clubs and practical projects.</p></article><article class="life-card"><h3>Community & Leadership</h3><p>School life is also about communication, responsibility, service and becoming a positive member of the community.</p></article></div></div></section>
+<section class="section alt mission-vision-teaser"><div class="container"><div class="section-head"><div class="eyebrow">Our Mission &amp; Vision</div><h2>Purpose that guides every learner.</h2><p>Explore the school's mission, vision and educational principles on a dedicated page.</p><a class="home-btn" href="mission-vision.html">EXPLORE MISSION &amp; VISION</a></div></div></section><section class="section" id="life"><div class="container"><div class="section-head"><div class="eyebrow">School Life</div><h2>More than lessons on a timetable.</h2><p>The main website already gives school life a broad role, with School facilities, sports, extracurricular activities, achievements and student-focused experiences.</p></div><div class="life"><article class="life-card"><h3>School & Facilities</h3><p>Spaces designed to support classroom learning, reading, technology, collaboration and everyday school life.</p></article><article class="life-card"><h3>Sports & Fitness</h3><p>Physical activity provides opportunities to develop teamwork, discipline, confidence and healthy habits.</p></article><article class="life-card"><h3>Creative & ECA</h3><p>Weekly extracurricular activities give students room to explore interests, creativity, clubs and practical projects.</p></article><article class="life-card"><h3>Community & Leadership</h3><p>School life is also about communication, responsibility, service and becoming a positive member of the community.</p></article></div></div></section>
 <section class="section contact" id="contact"><div class="container contact-grid"><div><div class="eyebrow">Visit / Connect</div><h2>Come closer to the Devdaha story.</h2><p>Public listings place Devdaha English Boarding High School in the Devdaha area of Rupandehi, Lumbini Province, Nepal. A published contact listing gives the school's phone number as +977 985 702 6285.</p><a class="home-btn" href="Devdaha.html">EXPLORE THE MAIN WEBSITE</a></div><div class="contact-box"><div><b>School</b>Devdaha English Boarding High School</div><div><b>Location</b>Devdaha, Rupandehi, Lumbini Province, Nepal</div><div><b>Phone</b>+977 985 702 6285</div><div><b>Established</b>2053 B.S. / 1996 A.D. (as shown in the current site identity)</div></div></div></section>
 </main>
 <footer class="footer"><strong>Devdaha E.B.H. School</strong> · About the School · <a href="Devdaha.html">Return to Home</a></footer>
@@ -126,5 +158,38 @@ body *{opacity:1!important;filter:none!important;}
   #mobile-menu, #mobile-menu > a, #mobile-menu > .mobile-menu-group, #site-nav #hamburger{transition:none !important;}
 }
 </style>
+
+<script id="devdaha-premium-subpage-motion-script">
+(function(){
+ const init=()=>{
+   const candidates=[...document.querySelectorAll('section,article,.feature,.notice-card,.download-card,.photo-card,.eca-card,.principle,.life-card,.timeline-item,.hero-card,.contact-box,.testimonial,.testimonial-card,.gallery-grid,.photo-grid,.eca-grid,.downloads-grid,.devdaha-managed-block,.devdaha-cms-testimonial')]
+     .filter(el=>!el.closest('nav,footer,.devdaha-editor-panel,.devdaha-editor-mask,[aria-hidden="true"]'));
+   candidates.forEach(el=>el.classList.add('ds-reveal'));
+   document.querySelectorAll('.gallery-grid,.photo-grid,.eca-grid,.downloads-grid,.devdaha-managed-testimonials,.devdaha-managed-blocks,.devdaha-gallery-managed-grid').forEach(g=>g.classList.add('ds-stagger'));
+   if('IntersectionObserver' in window){
+     const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');io.unobserve(e.target)}}),{threshold:.08,rootMargin:'0px 0px -6% 0px'});
+     candidates.forEach(el=>io.observe(el));
+   }else candidates.forEach(el=>el.classList.add('is-visible'));
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
+
+<script id="devdaha-theme-beauty-v2-js">
+(function(){
+ function init(){
+  const bar=document.createElement('div');bar.className='ds-page-accent';document.body.prepend(bar);
+  const selectors='section, .hero-card, .feature, .card, .principle, .life-card, .download-card, .notice-card, .photo-card, .eca-card, .testimonial, .testimonial-card, .event-card, .achievement-card, .year-card, .magazine-card, .contact-box, .timeline-item';
+  const els=[...document.querySelectorAll(selectors)].filter(el=>!el.closest('nav,footer,.devdaha-editor-panel,[aria-hidden="true"]'));
+  els.forEach((el,i)=>{el.classList.add('ds-beauty-reveal');el.style.transitionDelay=Math.min((i%8)*55,350)+'ms'});
+  if('IntersectionObserver' in window){
+   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('ds-in');io.unobserve(e.target)}}),{threshold:.08,rootMargin:'0px 0px -7% 0px'});els.forEach(e=>io.observe(e));
+  }else els.forEach(e=>e.classList.add('ds-in'));
+  const update=()=>{const h=document.documentElement.scrollHeight-innerHeight;bar.style.width=(h>0?(scrollY/h)*100:0)+'%'};addEventListener('scroll',update,{passive:true});update();
+ }
+ document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init,{once:true}):init();
+})();
+</script>
 </body>
 </html>

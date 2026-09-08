@@ -26,18 +26,116 @@ function renderPublicBlocks(data){const arr=data.blocks||[];if(!arr.length)retur
 function applyPublicNavigation(data){const items=(data.navigation||[]).filter(x=>Number(x.visible)!==0).sort((a,b)=>(a.sort_order??0)-(b.sort_order??0));if(!items.length)return;function sync(root){if(!root)return;const links=[...root.querySelectorAll('a')].filter(a=>!a.closest('.devdaha-admin-link'));const used=new Set();items.forEach(item=>{const id=String(item.id);let a=links.find(x=>x.dataset.cmsNavId===id);if(!a)a=links.find(x=>!used.has(x)&&((x.getAttribute('href')||'')===(item.href||'')||(x.textContent||'').trim().toLowerCase()===(item.label||'').trim().toLowerCase()));if(a){a.dataset.cmsNavId=id;a.textContent=item.label||'';a.href=item.href||'#';used.add(a)}})}sync(document.querySelector('#site-nav .nav-links'));sync(document.querySelector('#mobile-menu'))} 
 
 function applyPublicSettings(data){const s=data.settings||{};const map={schoolName:['.school-wordmark-single','.loader-school-name'],tagline:['[data-school-tagline]'],about:['[data-school-about]'],principal:['[data-school-principal]'],chairman:['[data-school-chairman]'],address:['[data-school-address]'],phone:['[data-school-phone]'],email:['[data-school-email]'],mission:['[data-school-mission]'],vision:['[data-school-vision]']};Object.entries(map).forEach(([k,selectors])=>{if(s[k]===undefined)return;selectors.forEach(sel=>document.querySelectorAll(sel).forEach(el=>{if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')el.value=s[k];else el.textContent=s[k]}))})}
+function ensureNoticeViewer(){
+  if(document.getElementById('devdaha-notice-viewer')) return;
+  const style=document.createElement('style');
+  style.id='devdaha-notice-viewer-style';
+  style.textContent=`
+  .devdaha-notice-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:22px}
+  .devdaha-notice-mini{display:flex;flex-direction:column;min-height:205px;padding:20px 20px 18px;border-radius:18px;background:linear-gradient(145deg,#fff,#f7fbff);border:1px solid rgba(18,82,143,.14);box-shadow:0 10px 28px rgba(8,43,85,.08);position:relative;overflow:hidden;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+  .devdaha-notice-mini::before{content:'';position:absolute;left:0;top:0;width:44%;height:3px;background:linear-gradient(90deg,#d4af37,transparent)}
+  .devdaha-notice-mini:hover{transform:translateY(-5px);box-shadow:0 18px 38px rgba(8,43,85,.13);border-color:rgba(212,175,55,.45)}
+  .devdaha-notice-mini .tag{align-self:flex-start;margin:0 0 10px;padding:5px 9px}
+  .devdaha-notice-mini h2{font-size:1.18rem!important;line-height:1.25!important;margin:0 0 8px!important;color:#163a67!important}
+  .devdaha-notice-summary{color:#53697c!important;font-size:.92rem;line-height:1.6;margin:0 0 16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .devdaha-notice-meta{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;color:#72869a;font-size:.76rem}
+  .devdaha-notice-open{border:1px solid #c7a13a;background:#0b3f78;color:#fff;border-radius:999px;padding:8px 12px;font:700 .7rem/1 Manrope,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+  .devdaha-notice-open:hover{background:#c7a13a;color:#17324d}
+  #devdaha-notice-viewer{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(6,24,45,.58);backdrop-filter:blur(7px)}
+  #devdaha-notice-viewer.open{display:flex}
+  .devdaha-notice-modal{width:min(760px,100%);max-height:min(82vh,760px);overflow:auto;background:#fff;border-radius:24px;border:1px solid rgba(199,161,58,.45);box-shadow:0 28px 80px rgba(0,0,0,.28);padding:28px}
+  .devdaha-notice-modal .tag{margin-bottom:12px}.devdaha-notice-modal h2{margin:0 0 8px;color:#163a67!important;font-size:clamp(1.7rem,3vw,2.4rem)!important}.devdaha-notice-modal .modal-date{color:#70849a;font-size:.8rem;margin-bottom:18px}.devdaha-notice-modal .modal-body{color:#294c73;white-space:pre-wrap;font-size:1rem;line-height:1.8}.devdaha-notice-close{float:right;border:0;background:#eef4fa;color:#163a67;border-radius:50%;width:38px;height:38px;font-size:20px;cursor:pointer}.devdaha-notice-link{display:inline-flex;margin-top:20px;padding:10px 15px;border-radius:999px;background:#0b3f78;color:#fff!important;text-decoration:none;font-weight:700}.devdaha-notice-link:hover{background:#c7a13a;color:#17324d!important}
+  @media(max-width:900px){.devdaha-notice-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:620px){.devdaha-notice-list{grid-template-columns:1fr}.devdaha-notice-mini{min-height:190px}.devdaha-notice-modal{padding:22px;border-radius:18px}}
+  .devdaha-notice-board{display:block!important;margin-top:24px}
+  .devdaha-notice-latest{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.75fr);gap:0;background:linear-gradient(135deg,#062b55 0%,#0b4b82 58%,#0c6a9f 100%);border:1px solid rgba(212,175,55,.52);border-radius:26px;min-height:310px;box-shadow:0 24px 60px rgba(6,43,85,.22);margin-bottom:34px;isolation:isolate}
+  .devdaha-notice-latest:before{content:'';position:absolute;inset:auto -80px -120px auto;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.28),transparent 68%);pointer-events:none}
+  .devdaha-notice-latest-copy{position:relative;z-index:2;padding:34px 34px 32px}
+  .devdaha-notice-kicker{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}.devdaha-notice-latest .tag{margin:0;background:rgba(255,255,255,.13);color:#ffe38a;border:1px solid rgba(255,255,255,.17)}
+  .devdaha-latest-badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;font-size:.68rem;line-height:1;text-transform:uppercase;letter-spacing:.09em;font-weight:800;background:#d4af37;color:#082b50}
+  .devdaha-notice-latest h2{margin:0;color:#fff!important;font-size:clamp(1.8rem,3.4vw,3rem)!important;line-height:1.08!important;max-width:800px}
+  .devdaha-notice-latest-date{margin-top:9px;color:rgba(255,255,255,.72);font-size:.8rem}.devdaha-notice-latest p{margin:18px 0 22px;color:rgba(255,255,255,.9)!important;max-width:780px;font-size:1rem;line-height:1.75}
+  .devdaha-notice-open-latest{background:#fff;color:#0b3f78;border-color:#fff;font-size:.74rem;padding:11px 16px}.devdaha-notice-open-latest:hover{background:#d4af37;border-color:#d4af37;color:#082b50}
+  .devdaha-notice-latest-media{min-height:100%;overflow:hidden;background:#0b355d}.devdaha-notice-latest-media img{width:100%;height:100%;min-height:310px;object-fit:cover;display:block;filter:saturate(1.02);transition:transform .6s ease}.devdaha-notice-latest:hover .devdaha-notice-latest-media img{transform:scale(1.04)}
+  .devdaha-notice-archive-heading{display:flex;align-items:center;gap:14px;margin:8px 0 18px;color:#163a67;font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.13em}.devdaha-notice-archive-heading i{height:1px;flex:1;background:linear-gradient(90deg,rgba(212,175,55,.6),transparent)}
+  .devdaha-notice-archive{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  .devdaha-notice-archive .devdaha-notice-mini{margin:0;min-height:220px}
+  @media(max-width:900px){.devdaha-notice-latest{grid-template-columns:1fr}.devdaha-notice-latest-media{max-height:280px;order:-1}.devdaha-notice-latest-media img{min-height:220px}.devdaha-notice-archive{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:620px){.devdaha-notice-latest-copy{padding:26px 22px 24px}.devdaha-notice-latest{border-radius:20px}.devdaha-notice-latest-media img{min-height:210px}.devdaha-notice-archive{grid-template-columns:1fr}}
+`;
+  document.head.appendChild(style);
+  const viewer=document.createElement('div');viewer.id='devdaha-notice-viewer';viewer.innerHTML='<div class="devdaha-notice-modal" role="dialog" aria-modal="true" aria-label="Notice details"><button class="devdaha-notice-close" type="button" aria-label="Close notice">×</button><div class="tag" data-v-category>Notice</div><h2 data-v-title></h2><div class="modal-date" data-v-date></div><div class="modal-body" data-v-body></div><div data-v-link></div></div>';
+  document.body.appendChild(viewer);
+  const close=()=>viewer.classList.remove('open');
+  viewer.querySelector('.devdaha-notice-close').onclick=close;
+  viewer.addEventListener('click',e=>{if(e.target===viewer)close()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  window.DEVDAHA_OPEN_NOTICE=(x)=>{viewer.querySelector('[data-v-category]').textContent=x.category||'Notice';viewer.querySelector('[data-v-title]').textContent=x.title||'Notice';viewer.querySelector('[data-v-date]').textContent=x.date||'';viewer.querySelector('[data-v-body]').textContent=x.body||x.description||'';const link=viewer.querySelector('[data-v-link]');link.innerHTML=x.link?`<a class="devdaha-notice-link" href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.link_text||'Open related link')}</a>`:'';viewer.classList.add('open')};
+}
 function renderPublicNotices(data){
   if(PAGE_KEY!=='notice.html')return;
-  const items=data.notices||[];
+  const items=(data.notices||[]).slice();
   const area=document.querySelector('.notice-area');
   if(!area)return;
+  ensureNoticeViewer();
   let host=document.getElementById('devdaha-managed-notices');
-  if(!host){host=document.createElement('div');host.id='devdaha-managed-notices';area.appendChild(host);}
+  if(!host){host=document.createElement('div');host.id='devdaha-managed-notices';host.className='devdaha-notice-board';area.appendChild(host);}
   host.innerHTML='';
-  items.slice().reverse().forEach(x=>{
-    const article=document.createElement('section');article.className='notice-card';article.dataset.devdahaItemId=String(x.id);article.dataset.devdahaItemType='notice';
-    article.innerHTML=`<div class="notice-head"><div><span class="tag">${esc(x.category||'Notice')}</span><h2>${esc(x.title||'Notice')}</h2></div><span class="date">${esc(x.date||'')}</span></div><p>${esc(x.body||x.description||'')}</p>${x.link?`<a class="back" href="${esc(x.link)}">${esc(x.link_text||'Learn More')}</a>`:''}`;
-    host.appendChild(article);
+
+  // Newest CMS notice is always promoted to the top. Use creation/update timestamps
+  // when available, then fall back to the numeric id without changing the stored data.
+  const timeOf=x=>{
+    for(const k of ['created_at','createdAt','published_at','updated_at','updatedAt','date']){
+      const v=x?.[k]; if(!v) continue;
+      const t=Date.parse(v); if(Number.isFinite(t)) return t;
+      const n=Number(v); if(Number.isFinite(n)) return n;
+    }
+    const id=Number(x?.id); return Number.isFinite(id)?id:0;
+  };
+  items.sort((a,b)=>timeOf(b)-timeOf(a));
+
+  const latest=items[0];
+  if(latest){
+    const featured=document.createElement('article');
+    featured.className='devdaha-notice-latest';
+    featured.dataset.devdahaItemId=String(latest.id);
+    featured.dataset.devdahaItemType='notice';
+    const summary=(latest.body||latest.description||'').trim();
+    const media=latest.media?.url?`<div class="devdaha-notice-latest-media"><img src="${esc(latest.media.url)}" alt="${esc(latest.media.alt_text||latest.title||'Notice')}" loading="lazy"></div>`:'';
+    featured.innerHTML=`<div class="devdaha-notice-latest-copy"><div class="devdaha-notice-kicker"><span class="tag">${esc(latest.category||'Notice')}</span><span class="devdaha-latest-badge">Latest notice</span></div><h2>${esc(latest.title||'Notice')}</h2><div class="devdaha-notice-latest-date">${esc(latest.date||latest.created_at||'')}</div><p>${esc(summary)}</p><button class="devdaha-notice-open devdaha-notice-open-latest" type="button">Open latest notice</button></div>${media}`;
+    featured.querySelector('.devdaha-notice-open-latest').onclick=()=>window.DEVDAHA_OPEN_NOTICE(latest);
+    host.appendChild(featured);
+  }
+
+  const older=items.slice(1);
+  if(older.length){
+    const heading=document.createElement('div');
+    heading.className='devdaha-notice-archive-heading';
+    heading.innerHTML='<span>Previous notices</span><i aria-hidden="true"></i>';
+    host.appendChild(heading);
+    const grid=document.createElement('div');
+    grid.className='devdaha-notice-archive';
+    older.forEach(x=>{
+      const article=document.createElement('article');
+      article.className='devdaha-notice-mini notice-card';
+      article.dataset.devdahaItemId=String(x.id);article.dataset.devdahaItemType='notice';
+      const summary=(x.body||x.description||'').trim();
+      article.innerHTML=`<span class="tag">${esc(x.category||'Notice')}</span><h2>${esc(x.title||'Notice')}</h2><p class="devdaha-notice-summary">${esc(summary)}</p><div class="devdaha-notice-meta"><span>${esc(x.date||x.created_at||'')}</span><button class="devdaha-notice-open" type="button">View notice</button></div>`;
+      article.querySelector('.devdaha-notice-open').onclick=()=>window.DEVDAHA_OPEN_NOTICE(x);
+      grid.appendChild(article);
+    });
+    host.appendChild(grid);
+  }
+
+  // Keep the original/static notices below the CMS section. They remain individually openable
+  // but are never allowed to displace the newest admin notice at the top.
+  area.querySelectorAll(':scope > .wrap > .notice-card:not(#devdaha-managed-notices .notice-card)').forEach(card=>{
+    if(card.dataset.noticeBound)return; card.dataset.noticeBound='1';
+    const title=card.querySelector('h2')?.textContent?.trim()||'Notice';
+    const body=card.querySelector('p')?.textContent?.trim()||'';
+    const category=card.querySelector('.tag')?.textContent?.trim()||'Notice';
+    const date=card.querySelector('.date')?.textContent?.trim()||'';
+    const btn=document.createElement('button');btn.type='button';btn.className='devdaha-notice-open';btn.textContent='View notice';btn.style.marginTop='14px';btn.onclick=()=>window.DEVDAHA_OPEN_NOTICE({title,body,category,date});card.appendChild(btn);
   });
 }
 function renderPublicDownloads(data){if(PAGE_KEY!=='downloads.html')return;const arr=data.downloads||[];const host=document.getElementById('downloads-list')||document.querySelector('main');if(!host)return;host.innerHTML='';arr.forEach(x=>{const a=x.file_media?.url||x.media?.url||x.link||'';const card=document.createElement('article');card.className='download-card';card.innerHTML=`<div class=\"download-icon\" aria-hidden=\"true\">PDF</div><div class=\"download-body\"><h2>${esc(x.title||'Download')}</h2><p>${esc(x.description||x.body||'')}</p></div><a class=\"download-btn\" href=\"${esc(a)}\" target=\"_blank\" rel=\"noopener\" download>Download</a>`;host.appendChild(card)})}
