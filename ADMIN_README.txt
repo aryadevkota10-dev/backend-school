@@ -1,4 +1,4 @@
-# Devdaha E.B.S.S. School — Production CMS
+# Devdaha E.B.H. School — Production CMS
 
 This package upgrades **only the administration/CMS layer** of the existing school website. The existing public HTML pages, filenames, asset folders, PHOTOS structure, forms, integrations, navigation markup, animations and visual design are preserved.
 

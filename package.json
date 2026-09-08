@@ -2,7 +2,7 @@
   "name": "devdaha-school-cms",
   "version": "3.0.0",
   "private": true,
-  "description": "Devdaha E.B.S.S. School CMS with MongoDB backend and secure admin password reset.",
+  "description": "Devdaha E.B.H. School CMS with MongoDB backend and secure admin password reset.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

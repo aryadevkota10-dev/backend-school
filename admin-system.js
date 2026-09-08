@@ -20,10 +20,44 @@ function cssPath(el){if(!el||el.nodeType!==1)return '';const parts=[];let n=el;w
 function applyOverride(el,d){if('text'in d&&!['SCRIPT','STYLE'].includes(el.tagName))el.textContent=d.text;if('html'in d)el.innerHTML=d.html;if('href'in d&&el.tagName==='A')el.setAttribute('href',d.href);if('src'in d&&/^(IMG|VIDEO|SOURCE)$/.test(el.tagName))el.setAttribute('src',d.src);if('alt'in d&&el.tagName==='IMG')el.setAttribute('alt',d.alt);if('title'in d)el.setAttribute('title',d.title)}
 function overrideAnchor(el){return {tag:el.tagName,id:el.id||'',classes:[...el.classList].slice(0,4),text:(el.textContent||'').replace(/\s+/g,' ').trim().slice(0,220)}}
 function findOverrideTarget(selector,d){let el=null;try{el=document.querySelector(selector)}catch{}if(el)return el;const a=d&&d.__anchor;if(!a||!a.tag)return null;const candidates=[...document.querySelectorAll(a.tag.toLowerCase())];return candidates.find(x=>{if(a.id&&x.id===a.id)return true;if((a.text||'') && (x.textContent||'').replace(/\s+/g,' ').trim().slice(0,220)===(a.text||'')){if(a.classes?.length)return a.classes.every(c=>x.classList.contains(c));return true}return false})||null}
-function injectStyle(){if(document.getElementById('devdaha-admin-system-style'))return;const st=document.createElement('style');st.id='devdaha-admin-system-style';st.textContent=`.devdaha-admin-link{display:inline-flex!important;align-items:center;justify-content:center;gap:.45rem;text-decoration:none!important;margin-left:.65rem;padding:.55rem .9rem!important;border:1px solid rgba(201,162,74,.6)!important;border-radius:999px!important;background:linear-gradient(135deg,rgba(201,162,74,.18),rgba(236,207,131,.08))!important;color:#eccf83!important;font:600 .72rem/1.1 Manrope,Arial,sans-serif!important;letter-spacing:.08em;text-transform:uppercase!important;white-space:nowrap;cursor:pointer;z-index:20}.devdaha-managed-blocks{max-width:1180px;margin:2rem auto;padding:0 4%;display:grid;gap:1rem}.devdaha-managed-block{padding:1.25rem;border-radius:20px;border:1px solid rgba(201,162,74,.35);background:linear-gradient(180deg,rgba(201,162,74,.09),rgba(255,255,255,.03));box-shadow:0 12px 35px rgba(0,0,0,.12)}.devdaha-managed-block h2{margin:.1rem 0 .5rem}.devdaha-managed-block p{margin:0;white-space:pre-wrap}.devdaha-managed-block a{display:inline-flex;margin-top:.85rem;padding:.5rem .8rem;border-radius:999px;text-decoration:none;border:1px solid rgba(201,162,74,.45)}.devdaha-managed-media{max-width:1180px;margin:2.5rem auto;padding:1rem 4%}.devdaha-managed-media h2{margin:0 0 .8rem}.devdaha-gallery-managed-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.devdaha-gallery-managed-grid .photo-card{overflow:hidden;background:linear-gradient(145deg,#06335f,#0a4d82);border:2px solid var(--gold,#d4af37);border-radius:20px;box-shadow:0 16px 40px rgba(0,0,0,.28);transition:.4s ease}.devdaha-gallery-managed-grid .photo-card:hover{transform:translateY(-10px)}.devdaha-gallery-managed-grid .photo-wrap{height:240px;overflow:hidden;background:#082847}.devdaha-gallery-managed-grid .photo-wrap img,.devdaha-gallery-managed-grid .photo-wrap video{width:100%;height:100%;object-fit:cover;display:block}.devdaha-gallery-managed-grid .photo-info{padding:20px}.devdaha-gallery-managed-grid .photo-info span{color:var(--gold2,#f1cf5e);font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.devdaha-gallery-managed-grid .photo-info h2{margin:9px 0 7px;font-size:1.4rem}.devdaha-gallery-managed-grid .photo-info p{margin:0;color:var(--muted,#d6e4ee);line-height:1.65}@media(max-width:900px){.devdaha-gallery-managed-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.devdaha-gallery-managed-grid{grid-template-columns:1fr}.devdaha-gallery-managed-grid .photo-wrap{height:230px}}`;document.head.appendChild(st)}
+function injectStyle(){
+  if(document.getElementById('devdaha-admin-system-style'))return;
+  const st=document.createElement('style');
+  st.id='devdaha-admin-system-style';
+  st.textContent=`
+  .devdaha-admin-link{display:inline-flex!important;align-items:center;justify-content:center;gap:.45rem;text-decoration:none!important;margin-left:.65rem;padding:.55rem .9rem!important;border:1px solid rgba(201,162,74,.6)!important;border-radius:999px!important;background:linear-gradient(135deg,rgba(201,162,74,.18),rgba(236,207,131,.08))!important;color:#eccf83!important;font:600 .72rem/1.1 Manrope,Arial,sans-serif!important;letter-spacing:.08em;text-transform:uppercase!important;white-space:nowrap;cursor:pointer;z-index:20}
+  .devdaha-managed-blocks{max-width:1180px;margin:2rem auto;padding:0 4%;display:grid;gap:1rem}
+  .devdaha-managed-block{padding:1.25rem;border-radius:20px;border:1px solid rgba(201,162,74,.35);background:linear-gradient(180deg,rgba(201,162,74,.09),rgba(255,255,255,.03));box-shadow:0 12px 35px rgba(0,0,0,.12)}
+  .devdaha-managed-block h2{margin:.1rem 0 .5rem}
+  .devdaha-managed-block p{margin:0;white-space:pre-wrap}
+  .devdaha-managed-block a{display:inline-flex;margin-top:.85rem;padding:.5rem .8rem;border-radius:999px;text-decoration:none;border:1px solid rgba(201,162,74,.45)}
+  .devdaha-managed-media{max-width:1180px;margin:2.5rem auto;padding:1rem 4%}
+  .devdaha-gallery-managed-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+  .devdaha-gallery-managed-grid .photo-card{overflow:hidden;background:linear-gradient(145deg,#06335f,#0a4d82);border:2px solid var(--gold,#d4af37);border-radius:20px;box-shadow:0 16px 40px rgba(0,0,0,.28);transition:.4s ease}
+  .devdaha-gallery-managed-grid .photo-card:hover{transform:translateY(-10px)}
+  .devdaha-gallery-managed-grid .photo-wrap{height:240px;overflow:hidden;background:#082847}
+  .devdaha-gallery-managed-grid .photo-wrap img,.devdaha-gallery-managed-grid .photo-wrap video{width:100%;height:100%;object-fit:cover;display:block}
+  .devdaha-gallery-managed-grid .photo-info{padding:20px}
+  .devdaha-gallery-managed-grid .photo-info span{color:var(--gold2,#f1cf5e);font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+  .devdaha-gallery-managed-grid .photo-info h2{margin:9px 0 7px;font-size:1.4rem}
+  .devdaha-gallery-managed-grid .photo-info p{margin:0;color:var(--muted,#d6e4ee);line-height:1.65}
+  .devdaha-notice-empty{margin:2rem auto;padding:2rem;border:1px dashed rgba(11,63,120,.22);border-radius:18px;background:linear-gradient(145deg,#fff,#f7fbff);color:#17324d;text-align:center;display:grid;gap:7px}
+  .devdaha-notice-empty strong{font:600 1.15rem Fraunces,Georgia,serif;color:#0b3f78}
+  .devdaha-notice-empty span{color:#687b8f}
+  .devdaha-managed-magazines{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:24px}
+  .devdaha-managed-magazine{overflow:hidden;border:1px solid rgba(11,63,120,.13);border-radius:22px;background:#fff;box-shadow:0 18px 45px rgba(8,43,87,.09);transition:transform .35s ease,box-shadow .35s ease;border-top:4px solid #d4af37}
+  .devdaha-managed-magazine:hover{transform:translateY(-8px);box-shadow:0 26px 55px rgba(8,43,87,.15)}
+  .devdaha-managed-magazine>img{width:100%;height:250px;object-fit:cover;background:#eef4fa}
+  .devdaha-mag-body{padding:20px}.devdaha-mag-body .tag{display:inline-block;margin-bottom:9px}.devdaha-mag-body h2{margin:0 0 6px;color:#0b3f78}.devdaha-mag-date{font-size:.8rem;color:#8b6a20;margin-bottom:9px}.devdaha-mag-body p{color:#687b8f;line-height:1.7}.devdaha-mag-body a{display:inline-flex;margin-top:10px;padding:9px 13px;border-radius:999px;background:#0b3f78;color:#fff;text-decoration:none}
+  .magazine-empty-shell{padding:3rem 0 6rem}.magazine-empty{padding:2.5rem;border:1px solid rgba(11,63,120,.12);border-radius:26px;background:linear-gradient(145deg,#ffffff,#f5f8fc);box-shadow:0 18px 45px rgba(8,43,87,.08);text-align:center}.magazine-empty h2{color:#0b3f78;margin:.5rem 0}.magazine-empty p{color:#687b8f;max-width:620px;margin:0 auto}.magazine-empty-inline{padding:1rem 1.2rem;color:#687b8f;border-left:3px solid #d4af37;background:#fafcff;border-radius:10px}
+  @media(max-width:900px){.devdaha-gallery-managed-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.devdaha-managed-magazines{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:620px){.devdaha-gallery-managed-grid{grid-template-columns:1fr}.devdaha-gallery-managed-grid .photo-wrap{height:230px}.devdaha-managed-magazines{grid-template-columns:1fr}}
+  `;
+  document.head.appendChild(st);
+}
 async function publicLoad(){try{const data=await getJSON('/api/public/content?page='+encodeURIComponent(PAGE_KEY));const ov=data.overrides||{};Object.keys(ov).forEach(p=>{const el=findOverrideTarget(p,ov[p]);if(el)applyOverride(el,ov[p])});const mm=data.marquee?.top;if(mm&&mm.active&&document.querySelector('#marquee-track')){const track=document.querySelector('#marquee-track');if(mm.text){track.dataset.marqueeText=mm.text;try{localStorage.setItem('devdahaTopMarqueeText',mm.text)}catch{}}}const nm=data.marquee?.notice;const wrap=document.querySelector('.notice-marquee-wrap');if(nm&&wrap){const label=wrap.querySelector('.notice-label'),track=wrap.querySelector('.notice-track');if(label)label.textContent=nm.label||'Notice';if(track&&nm.text){track.innerHTML='';const s=document.createElement('span');s.className='notice-item';s.textContent=nm.text;track.appendChild(s);const c=s.cloneNode(true);c.setAttribute('aria-hidden','true');track.appendChild(c)}if(!nm.active)wrap.style.display='none'}applyPublicNavigation(data);applyPublicSettings(data);renderPublicBlocks(data);renderPublicItems(data);renderPublicNotices(data);renderPublicDownloads(data)}catch(e){console.warn('Devdaha CMS unavailable; original static content remains active.',e)}}
 function renderPublicBlocks(data){const arr=data.blocks||[];if(!arr.length)return;const old=document.getElementById('devdaha-managed-blocks');if(old)old.remove();const sec=document.createElement('section');sec.id='devdaha-managed-blocks';sec.className='devdaha-managed-blocks';arr.forEach(b=>{const el=document.createElement('article');el.className='devdaha-managed-block';el.innerHTML=`<h2>${esc(b.title)}</h2><p>${esc(b.body)}</p>${b.link?`<a href="${esc(b.link)}">${esc(b.link_text||'Learn More')}</a>`:''}`;sec.appendChild(el)});(document.querySelector('main')||document.body).appendChild(sec)}
-function applyPublicNavigation(data){const items=(data.navigation||[]).filter(x=>Number(x.visible)!==0).sort((a,b)=>(a.sort_order??0)-(b.sort_order??0));if(!items.length)return;function sync(root){if(!root)return;const links=[...root.querySelectorAll('a')].filter(a=>!a.closest('.devdaha-admin-link'));const used=new Set();items.forEach(item=>{const id=String(item.id);let a=links.find(x=>x.dataset.cmsNavId===id);if(!a)a=links.find(x=>!used.has(x)&&((x.getAttribute('href')||'')===(item.href||'')||(x.textContent||'').trim().toLowerCase()===(item.label||'').trim().toLowerCase()));if(a){a.dataset.cmsNavId=id;a.textContent=item.label||'';a.href=item.href||'#';used.add(a)}})}sync(document.querySelector('#site-nav .nav-links'));sync(document.querySelector('#mobile-menu'))} 
+function applyPublicNavigation(data){const items=(data.navigation||[]).filter(x=>Number(x.visible)!==0).sort((a,b)=>(a.sort_order??0)-(b.sort_order??0));if(!items.length)return;const page=PAGE_KEY.toLowerCase();function normalizeHref(href,label){let h=String(href||'#');if(page!=='devdaha.html'){if(h==='#hero')return 'Devdaha.html#hero';if(h==='#facilities')return 'Devdaha.html#facilities';if(h==='#magazine')return 'school-magazine.html';if(h==='#gallery')return 'Devdaha.html#gallery';if(h==='#suggestion-box')return 'Devdaha.html#suggestion-box';if(h==='#footer')return 'Devdaha.html#footer';}return h}function sync(root){if(!root)return;const links=[...root.querySelectorAll('a')].filter(a=>!a.closest('.devdaha-admin-link'));const used=new Set();items.forEach(item=>{const id=String(item.id);let a=links.find(x=>x.dataset.cmsNavId===id);if(!a)a=links.find(x=>!used.has(x)&&((x.getAttribute('href')||'')===(item.href||'')||(x.textContent||'').trim().toLowerCase()===(item.label||'').trim().toLowerCase()));if(a){a.dataset.cmsNavId=id;a.textContent=item.label||'';a.href=normalizeHref(item.href,item.label)||'#';used.add(a)}})}sync(document.querySelector('#site-nav .nav-links'));sync(document.querySelector('#mobile-menu'))} 
 
 function applyPublicSettings(data){const s=data.settings||{};const map={schoolName:['.school-wordmark-single','.loader-school-name'],tagline:['[data-school-tagline]'],about:['[data-school-about]'],principal:['[data-school-principal]'],chairman:['[data-school-chairman]'],address:['[data-school-address]'],phone:['[data-school-phone]'],email:['[data-school-email]'],mission:['[data-school-mission]'],vision:['[data-school-vision]']};Object.entries(map).forEach(([k,selectors])=>{if(s[k]===undefined)return;selectors.forEach(sel=>document.querySelectorAll(sel).forEach(el=>{if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')el.value=s[k];else el.textContent=s[k]}))})}
 function ensureNoticeViewer(){
@@ -85,7 +119,7 @@ function renderPublicNotices(data){
   // Newest CMS notice is always promoted to the top. Use creation/update timestamps
   // when available, then fall back to the numeric id without changing the stored data.
   const timeOf=x=>{
-    for(const k of ['created_at','createdAt','published_at','updated_at','updatedAt','date']){
+    for(const k of ['created_at','createdAt','published_at','date','updated_at','updatedAt']){
       const v=x?.[k]; if(!v) continue;
       const t=Date.parse(v); if(Number.isFinite(t)) return t;
       const n=Number(v); if(Number.isFinite(n)) return n;
@@ -127,21 +161,14 @@ function renderPublicNotices(data){
     host.appendChild(grid);
   }
 
-  // Keep the original/static notices below the CMS section. They remain individually openable
-  // but are never allowed to displace the newest admin notice at the top.
-  area.querySelectorAll(':scope > .wrap > .notice-card:not(#devdaha-managed-notices .notice-card)').forEach(card=>{
-    if(card.dataset.noticeBound)return; card.dataset.noticeBound='1';
-    const title=card.querySelector('h2')?.textContent?.trim()||'Notice';
-    const body=card.querySelector('p')?.textContent?.trim()||'';
-    const category=card.querySelector('.tag')?.textContent?.trim()||'Notice';
-    const date=card.querySelector('.date')?.textContent?.trim()||'';
-    const btn=document.createElement('button');btn.type='button';btn.className='devdaha-notice-open';btn.textContent='View notice';btn.style.marginTop='14px';btn.onclick=()=>window.DEVDAHA_OPEN_NOTICE({title,body,category,date});card.appendChild(btn);
-  });
+  if(!items.length){host.innerHTML='<div class="devdaha-notice-empty"><strong>No notices published yet.</strong><span>New notices will appear here as soon as the administration publishes them.</span></div>'; }
 }
 function renderPublicDownloads(data){if(PAGE_KEY!=='downloads.html')return;const arr=data.downloads||[];const host=document.getElementById('downloads-list')||document.querySelector('main');if(!host)return;host.innerHTML='';arr.forEach(x=>{const a=x.file_media?.url||x.media?.url||x.link||'';const card=document.createElement('article');card.className='download-card';card.innerHTML=`<div class=\"download-icon\" aria-hidden=\"true\">PDF</div><div class=\"download-body\"><h2>${esc(x.title||'Download')}</h2><p>${esc(x.description||x.body||'')}</p></div><a class=\"download-btn\" href=\"${esc(a)}\" target=\"_blank\" rel=\"noopener\" download>Download</a>`;host.appendChild(card)})}
+function renderPublicMagazines(items){if(PAGE_KEY!=='school-magazine.html')return;const host=document.getElementById('magazine-list');if(!host)return;host.innerHTML='';if(!items.length){host.innerHTML='<div class="magazine-empty-inline">No magazine editions have been published yet.</div>';return;}const grid=document.createElement('div');grid.className='devdaha-managed-magazines';items.slice().sort((a,b)=>(Date.parse(b.created_at||b.updated_at||'')||0)-(Date.parse(a.created_at||a.updated_at||'')||0)).forEach(x=>{const card=document.createElement('article');card.className='devdaha-managed-magazine';card.dataset.devdahaItemId=String(x.id);card.dataset.devdahaItemType='magazine';const img=x.media?.url?`<img src="${esc(x.media.url)}" alt="${esc(x.media.alt_text||x.title||'Magazine cover')}" loading="lazy">`:'';const link=x.link||x.file_media?.url||x.media?.url||'';card.innerHTML=`${img}<div class="devdaha-mag-body"><span class="tag">Magazine</span><h2>${esc(x.title||'School Magazine')}</h2><div class="devdaha-mag-date">${esc(x.date||'')}</div><p>${esc(x.description||x.body||'')}</p>${link?`<a href="${esc(link)}" target="_blank" rel="noopener">Open edition</a>`:''}</div>`;grid.appendChild(card)});host.appendChild(grid)}
 function renderPublicItems(data){
   const testimonials=data.testimonials||[];
-  const managedAll=[...(data.galleries||[]),...(data.events||[]),...(data.achievements||[]),...(data.magazines||[]),...(data.eca||[])];
+  renderPublicMagazines(data.magazines||[]);
+  const managedAll=[...(data.galleries||[]),...(data.events||[]),...(data.achievements||[]),...(data.eca||[])];
   if(PAGE_KEY==='testimonials.html'){
     renderPublicTestimonials(testimonials);
   }
@@ -164,7 +191,7 @@ function renderPublicTestimonials(items){
   if(!host){host=document.createElement('div');host.id='devdaha-managed-testimonials';host.className='devdaha-managed-testimonials';grid.insertAdjacentElement('afterend',host);}
   host.innerHTML='';
   if(!items.length)return;
-  items.slice().reverse().forEach(x=>{
+  items.slice().sort((a,b)=>{const ta=Date.parse(a.created_at||a.updated_at||'')||0;const tb=Date.parse(b.created_at||b.updated_at||'')||0;return ta-tb}).forEach(x=>{
     const article=document.createElement('article');
     article.className='card devdaha-cms-testimonial';
     article.dataset.devdahaItemId=String(x.id);article.dataset.devdahaItemType='testimonial';
