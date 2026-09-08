@@ -1,43 +1,10 @@
-
-<style id="devdaha-premium-subpage-motion">
-:root{--ds-blue:#0b3f78;--ds-deep:#082847;--ds-gold:#d4af37;--ds-gold2:#f1cf5e;--ds-ink:#17324d;--ds-muted:#687b8f;--ds-card:rgba(255,255,255,.88)}
-html{scroll-behavior:smooth}
-body{overflow-x:hidden}
-body::before{content:"";position:fixed;inset:-15%;pointer-events:none;z-index:-2;background:radial-gradient(circle at 10% 10%,rgba(212,175,55,.10),transparent 27%),radial-gradient(circle at 90% 15%,rgba(11,63,120,.10),transparent 30%),radial-gradient(circle at 50% 90%,rgba(29,112,160,.07),transparent 35%);filter:blur(18px);animation:dsAura 14s ease-in-out infinite alternate}
-@keyframes dsAura{from{transform:translate3d(-1%,0,0) scale(1)}to{transform:translate3d(1%,1%,0) scale(1.04)}}
-:is(header,main,footer,.hero,.section,.wrap,.container,.page-shell,.top,.eca-page)>*{animation:dsFadeUp .75s cubic-bezier(.2,.7,.2,1) both}
-@keyframes dsFadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-.ds-reveal{opacity:0!important;transform:translateY(28px) scale(.985)!important;transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1)!important}
-.ds-reveal.is-visible{opacity:1!important;transform:none!important}
-.ds-stagger>*{--ds-i:0;transition-delay:calc(var(--ds-i)*90ms)}
-.ds-stagger>*:nth-child(1){--ds-i:1}.ds-stagger>*:nth-child(2){--ds-i:2}.ds-stagger>*:nth-child(3){--ds-i:3}.ds-stagger>*:nth-child(4){--ds-i:4}.ds-stagger>*:nth-child(5){--ds-i:5}.ds-stagger>*:nth-child(6){--ds-i:6}.ds-stagger>*:nth-child(7){--ds-i:7}.ds-stagger>*:nth-child(8){--ds-i:8}
-:is(.feature,.card,.notice-card,.principle,.life-card,.download-card,.photo-card,.eca-card,.hero-card,.contact-box,.testimonial,.testimonial-card,.timeline-item){transition:transform .38s ease,box-shadow .38s ease,border-color .38s ease,background .38s ease;will-change:transform}
-:is(.feature,.card,.notice-card,.principle,.life-card,.download-card,.photo-card,.eca-card,.hero-card,.contact-box,.testimonial,.testimonial-card,.timeline-item):hover{transform:translateY(-7px);box-shadow:0 22px 48px rgba(8,43,87,.13)}
-:is(.back,.home-btn,.download-btn,a.button,button){transition:transform .25s ease,box-shadow .25s ease,background .25s ease,border-color .25s ease}
-:is(.back,.home-btn,.download-btn,a.button,button):hover{transform:translateY(-2px)}
-:is(h1,h2,h3){text-wrap:balance}
-img{transition:transform .55s cubic-bezier(.2,.7,.2,1),filter .4s ease}
-:is(.photo-card,.download-card,.feature,.life-card,.principle,.notice-card,.eca-card) img:hover{transform:scale(1.035)}
-/* Keep admin-added CMS content visually native to each sub-page */
-.devdaha-managed-blocks,.devdaha-managed-media,.devdaha-managed-notices,.devdaha-managed-testimonials{position:relative}
-.devdaha-managed-block{background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,250,253,.92))!important;border:1px solid rgba(11,63,120,.10)!important;box-shadow:0 16px 40px rgba(8,43,87,.08)!important;border-radius:24px!important;transition:transform .35s ease,box-shadow .35s ease,border-color .35s ease!important}
-.devdaha-managed-block:hover{transform:translateY(-7px)!important;box-shadow:0 24px 52px rgba(8,43,87,.14)!important;border-color:rgba(212,175,55,.42)!important}
-.devdaha-managed-block h2{color:var(--ds-blue,#0b3f78)}
-.devdaha-managed-block p{color:var(--ds-muted,#687b8f);line-height:1.75}
-.devdaha-gallery-managed-grid .photo-card{transition:transform .4s ease,box-shadow .4s ease!important}
-.devdaha-gallery-managed-grid .photo-card:hover{transform:translateY(-9px) scale(1.01)!important;box-shadow:0 24px 50px rgba(8,43,87,.24)!important}
-.devdaha-managed-testimonials{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2rem;max-width:1180px;margin:0 auto 5rem;padding:0 4%}
-@media(max-width:900px){.devdaha-managed-testimonials{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:620px){.devdaha-managed-testimonials{grid-template-columns:1fr;gap:1.5rem;padding:0 4%}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.ds-reveal{opacity:1!important;transform:none!important}}
-</style>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About the School | Devdaha E.B.H. School</title>
-<meta name="description" content="Learn about Devdaha English Boarding High School in Devdaha, Rupandehi — its story, educational approach, community and school life.">
+<title>About the School | Devdaha E.B.S.S. School</title>
+<meta name="description" content="Learn about Devdaha English Boarding Secondary School in Devdaha, Rupandehi — its story, educational approach, community and school life.">
 <style>
 :root{--blue:#082b57;--blue2:#1559a6;--gold:#e2b83f;--gold2:#c99a24;--cream:#f7f3e9;--ink:#102a43;--muted:#5f7184;--white:#fff;--line:#dce5ee;--shadow:0 18px 50px rgba(8,43,87,.12)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#fff;overflow-x:hidden}a{text-decoration:none;color:inherit}
@@ -46,19 +13,249 @@ img{transition:transform .55s cubic-bezier(.2,.7,.2,1),filter .4s ease}
 @media(max-width:900px){.nav-inner{min-height:68px;padding:10px 16px}.navlinks{display:none}.home-btn{padding:10px 13px}.hero-inner{grid-template-columns:1fr;padding:70px 20px 60px;gap:35px}.facts{grid-template-columns:1fr}.story,.contact-grid{grid-template-columns:1fr;gap:35px}.principles{grid-template-columns:1fr}.life{grid-template-columns:1fr}.section{padding:65px 20px}.hero h1{font-size:clamp(2.5rem,13vw,4.4rem)}}
 @media(max-width:480px){.brand strong{font-size:.92rem}.brand small{font-size:.42rem}.crest{width:36px;height:36px}.home-btn{font-size:.62rem}.hero-inner{padding-top:55px}.hero-card{padding:22px}.hero-card .big{font-size:3.4rem}.section{padding:55px 16px}}
 </style>
+</head>
+<style id="root-navbar-exact-fix">
+/* Exact root-page navbar CSS, reused by sub-pages. Keep this block before page overrides. */
+/* ============================================================ DEVDAHA SINGLE NAVBAR SYSTEM Scoped only to the header + its mobile menu. Visual reference:everest.edu.np ============================================================ */ #site-nav.devdaha-reference-header{position:relative !important;width:100% !important;height:auto !important;min-height:0 !important;margin:0 !important;padding:0 !important;background:#fff !important;color:#24364b !important;border:0 !important;box-shadow:none !important;z-index:1000 !important;inset:auto !important;}#site-nav .devdaha-header-shell{width:100%;background:#fff;}#site-nav .devdaha-utility-row{min-height:34px;height:34px;padding:0 clamp(18px,3.2vw,44px);display:flex;align-items:center;justify-content:space-between;gap:24px;background:#f6f6f6;border-bottom:1px solid #e7e7e7;box-sizing:border-box;}#site-nav .utility-school,#site-nav .utility-links a{font-family:Arial,Helvetica,sans-serif;text-decoration:none;text-transform:uppercase;white-space:nowrap;}#site-nav .utility-school{color:#183d64;font-size:9px;line-height:1;font-weight:800;letter-spacing:.11em;}#site-nav .utility-links{display:flex;align-items:center;justify-content:flex-end;gap:20px;min-width:0;}#site-nav .utility-links a{color:#555;font-size:9px;line-height:1;font-weight:600;letter-spacing:.075em;transition:color .2s ease;}#site-nav .utility-links a:hover,#site-nav .utility-links a:focus-visible{color:#a47a18;}#site-nav .utility-links .utility-more{padding-left:18px;border-left:1px solid #dcdcdc;}#site-nav .devdaha-main-row{width:min(1280px,calc(100% - 48px));height:82px;min-height:82px;margin:0 auto;padding:0;display:flex;align-items:center;gap:24px;box-sizing:border-box;}#site-nav .nav-mark{flex:0 0 auto !important;min-width:214px !important;display:flex !important;align-items:center !important;gap:12px !important;padding:0 !important;margin:0 !important;color:#183d64 !important;text-decoration:none !important;line-height:1 !important;}#site-nav .school-logo-switch,#site-nav .school-logo-switch img,#site-nav .school-logo-img{width:54px !important;height:54px !important;min-width:54px !important;min-height:54px !important;max-width:54px !important;max-height:54px !important;object-fit:contain !important;flex:0 0 54px !important;}#site-nav .school-wordmark-single{display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:flex-start !important;gap:0 !important;margin:0 !important;padding:0 !important;white-space:nowrap !important;line-height:1 !important;}#site-nav .school-wordmark-single .brand-line-main{font-family:Arial,Helvetica,sans-serif !important;font-size:18px !important;line-height:1 !important;font-weight:800 !important;letter-spacing:.085em !important;color:#183d64 !important;}#site-nav .school-wordmark-single .brand-line-sub{margin-top:4px !important;font-family:Arial,Helvetica,sans-serif !important;font-size:9px !important;line-height:1 !important;font-weight:700 !important;letter-spacing:.16em !important;color:#707070 !important;}#site-nav .nav-links{flex:1 1 auto !important;min-width:0 !important;display:flex !important;align-items:center !important;justify-content:flex-end !important;gap:clamp(12px,1.45vw,24px) !important;white-space:nowrap !important;position:relative !important;}#site-nav .nav-links > a,#site-nav .nav-dropdown-toggle{position:relative !important;display:inline-flex !important;align-items:center !important;gap:4px !important;padding:30px 0 28px !important;margin:0 !important;border:0 !important;background:transparent !important;color:#333 !important;font-family:Arial,Helvetica,sans-serif !important;font-size:10px !important;line-height:1 !important;font-weight:700 !important;letter-spacing:.075em !important;text-transform:uppercase !important;text-decoration:none !important;white-space:nowrap !important;cursor:pointer !important;transform:none !important;}#site-nav .nav-links > a::before,#site-nav .nav-links > a::after{display:none !important;}#site-nav .nav-links > a:hover,#site-nav .nav-links > a:focus-visible,#site-nav .nav-links > a.active,#site-nav .nav-dropdown-toggle:hover,#site-nav .nav-dropdown-toggle:focus-visible{color:#a47a18 !important;}#site-nav .nav-links > a:hover::after,#site-nav .nav-dropdown-toggle:hover::after,#site-nav .nav-links > a.active::after,#site-nav .nav-dropdown:focus-within .nav-dropdown-toggle::after{content:"";position:absolute;left:0;right:0;bottom:20px;height:2px;border-radius:2px;background:#a47a18;transform:none;opacity:1;}#site-nav .nav-dropdown{position:relative !important;height:82px !important;display:flex !important;align-items:center !important;}#site-nav .nav-chevron{font-size:9px !important;color:#777 !important;margin-left:2px !important;}#site-nav .nav-dropdown-menu{position:absolute !important;top:68px !important;left:50% !important;transform:translateX(-50%) !important;display:none !important;min-width:198px !important;margin:0 !important;padding:6px !important;background:#fff !important;border:1px solid #e2e2e2 !important;border-radius:0 !important;box-shadow:0 9px 22px rgba(0,0,0,.10) !important;z-index:1100 !important;}#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu,#site-nav .nav-dropdown:focus-within .nav-dropdown-menu{display:block !important;}#site-nav .nav-dropdown-menu a{display:block !important;padding:9px 11px !important;margin:0 !important;color:#333 !important;background:#fff !important;font-family:Arial,Helvetica,sans-serif !important;font-size:10px !important;line-height:1.3 !important;font-weight:600 !important;letter-spacing:.035em !important;text-decoration:none !important;white-space:nowrap !important;}#site-nav .nav-dropdown-menu a:hover,#site-nav .nav-dropdown-menu a:focus-visible{color:#a47a18 !important;background:#faf8f2 !important;}#site-nav .nav-cta{flex:0 0 auto !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;height:38px !important;min-height:38px !important;padding:0 17px !important;border:1px solid #b1841f !important;border-radius:2px !important;background:#b1841f !important;color:#fff !important;font-family:Arial,Helvetica,sans-serif !important;font-size:9px !important;line-height:1 !important;font-weight:800 !important;letter-spacing:.085em !important;text-transform:uppercase !important;text-decoration:none !important;white-space:nowrap !important;box-shadow:none !important;cursor:pointer !important;transition:background .2s ease,border-color .2s ease !important;}#site-nav .nav-cta:hover,#site-nav .nav-cta:focus-visible{background:#a47a18 !important;border-color:#a47a18 !important;color:#fff !important;transform:none !important;}#site-nav #hamburger{display:none !important;flex:0 0 44px !important;width:44px !important;height:44px !important;min-width:44px !important;min-height:44px !important;padding:0 !important;margin:0 !important;border:1px solid #e2e2e2 !important;border-radius:2px !important;background:#fff !important;position:relative !important;align-items:center !important;justify-content:center !important;cursor:pointer !important;}#site-nav #hamburger span{position:absolute !important;left:10px !important;right:10px !important;height:2px !important;background:#183d64 !important;border-radius:1px !important;transition:transform .24s ease,opacity .18s ease !important;}#site-nav #hamburger span:nth-child(1){top:13px !important;}#site-nav #hamburger span:nth-child(2){top:20px !important;}#site-nav #hamburger span:nth-child(3){top:27px !important;}#site-nav #hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg) !important;}#site-nav #hamburger.open span:nth-child(2){opacity:0 !important;}#site-nav #hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg) !important;}#mobile-menu{display:none !important;position:fixed !important;top:0 !important;right:0 !important;bottom:0 !important;left:0 !important;width:100vw !important;height:100dvh !important;box-sizing:border-box !important;overflow-x:hidden !important;overflow-y:auto !important;padding:76px 20px 28px !important;background:#fff !important;color:#183d64 !important;z-index:2000 !important;}#mobile-menu.open,#mobile-menu[aria-hidden="false"]{display:block !important;}#mobile-menu .mobile-menu-head{display:flex !important;align-items:center !important;justify-content:space-between !important;padding:0 0 12px !important;margin:0 0 4px !important;border-bottom:1px solid #e7e7e7 !important;}#mobile-menu .mobile-menu-title{font:800 10px/1 Arial,Helvetica,sans-serif !important;letter-spacing:.15em !important;color:#183d64 !important;}#mobile-menu .mobile-menu-head button{display:grid !important;place-items:center !important;width:40px !important;height:40px !important;padding:0 !important;margin:0 !important;border:1px solid #e2e2e2 !important;border-radius:2px !important;background:#fff !important;color:#183d64 !important;font:400 20px/1 Arial,Helvetica,sans-serif !important;}#mobile-menu a{display:block !important;width:100% !important;box-sizing:border-box !important;padding:13px 4px !important;margin:0 !important;border-bottom:1px solid #efefef !important;background:#fff !important;color:#333 !important;font:700 12px/1.25 Arial,Helvetica,sans-serif !important;letter-spacing:.07em !important;text-transform:uppercase !important;text-decoration:none !important;}#mobile-menu a:hover,#mobile-menu a:focus-visible{color:#a47a18 !important;background:#faf8f2 !important;}#mobile-menu .mobile-menu-apply{margin-top:16px !important;border:1px solid #b1841f !important;background:#b1841f !important;color:#fff !important;text-align:center !important;padding:13px 16px !important;}body.mobile-nav-open{overflow:hidden !important;}@media (max-width:1180px) and (min-width:901px){#site-nav .devdaha-main-row{width:calc(100% - 28px);gap:16px;}#site-nav .nav-mark{min-width:190px !important;}#site-nav .nav-links{gap:12px !important;}#site-nav .nav-links > a,#site-nav .nav-dropdown-toggle{font-size:9px !important;letter-spacing:.055em !important;}#site-nav .nav-cta{padding:0 13px !important;font-size:8.5px !important;}}@media (max-width:900px){#site-nav .devdaha-utility-row{min-height:32px;height:32px;padding:0 12px;gap:8px;}#site-nav .utility-school{font-size:8px;letter-spacing:.08em;}#site-nav .utility-links{gap:12px;}#site-nav .utility-links a{font-size:8px;letter-spacing:.06em;}#site-nav .utility-links a:nth-child(3),#site-nav .utility-links a:nth-child(4),#site-nav .utility-links .utility-more{display:none;}#site-nav .devdaha-main-row{width:100%;height:68px;min-height:68px;padding:0 12px;gap:10px;}#site-nav .nav-mark{min-width:0 !important;flex:1 1 auto !important;gap:9px !important;}#site-nav .school-logo-switch,#site-nav .school-logo-switch img,#site-nav .school-logo-img{width:44px !important;height:44px !important;min-width:44px !important;min-height:44px !important;max-width:44px !important;max-height:44px !important;flex-basis:44px !important;}#site-nav .school-wordmark-single .brand-line-main{font-size:15px !important;letter-spacing:.065em !important;}#site-nav .school-wordmark-single .brand-line-sub{font-size:8px !important;letter-spacing:.10em !important;margin-top:3px !important;}#site-nav .nav-links,#site-nav .nav-cta{display:none !important;}#site-nav #hamburger{display:flex !important;margin-left:auto !important;}}@media (max-width:600px){#site-nav .utility-school{font-size:7.5px;}#site-nav .utility-links{gap:9px;}#site-nav .devdaha-main-row{height:64px;min-height:64px;padding:0 10px;}#site-nav .school-logo-switch,#site-nav .school-logo-switch img,#site-nav .school-logo-img{width:41px !important;height:41px !important;min-width:41px !important;min-height:41px !important;max-width:41px !important;max-height:41px !important;flex-basis:41px !important;}#site-nav .school-wordmark-single .brand-line-main{font-size:14px !important;}#site-nav .school-wordmark-single .brand-line-sub{font-size:7.5px !important;}#site-nav #hamburger{width:42px !important;height:42px !important;min-width:42px !important;min-height:42px !important;flex-basis:42px !important;}}
+/* Keep the school logo/name at the far left and navigation at the far right. */ #site-nav .devdaha-header-shell{width:100% !important;max-width:none !important;margin:0 !important;padding-left:0 !important;padding-right:0 !important;}#site-nav .devdaha-main-row{width:100% !important;display:flex !important;align-items:center !important;}#site-nav .nav-mark{margin-right:auto !important;flex:0 0 auto !important;}#site-nav .nav-links{margin-left:auto !important;justify-content:flex-end !important;}#site-nav .nav-cta{margin-left:24px !important;margin-right:24px !important;flex:0 0 auto !important;}@media (max-width:1000px){#site-nav .nav-links{gap:12px !important;}#site-nav .nav-cta{margin-left:18px !important;}}@media (max-width:760px){#site-nav .nav-mark{margin-right:auto !important;}#site-nav #hamburger{margin-left:auto !important;}}
+#site-nav.devdaha-reference-header{position:sticky !important;top:0 !important;z-index:10000 !important;}#mobile-menu{z-index:10001 !important;}
+/* Navbar only:gold background with blue text. */ #site-nav,#site-nav .devdaha-header-shell,#site-nav .devdaha-main-row,#site-nav .devdaha-utility-row{background:#d4af37 !important;}#site-nav,#site-nav a,#site-nav button,#site-nav .utility-school,#site-nav .utility-links a,#site-nav .school-brand-name,#site-nav .nav-links a{color:#082b57 !important;}#site-nav .nav-links a:hover,#site-nav .utility-links a:hover{color:#082b57 !important;}#site-nav #hamburger span{background:#082b57 !important;}
+/* Navbar only:navy-blue background with gold text/icons. */ #site-nav,#site-nav .devdaha-header-shell,#site-nav .devdaha-main-row,#site-nav .devdaha-utility-row{background:#082b57 !important;}#site-nav a,#site-nav .utility-school,#site-nav .utility-links a,#site-nav .school-brand-name,#site-nav .nav-links a,#site-nav .nav-links a span,#site-nav .nav-mark,#site-nav .hamburger,#site-nav #hamburger{color:#d4af37 !important;}#site-nav #hamburger span{background:#d4af37 !important;}
+/* Navbar text only:navy background remains unchanged. */ #site-nav .devdaha-header-shell,#site-nav .devdaha-header-shell a,#site-nav .utility-school,#site-nav .utility-links a,#site-nav .school-brand-name,#site-nav .nav-links a,#site-nav .nav-links button,#site-nav .nav-mark,#site-nav .nav-mark *,#site-nav .brand-name,#site-nav .brand-name *,#site-nav .hamburger-label,#site-nav .hamburger-label *,#site-nav .mobile-menu a,#site-nav .mobile-menu button{color:#f2cd61 !important;}#site-nav #hamburger span{background:#f2cd61 !important;}
+/* Dropdown background animation only. Navbar and marquee remain unchanged. */ #site-nav .nav-dropdown-menu{background:linear-gradient(120deg,#082b57,#0d3d79,#174f8f,#082b57) !important;background-size:300% 300% !important;border-color:#d4af37 !important;box-shadow:0 12px 30px rgba(0,0,0,.22) !important;animation:dropdownGoldBlueFlow 5s ease infinite !important;}#site-nav .nav-dropdown-menu a{background:transparent !important;color:#f2cd61 !important;transition:background .25s ease,color .25s ease !important;}#site-nav .nav-dropdown-menu a:hover,#site-nav .nav-dropdown-menu a:focus-visible{background:rgba(242,205,97,.16) !important;color:#fff1a8 !important;}@keyframes dropdownGoldBlueFlow{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+/* School brand only:gold,larger,with a slightly larger logo. */ #site-nav .school-logo-switch,#site-nav .school-logo-switch img,#site-nav .school-logo-img{width:78px !important;height:78px !important;min-width:78px !important;min-height:78px !important;max-width:78px !important;max-height:78px !important;}#site-nav .school-brand-name{color:#f2cd61 !important;font-size:clamp(14px,1.35vw,19px) !important;font-weight:900 !important;line-height:1.02 !important;letter-spacing:.025em !important;}#site-nav .school-wordmark-single .brand-line-main,#site-nav .school-wordmark-single .brand-line-sub{color:#f2cd61 !important;font-weight:900 !important;}#site-nav .school-wordmark-single .brand-line-main{font-size:clamp(18px,1.55vw,23px) !important;}#site-nav .school-wordmark-single .brand-line-sub{font-size:clamp(9px,.8vw,12px) !important;}@media (max-width:760px){#site-nav .school-logo-switch,#site-nav .school-logo-switch img,#site-nav .school-logo-img{width:52px !important;height:52px !important;min-width:52px !important;min-height:52px !important;max-width:52px !important;max-height:52px !important;}#site-nav .school-wordmark-single .brand-line-main{font-size:16px !important;}#site-nav .school-wordmark-single .brand-line-sub{font-size:8px !important;}}
+/* NAV HOVER ONLY — premium gold sweep on the existing navy navbar. */ #site-nav .nav-links > a,#site-nav .nav-dropdown-toggle{transition:color .28s ease,transform .28s cubic-bezier(.22,.7,.25,1),text-shadow .28s ease !important;}#site-nav .nav-links > a::before,#site-nav .nav-dropdown-toggle::before{content:"" !important;position:absolute !important;left:50% !important;bottom:18px !important;width:0 !important;height:2px !important;border-radius:999px !important;background:linear-gradient(90deg,transparent,#f2cd61 18%,#fff1a8 50%,#f2cd61 82%,transparent) !important;box-shadow:0 0 8px rgba(242,205,97,.7) !important;transform:translateX(-50%) !important;opacity:0 !important;transition:width .35s cubic-bezier(.22,.7,.25,1),opacity .25s ease !important;}#site-nav .nav-links > a:hover,#site-nav .nav-links > a:focus-visible,#site-nav .nav-dropdown-toggle:hover,#site-nav .nav-dropdown-toggle:focus-visible{color:#fff1a8 !important;transform:translateY(-2px) !important;text-shadow:0 0 10px rgba(242,205,97,.28) !important;}#site-nav .nav-links > a:hover::before,#site-nav .nav-links > a:focus-visible::before,#site-nav .nav-dropdown-toggle:hover::before,#site-nav .nav-dropdown-toggle:focus-visible::before{width:100% !important;opacity:1 !important;}#site-nav .nav-links > a.active::before,#site-nav .nav-dropdown.open .nav-dropdown-toggle::before{width:100% !important;opacity:.95 !important;}#site-nav .nav-links > a.active,#site-nav .nav-dropdown.open .nav-dropdown-toggle{color:#fff1a8 !important;}#site-nav .nav-dropdown-menu a{transition:transform .22s ease,background .22s ease,color .22s ease,padding-left .22s ease !important;}#site-nav .nav-dropdown-menu a:hover,#site-nav .nav-dropdown-menu a:focus-visible{transform:translateX(4px) !important;padding-left:15px !important;}
+/* SAME hover underline for every top-level navigation item. */ #site-nav .nav-links > a,#site-nav .nav-dropdown-toggle{position:relative !important;color:#f2cd61 !important;}#site-nav .nav-links > a::before,#site-nav .nav-dropdown-toggle::before{content:"" !important;position:absolute !important;left:50% !important;bottom:18px !important;width:0 !important;height:2px !important;border-radius:999px !important;background:linear-gradient(90deg,transparent,#f2cd61 15%,#fff2a6 50%,#f2cd61 85%,transparent) !important;box-shadow:0 0 9px rgba(242,205,97,.75) !important;transform:translateX(-50%) !important;opacity:0 !important;transition:width .35s ease,opacity .22s ease !important;}#site-nav .nav-links > a:hover::before,#site-nav .nav-links > a:focus-visible::before,#site-nav .nav-dropdown-toggle:hover::before,#site-nav .nav-dropdown-toggle:focus-visible::before,#site-nav .nav-dropdown.open .nav-dropdown-toggle::before{width:100% !important;opacity:1 !important;}#site-nav .nav-links > a:hover,#site-nav .nav-links > a:focus-visible,#site-nav .nav-dropdown-toggle:hover,#site-nav .nav-dropdown-toggle:focus-visible{color:#fff2a6 !important;transform:translateY(-2px) !important;text-shadow:0 0 10px rgba(242,205,97,.3) !important;}
+#site-nav .nav-links > a,#site-nav .nav-dropdown-toggle{font-size:clamp(12px,1.05vw,15px) !important;font-weight:800 !important;}@media (max-width:1180px) and (min-width:901px){#site-nav .nav-links > a,#site-nav .nav-dropdown-toggle{font-size:11px !important;}}
+/* Same underline treatment for every main nav item. */ #site-nav .nav-links > a,#site-nav .nav-links > .nav-dropdown > .nav-dropdown-toggle{position:relative !important;}#site-nav .nav-links > a::after,#site-nav .nav-links > .nav-dropdown > .nav-dropdown-toggle::after{content:"" !important;position:absolute !important;left:50% !important;bottom:-7px !important;width:0 !important;height:2px !important;background:#f2cd61 !important;transform:translateX(-50%) !important;box-shadow:0 0 10px rgba(242,205,97,.7) !important;transition:width .35s cubic-bezier(.22,.7,.2,1) !important;}#site-nav .nav-links > a:hover::after,#site-nav .nav-links > a:focus-visible::after,#site-nav .nav-links > .nav-dropdown > .nav-dropdown-toggle:hover::after,#site-nav .nav-links > .nav-dropdown > .nav-dropdown-toggle:focus-visible::after{width:72% !important;}/* Keep the existing shared underline hidden so it cannot create a different effect. */ #nav-underline{display:none !important;}
+/* Apply the exact same underline hover effect to EVERY primary nav item. */ #site-nav .nav-links > a,#site-nav .nav-links > .nav-dropdown > .nav-dropdown-toggle{position:relative !important;text-decoration:none !important;}#site-nav .nav-links > a::after,#site-nav .nav-links > .nav-dropdown > .nav-dropdown-toggle::after{content:"" !important;position:absolute !important;left:50% !important;bottom:-8px !important;width:100% !important;height:2px !important;background:#e0b84f !important;transform:translateX(-50%) scaleX(0) !important;transform-origin:center !important;border-radius:999px !important;box-shadow:0 0 8px rgba(224,184,79,.55) !important;transition:transform .32s cubic-bezier(.22,.8,.24,1) !important;pointer-events:none !important;}#site-nav .nav-links > a:hover::after,#site-nav .nav-links > a:focus-visible::after,#site-nav .nav-links > .nav-dropdown > .nav-dropdown-toggle:hover::after,#site-nav .nav-links > .nav-dropdown > .nav-dropdown-toggle:focus-visible::after,#site-nav .nav-links > .nav-dropdown:hover > .nav-dropdown-toggle::after{transform:translateX(-50%) scaleX(1) !important;}/* Keep the existing moving underline from interfering with the unified effect. */ #site-nav #nav-underline{display:none !important;}/* School logo animation — elegant slow 3D tilt + glow */ .school-logo-img.school-logo-exact{transform-origin:center;animation:devdahaLogoOrbit 5.5s ease-in-out infinite;transition:filter .35s ease,transform .35s ease;will-change:transform,filter;}.nav-mark:hover .school-logo-img.school-logo-exact{animation-play-state:paused;transform:scale(1.08) rotate(0deg);filter:drop-shadow(0 0 10px rgba(212,175,55,.72)) drop-shadow(0 0 22px rgba(212,175,55,.34));}@keyframes devdahaLogoOrbit{0%,100%{transform:perspective(500px) rotateY(0deg) rotateZ(0deg) scale(1);filter:drop-shadow(0 0 2px rgba(212,175,55,.15));}25%{transform:perspective(500px) rotateY(8deg) rotateZ(-1deg) scale(1.02);filter:drop-shadow(0 0 7px rgba(212,175,55,.42));}50%{transform:perspective(500px) rotateY(0deg) rotateZ(0deg) scale(1.035);filter:drop-shadow(0 0 13px rgba(212,175,55,.62));}75%{transform:perspective(500px) rotateY(-8deg) rotateZ(1deg) scale(1.02);filter:drop-shadow(0 0 7px rgba(212,175,55,.42));}}@media (prefers-reduced-motion:reduce){.school-logo-img.school-logo-exact{animation:none;}}
+/* Mobile/tablet navigation:animated menu + always-available Admin Login. */ @media (max-width:900px){#mobile-menu{display:block !important;visibility:hidden !important;opacity:0 !important;transform:translate3d(0,-18px,0) scale(.985) !important;transform-origin:top center !important;pointer-events:none !important;transition:opacity .28s ease,transform .34s cubic-bezier(.22,.8,.2,1),visibility 0s linear .34s !important;will-change:opacity,transform;}#mobile-menu.open,#mobile-menu[aria-hidden="false"]{visibility:visible !important;opacity:1 !important;transform:translate3d(0,0,0) scale(1) !important;pointer-events:auto !important;transition:opacity .28s ease,transform .34s cubic-bezier(.22,.8,.2,1),visibility 0s linear 0s !important;}#mobile-menu > a,#mobile-menu > .mobile-menu-group{opacity:0;transform:translateY(-8px);transition:opacity .22s ease,transform .28s cubic-bezier(.22,.8,.2,1);}#mobile-menu.open > a,#mobile-menu[aria-hidden="false"] > a,#mobile-menu.open > .mobile-menu-group,#mobile-menu[aria-hidden="false"] > .mobile-menu-group{opacity:1;transform:translateY(0);}#mobile-menu.open > a:nth-of-type(1){transition-delay:.04s}#mobile-menu.open > a:nth-of-type(2){transition-delay:.07s}#mobile-menu.open > a:nth-of-type(3){transition-delay:.10s}#mobile-menu.open > a:nth-of-type(4){transition-delay:.13s}#mobile-menu.open > a:nth-of-type(5){transition-delay:.16s}#mobile-menu.open > a:nth-of-type(6){transition-delay:.19s}#mobile-menu.open > .mobile-menu-group{transition-delay:.22s}#mobile-menu.open > a:nth-of-type(7){transition-delay:.25s}#mobile-menu.open > a:nth-of-type(8){transition-delay:.28s}#mobile-menu.open > a:nth-of-type(9){transition-delay:.31s}#mobile-menu.open > a:nth-of-type(10){transition-delay:.34s}#mobile-menu .mobile-menu-admin{margin-top:12px !important;border:1px solid #183d64 !important;border-radius:10px !important;background:linear-gradient(135deg,#183d64,#0d3b73) !important;color:#fff !important;text-align:center !important;box-shadow:0 8px 22px rgba(24,61,100,.18) !important;letter-spacing:.11em !important;transition:transform .2s ease,box-shadow .2s ease,background .2s ease !important;}#mobile-menu .mobile-menu-admin:hover,#mobile-menu .mobile-menu-admin:focus-visible{color:#fff !important;background:linear-gradient(135deg,#a47a18,#d4af37) !important;transform:translateY(-2px) !important;box-shadow:0 10px 26px rgba(164,122,24,.22) !important;outline:none !important;}#mobile-menu .mobile-menu-apply{margin-top:10px !important;}#site-nav #hamburger{transition:transform .24s ease,box-shadow .24s ease,background .24s ease !important;}#site-nav #hamburger:active{transform:scale(.93)!important;}#site-nav #hamburger.open{background:#f7f2e6 !important;box-shadow:0 0 0 4px rgba(212,175,55,.12) !important;}}@media (prefers-reduced-motion:reduce){#mobile-menu,#mobile-menu > a,#mobile-menu > .mobile-menu-group,#site-nav #hamburger{transition:none !important;}}
+
+/* Final authority for the About dropdown: compact reference-style list on the site's own navy/gold palette. */
+#site-nav .nav-dropdown-menu{background:#fff!important;background-image:none!important;width:238px!important;min-width:238px!important;padding:8px 0!important;border:1px solid rgba(8,43,87,.12)!important;border-top:3px solid #d4af37!important;border-radius:0 0 14px 14px!important;box-shadow:0 18px 42px rgba(8,43,87,.16)!important;animation:none!important;}
+#site-nav .nav-dropdown-menu a.about-menu-link{display:flex!important;align-items:center!important;position:relative!important;min-height:47px!important;padding:10px 16px 10px 32px!important;background:#fff!important;color:#082b57!important;border:0!important;border-bottom:1px solid #eef1f4!important;border-radius:0!important;font:700 12px/1.25 Manrope,Arial,sans-serif!important;letter-spacing:.02em!important;text-transform:none!important;transform:none!important;text-shadow:none!important;transition:background .2s ease,color .2s ease,padding-left .2s ease!important;}
+#site-nav .nav-dropdown-menu a.about-menu-link:last-child{border-bottom:0!important}
+#site-nav .nav-dropdown-menu a.about-menu-link::before{content:""!important;display:block!important;position:absolute!important;left:14px!important;top:50%!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#d4af37!important;transform:translateY(-50%)!important;box-shadow:none!important;}
+#site-nav .nav-dropdown-menu a.about-menu-link:hover,#site-nav .nav-dropdown-menu a.about-menu-link:focus-visible{background:#fff0e7!important;color:#ff5b2f!important;padding-left:36px!important;outline:none!important;}
+#site-nav .nav-dropdown-menu a.about-menu-link:hover::before,#site-nav .nav-dropdown-menu a.about-menu-link:focus-visible::before{background:#ff5b2f!important}
+#site-nav .nav-dropdown-menu a.about-menu-link.active-about{background:#fff0e7!important;color:#ff5b2f!important}
+#site-nav .nav-dropdown-menu a.about-menu-link.active-about::before{background:#ff5b2f!important}
+@media(max-width:900px){#mobile-menu .mobile-about-group{display:block!important;border-bottom:1px solid #eef1f4!important}#mobile-menu .mobile-about-group .mobile-menu-group-toggle{display:flex!important;align-items:center!important;justify-content:space-between!important;width:100%!important;padding:13px 4px!important;background:#fff!important;color:#082b57!important;border:0!important;border-bottom:1px solid #eef1f4!important;text-align:left!important;font:800 12px/1.25 Manrope,Arial,sans-serif!important;letter-spacing:.02em!important;text-transform:none!important}#mobile-menu .about-mobile-items{display:none!important;padding:0!important;background:#fff!important}#mobile-menu .mobile-about-group.open .about-mobile-items{display:block!important}#mobile-menu .about-mobile-items a{display:block!important;position:relative!important;min-height:44px!important;padding:11px 18px 11px 35px!important;background:#fff!important;color:#082b57!important;border:0!important;border-bottom:1px solid #f1f2f4!important;font:700 12px/1.35 Manrope,Arial,sans-serif!important;letter-spacing:0!important;text-transform:none!important}#mobile-menu .about-mobile-items a::before{content:""!important;position:absolute!important;left:17px!important;top:50%!important;width:6px!important;height:6px!important;border-radius:50%!important;background:#d4af37!important;transform:translateY(-50%)!important}#mobile-menu .about-mobile-items a:hover,#mobile-menu .about-mobile-items a:focus-visible,#mobile-menu .about-mobile-items a.active{background:#fff0e7!important;color:#ff5b2f!important;outline:none!important}}
+
+
+/* Only the requested fixes: clearer YEARS ROOTED + working/animated small-screen menu. */
+#hero .years-rooted-label.designed-years{
+  font-family:"Manrope",Arial,sans-serif !important;
+  font-style:normal !important;
+  font-weight:900 !important;
+  font-size:clamp(.68rem,.85vw,.92rem) !important;
+  letter-spacing:.12em !important;
+  line-height:1.15 !important;
+  color:#fff4c2 !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.42) !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+@media (max-width:760px){
+  /* Keep the mobile panel in the DOM so its entrance/exit can animate smoothly. */
+  #mobile-menu{
+    display:block !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    transform:translate3d(0,-18px,0) scale(.985) !important;
+    transform-origin:top center !important;
+    pointer-events:none !important;
+    transition:opacity .24s ease,transform .34s cubic-bezier(.22,.8,.2,1),visibility 0s linear .34s !important;
+    will-change:opacity,transform;
+  }
+  #mobile-menu.open,#mobile-menu[aria-hidden="false"]{
+    visibility:visible !important;
+    opacity:1 !important;
+    transform:translate3d(0,0,0) scale(1) !important;
+    pointer-events:auto !important;
+    transition:opacity .24s ease,transform .34s cubic-bezier(.22,.8,.2,1),visibility 0s linear 0s !important;
+  }
+  #mobile-menu > a,#mobile-menu > .mobile-menu-group,#mobile-menu .mobile-menu-head{
+    opacity:0;
+    transform:translate3d(0,-8px,0);
+    transition:opacity .22s ease,transform .28s cubic-bezier(.22,.8,.2,1);
+  }
+  #mobile-menu.open > a,#mobile-menu.open > .mobile-menu-group,#mobile-menu.open .mobile-menu-head{
+    opacity:1;
+    transform:translate3d(0,0,0);
+  }
+  #mobile-menu.open > a:nth-of-type(1){transition-delay:.03s !important}
+  #mobile-menu.open > a:nth-of-type(2){transition-delay:.055s !important}
+  #mobile-menu.open > a:nth-of-type(3){transition-delay:.08s !important}
+  #mobile-menu.open > a:nth-of-type(4){transition-delay:.105s !important}
+  #mobile-menu.open > a:nth-of-type(5){transition-delay:.13s !important}
+  #mobile-menu.open > a:nth-of-type(6){transition-delay:.155s !important}
+  #mobile-menu.open > .mobile-menu-group{transition-delay:.18s !important}
+  #mobile-menu.open > a:nth-of-type(7){transition-delay:.205s !important}
+  #mobile-menu.open > a:nth-of-type(8){transition-delay:.23s !important}
+  #mobile-menu.open > a:nth-of-type(9){transition-delay:.255s !important}
+  #mobile-menu.open > a:nth-of-type(10){transition-delay:.28s !important}
+
+  /* More Info inside the mobile menu: click/tap opens this section with a real height animation. */
+  #mobile-menu .mobile-menu-group-items{
+    display:grid !important;
+    grid-template-rows:0fr !important;
+    padding:0 0 0 14px !important;
+    overflow:hidden !important;
+    transition:grid-template-rows .3s cubic-bezier(.22,.8,.2,1),padding-bottom .3s ease !important;
+  }
+  #mobile-menu .mobile-menu-group-items::before{content:"";min-height:0;}
+  #mobile-menu .mobile-menu-group-items a{min-height:0;overflow:hidden;}
+  #mobile-menu .mobile-menu-group.open .mobile-menu-group-items{grid-template-rows:1fr !important;padding-bottom:4px !important;}
+  #mobile-menu .mobile-menu-group-toggle span{
+    display:inline-block !important;
+    transform:rotate(0deg) !important;
+    transition:transform .28s cubic-bezier(.22,.8,.2,1) !important;
+  }
+  #mobile-menu .mobile-menu-group.open .mobile-menu-group-toggle span{transform:rotate(180deg) !important;}
+}
+@media (prefers-reduced-motion:reduce){
+  #mobile-menu,#mobile-menu > a,#mobile-menu > .mobile-menu-group,#mobile-menu .mobile-menu-head,#mobile-menu .mobile-menu-group-items,#mobile-menu .mobile-menu-group-toggle span{transition:none !important;}
+}
+
+
+/* More Info uses the same compact reference-style dropdown as About. */
+#site-nav .nav-more-info .nav-dropdown-menu a{
+  display:flex!important;align-items:center!important;position:relative!important;min-height:47px!important;
+  padding:10px 16px 10px 32px!important;background:#fff!important;color:#082b57!important;border:0!important;
+  border-bottom:1px solid #eef1f4!important;border-radius:0!important;font:700 12px/1.25 Manrope,Arial,sans-serif!important;
+  letter-spacing:.02em!important;text-transform:none!important;transform:none!important;text-shadow:none!important;
+  transition:background .22s ease,color .22s ease,padding-left .22s ease,box-shadow .22s ease!important;
+}
+#site-nav .nav-more-info .nav-dropdown-menu a:last-child{border-bottom:0!important}
+#site-nav .nav-more-info .nav-dropdown-menu a::before{
+  content:""!important;position:absolute!important;left:14px!important;top:50%!important;width:6px!important;height:6px!important;
+  border-radius:50%!important;background:#d4af37!important;transform:translateY(-50%)!important;box-shadow:none!important;
+  transition:background .22s ease,transform .22s ease!important;
+}
+#site-nav .nav-more-info .nav-dropdown-menu a:hover,
+#site-nav .nav-more-info .nav-dropdown-menu a:focus-visible,
+#site-nav .nav-more-info .nav-dropdown-menu a.active-more-info{
+  background:#fff0e7!important;color:#ff5b2f!important;padding-left:36px!important;outline:none!important;
+}
+#site-nav .nav-more-info .nav-dropdown-menu a:hover::before,
+#site-nav .nav-more-info .nav-dropdown-menu a:focus-visible::before,
+#site-nav .nav-more-info .nav-dropdown-menu a.active-more-info::before{
+  background:#ff5b2f!important;transform:translateY(-50%) scale(1.18)!important;
+}
+/* soft open animation, matching the About menu without adding visual clutter */
+#site-nav .nav-more-info .nav-dropdown-menu a{opacity:0;transform:translateY(-5px)!important;}
+#site-nav .nav-more-info:hover .nav-dropdown-menu a,
+#site-nav .nav-more-info.open .nav-dropdown-menu a,
+#site-nav .nav-more-info .nav-dropdown-menu:focus-within a{opacity:1;transform:translateY(0)!important;}
+#site-nav .nav-more-info .nav-dropdown-menu a:nth-child(1){transition-delay:.02s!important}
+#site-nav .nav-more-info .nav-dropdown-menu a:nth-child(2){transition-delay:.045s!important}
+#site-nav .nav-more-info .nav-dropdown-menu a:nth-child(3){transition-delay:.07s!important}
+#site-nav .nav-more-info .nav-dropdown-menu a:nth-child(4){transition-delay:.095s!important}
+#site-nav .nav-more-info .nav-dropdown-menu a:nth-child(5){transition-delay:.12s!important}
+@media (max-width:900px){
+  /* Mobile More Info becomes the same stacked, dotted, highlighted list as About. */
+  #mobile-menu .mobile-more-info-group .mobile-menu-group-toggle{
+    display:flex!important;align-items:center!important;justify-content:space-between!important;width:100%!important;
+    padding:13px 4px!important;background:#fff!important;color:#082b57!important;border:0!important;
+    border-bottom:1px solid #eef1f4!important;text-align:left!important;font:800 12px/1.25 Manrope,Arial,sans-serif!important;
+    letter-spacing:.02em!important;text-transform:none!important;
+  }
+  #mobile-menu .mobile-more-info-items{padding:0!important;background:#fff!important;}
+  #mobile-menu .mobile-more-info-items a{
+    display:block!important;position:relative!important;min-height:44px!important;padding:11px 18px 11px 35px!important;
+    background:#fff!important;color:#082b57!important;border:0!important;border-bottom:1px solid #f1f2f4!important;
+    font:700 12px/1.35 Manrope,Arial,sans-serif!important;letter-spacing:0!important;text-transform:none!important;
+    transition:background .2s ease,color .2s ease,padding-left .2s ease!important;
+  }
+  #mobile-menu .mobile-more-info-items a::before{
+    content:""!important;position:absolute!important;left:17px!important;top:50%!important;width:6px!important;height:6px!important;
+    border-radius:50%!important;background:#d4af37!important;transform:translateY(-50%)!important;
+  }
+  #mobile-menu .mobile-more-info-items a:hover,
+  #mobile-menu .mobile-more-info-items a:focus-visible,
+  #mobile-menu .mobile-more-info-items a.active{
+    background:#fff0e7!important;color:#ff5b2f!important;padding-left:39px!important;outline:none!important;
+  }
+  #mobile-menu .mobile-more-info-items a:hover::before,
+  #mobile-menu .mobile-more-info-items a:focus-visible::before,
+  #mobile-menu .mobile-more-info-items a.active::before{background:#ff5b2f!important}
+}
+@media (prefers-reduced-motion:reduce){
+  #site-nav .nav-more-info .nav-dropdown-menu a{transition:none!important;}
+}
+
+
+/* 1) Mobile navigation: keep the existing menu/behavior, but guarantee the
+   hamburger is visible, touch-friendly, and the full-screen menu is usable. */
+@media (max-width:900px){
+  #site-nav{position:relative !important;z-index:2500 !important;overflow:visible !important;}
+  #site-nav #hamburger{
+    display:grid !important;position:relative !important;flex:0 0 46px !important;
+    width:46px !important;height:46px !important;margin-left:10px !important;padding:0 !important;
+    place-items:center !important;border:1px solid rgba(212,175,55,.55) !important;
+    border-radius:10px !important;background:#fff !important;color:#183d64 !important;
+    cursor:pointer !important;z-index:2601 !important;
+  }
+  #site-nav #hamburger span{display:block !important;position:absolute !important;left:11px !important;right:11px !important;height:2px !important;background:#183d64 !important;border-radius:2px !important;}
+  #site-nav #hamburger span:nth-child(1){top:13px !important;}
+  #site-nav #hamburger span:nth-child(2){top:22px !important;}
+  #site-nav #hamburger span:nth-child(3){top:31px !important;}
+  #site-nav #hamburger.open span:nth-child(1){top:22px !important;transform:rotate(45deg) !important;}
+  #site-nav #hamburger.open span:nth-child(2){opacity:0 !important;}
+  #site-nav #hamburger.open span:nth-child(3){top:22px !important;transform:rotate(-45deg) !important;}
+  #mobile-menu{
+    z-index:2600 !important;width:100vw !important;max-width:100vw !important;
+    min-height:100dvh !important;max-height:100dvh !important;
+    padding:78px max(18px,env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left)) !important;
+    overscroll-behavior:contain !important;-webkit-overflow-scrolling:touch !important;
+  }
+  #mobile-menu .mobile-menu-head{position:sticky !important;top:0 !important;background:#fff !important;z-index:2 !important;}
+  #mobile-menu .mobile-menu-group-toggle{width:100% !important;display:flex !important;align-items:center !important;justify-content:space-between !important;border:0 !important;border-bottom:1px solid #efefef !important;background:#fff !important;color:#333 !important;padding:13px 4px !important;font:700 12px/1.25 Arial,Helvetica,sans-serif !important;letter-spacing:.07em !important;text-transform:uppercase !important;text-align:left !important;cursor:pointer !important;}
+  #mobile-menu .mobile-menu-group-items a{padding-left:18px !important;font-size:11px !important;background:#faf8f2 !important;}
+}
+@media (max-width:380px){
+  #site-nav #hamburger{flex-basis:42px !important;width:42px !important;height:42px !important;}
+  #site-nav .school-logo-switch,#site-nav .school-logo-switch img{width:42px !important;height:42px !important;}
+}
+
+/* 2) Hero heading: keep the changing title on one line where possible and
+   scale it continuously so no word is clipped or pushed to a second line. */
+#hero .hero-title h4#hero-h1{
+  display:block !important;width:100% !important;max-width:none !important;
+  white-space:nowrap !important;overflow:visible !important;
+  font-size:clamp(1.35rem,4.2vw,4.8rem) !important;
+  line-height:1.06 !important;letter-spacing:-.035em !important;
+  text-wrap:nowrap !important;overflow-wrap:normal !important;word-break:normal !important;
+  margin-left:auto !important;margin-right:auto !important;
+}
+#hero .hero-title h4#hero-h1 .char{display:inline !important;white-space:pre !important;}
+@media (max-width:900px){
+  #hero .hero-title h4#hero-h1{font-size:clamp(1.05rem,5.8vw,2.7rem) !important;line-height:1.02 !important;letter-spacing:-.045em !important;}
+}
+@media (max-width:480px){
+  #hero .hero-title h4#hero-h1{font-size:clamp(.92rem,5.15vw,1.65rem) !important;letter-spacing:-.05em !important;}
+}
+
+/* 3) Respectful names for the four homepage gallery cards. */
+#gallery .devdaha-gallery-card:nth-child(1) .devdaha-gallery-label{content:"";}
+
+/* Magazine should look/behave like a real page link, not an in-page anchor. */
+#site-nav a[href="#magazine"],#mobile-menu a[href="#magazine"]{cursor:pointer !important;}
+
+/* Structural safety for this page */
+#site-nav.devdaha-reference-header{position:sticky!important;top:0!important;z-index:10000!important;display:block!important;}
+#site-nav .devdaha-header-shell,#site-nav .devdaha-main-row{box-sizing:border-box!important;}
+#site-nav .school-logo-img{display:block!important;object-fit:contain!important;}
+</style>
 <body>
-<header class="nav"><div class="nav-inner">
-<a class="brand" href="Devdaha.html"><span class="crest">✦</span><span><strong>DEVDAHA E.B.H. SCHOOL</strong><small>DEVDAHA · EST. 2053 B.S. / 1996 A.D.</small></span></a>
-<nav class="navlinks" aria-label="About page navigation"><a class="active" href="#story">Our Story</a><a href="#approach">Approach</a><a href="#life">School Life</a><a href="#contact">Contact</a></nav>
-<a class="home-btn" href="Devdaha.html">← MAIN WEBSITE</a>
-</div></header>
-<main>
-<section class="hero"><div class="hero-inner"><div><div class="eyebrow">About Devdaha E.B.H. School</div><h1>Rooted in <span>values.</span><br>Focused on the future.</h1><p>Devdaha English Boarding High School is presented as a learning community built around academic growth, character, discipline and the confidence to take on a changing world.</p></div><aside class="hero-card"><div class="big">2053</div><h3>A story that continues to grow.</h3><p>The school's own website identity marks its establishment as 2053 B.S. / 1996 A.D. Government school records also list Devdaha English Boarding School in Devdaha Municipality, Rupandehi as a private school.</p><div class="facts"><div class="fact"><b>850+</b><span>Students</span></div><div class="fact"><b>37+</b><span>Educators</span></div><div class="fact"><b>29+</b><span>Years</span></div></div></aside></div></section>
+<header id="site-nav" class="devdaha-reference-header"><div class="devdaha-header-shell"><div class="devdaha-main-row"><a aria-label="Devdaha English Boarding Secondary School home" class="nav-mark" href="Devdaha.html#hero"><span aria-label="Devdaha E.B.S.S. logo" class="school-logo-switch"><img alt="Devdaha E.B.S.S. logo" class="school-logo-img school-logo-exact" src="assets/logo.png"/></span><span aria-label="Devdaha English Boarding Secondary School" class="school-wordmark school-wordmark-single"><span class="brand-line brand-line-main">DEVDAHA</span><span class="brand-line brand-line-sub">E.B.S.S</span></span></a><nav aria-label="Primary navigation" class="nav-links"><a data-nav="" href="Devdaha.html#hero">Home</a><div class="nav-dropdown"><button aria-expanded="false" aria-haspopup="true" class="nav-dropdown-toggle" type="button">About <span class="nav-chevron">⌄</span></button><div aria-label="About menu" class="nav-dropdown-menu"><a class="about-menu-link" href="about-school.html">About Us</a><a class="about-menu-link" href="message-from-chairman.html">Message From Chairman</a><a class="about-menu-link" href="message-from-principal.html">Message From Principal</a><a class="about-menu-link" href="mission-vision.html">Mission &amp; Vision</a><a class="about-menu-link" href="history.html">History</a></div></div><div class="nav-dropdown nav-more-info"><button aria-expanded="false" aria-haspopup="true" class="nav-dropdown-toggle" type="button">More Info <span class="nav-chevron">⌄</span></button><div aria-label="More Info menu" class="nav-dropdown-menu"><a data-nav="" href="Devdaha.html#facilities">Facilities</a><a data-nav="" href="weekly-eca.html">Weekly ECA</a><a data-nav="" href="Devdaha.html#magazine">Magazine</a><a data-nav="" href="testimonials.html">Testimonials</a><a data-nav="" href="downloads.html">Downloads</a></div></div><a data-nav="" href="Devdaha.html#gallery">Gallery</a><a data-nav="" href="Devdaha.html#suggestion-box">Suggestion Box</a><a data-nav="" href="notice.html">Notice</a><a data-nav="" href="Devdaha.html#footer">Contact</a><span id="nav-underline" aria-hidden="true"></span></nav><button class="nav-cta" data-admission-open="" type="button">Enroll Now</button><button aria-controls="mobile-menu" aria-expanded="false" aria-label="Open navigation" id="hamburger" type="button"><span></span><span></span><span></span></button></div></div></header><div aria-hidden="true" aria-label="Mobile navigation" id="mobile-menu"><div class="mobile-menu-head"><span class="mobile-menu-title">MENU</span><button aria-label="Close navigation" id="mobile-menu-back" type="button">✕</button></div><a href="Devdaha.html#hero">Home</a><div class="mobile-menu-group mobile-about-group"><button type="button" class="mobile-menu-group-toggle" aria-expanded="false">About <span>⌄</span></button><div class="mobile-menu-group-items about-mobile-items"><a href="about-school.html">About Us</a><a href="message-from-chairman.html">Message From Chairman</a><a href="message-from-principal.html">Message From Principal</a><a href="mission-vision.html">Mission &amp; Vision</a><a href="history.html">History</a></div></div><div class="mobile-menu-group mobile-more-info-group"><button type="button" class="mobile-menu-group-toggle" aria-expanded="false">More Info <span>⌄</span></button><div class="mobile-menu-group-items mobile-more-info-items"><a href="Devdaha.html#facilities">Facilities</a><a href="weekly-eca.html">Weekly ECA</a><a href="Devdaha.html#magazine">Magazine</a><a href="testimonials.html">Testimonials</a><a href="downloads.html">Downloads</a></div></div><a href="Devdaha.html#gallery">Gallery</a><a href="Devdaha.html#suggestion-box">Suggestion Box</a><a href="notice.html">Notice</a><a href="Devdaha.html#footer">Contact</a><a class="mobile-menu-admin" href="admin-login.html">Admin Login</a><a class="mobile-menu-apply" data-admission-open="" href="#">Enroll Now</a></div><main>
+<section class="hero"><div class="hero-inner"><div><div class="eyebrow">About Devdaha E.B.S.S. School</div><h1>Rooted in <span>values.</span><br>Focused on the future.</h1><p>Devdaha English Boarding Secondary School is presented as a learning community built around academic growth, character, discipline and the confidence to take on a changing world.</p></div><aside class="hero-card"><div class="big">2053</div><h3>A story that continues to grow.</h3><p>The school's own website identity marks its establishment as 2053 B.S. / 1996 A.D. Government school records also list Devdaha English Boarding School in Devdaha Municipality, Rupandehi as a private school.</p><div class="facts"><div class="fact"><b>850+</b><span>Students</span></div><div class="fact"><b>37+</b><span>Educators</span></div><div class="fact"><b>29+</b><span>Years</span></div></div></aside></div></section>
 <section class="section" id="story"><div class="container"><div class="section-head"><div class="eyebrow">Our Story</div><h2>From a local school to a wider vision for learning.</h2><p>The school's story can be understood through the values already reflected across its website: a strong academic foundation, responsible character, practical experiences and a close connection with the community.</p></div><div class="story"><div class="timeline"><div class="timeline-item"><h3>2053 B.S. / 1996 A.D.</h3><p>The school identity dates its establishment to 2053 B.S. / 1996 A.D., marking the beginning of its long-running educational journey.</p></div><div class="timeline-item"><h3>Growing with Devdaha</h3><p>Government records place Devdaha English Boarding School in Devdaha Municipality, Rupandehi, connecting the institution with the wider local education community.</p></div><div class="timeline-item"><h3>Learning beyond the classroom</h3><p>The current website emphasizes School life, sports, extracurricular activities, student development and opportunities to build confidence alongside academic learning.</p></div></div><div><div class="section-head" style="margin-bottom:0"><div class="eyebrow">Our Promise</div><h2>Education with purpose.</h2><p>We want students to leave school not only knowing more, but also thinking more clearly, working with others, taking responsibility and contributing positively to society.</p></div></div></div></div></section>
 <section class="section alt mission-vision-teaser"><div class="container"><div class="section-head"><div class="eyebrow">Our Mission &amp; Vision</div><h2>Purpose that guides every learner.</h2><p>Explore the school's mission, vision and educational principles on a dedicated page.</p><a class="home-btn" href="mission-vision.html">EXPLORE MISSION &amp; VISION</a></div></div></section><section class="section" id="life"><div class="container"><div class="section-head"><div class="eyebrow">School Life</div><h2>More than lessons on a timetable.</h2><p>The main website already gives school life a broad role, with School facilities, sports, extracurricular activities, achievements and student-focused experiences.</p></div><div class="life"><article class="life-card"><h3>School & Facilities</h3><p>Spaces designed to support classroom learning, reading, technology, collaboration and everyday school life.</p></article><article class="life-card"><h3>Sports & Fitness</h3><p>Physical activity provides opportunities to develop teamwork, discipline, confidence and healthy habits.</p></article><article class="life-card"><h3>Creative & ECA</h3><p>Weekly extracurricular activities give students room to explore interests, creativity, clubs and practical projects.</p></article><article class="life-card"><h3>Community & Leadership</h3><p>School life is also about communication, responsibility, service and becoming a positive member of the community.</p></article></div></div></section>
-<section class="section contact" id="contact"><div class="container contact-grid"><div><div class="eyebrow">Visit / Connect</div><h2>Come closer to the Devdaha story.</h2><p>Public listings place Devdaha English Boarding High School in the Devdaha area of Rupandehi, Lumbini Province, Nepal. A published contact listing gives the school's phone number as +977 985 702 6285.</p><a class="home-btn" href="Devdaha.html">EXPLORE THE MAIN WEBSITE</a></div><div class="contact-box"><div><b>School</b>Devdaha English Boarding High School</div><div><b>Location</b>Devdaha, Rupandehi, Lumbini Province, Nepal</div><div><b>Phone</b>+977 985 702 6285</div><div><b>Established</b>2053 B.S. / 1996 A.D. (as shown in the current site identity)</div></div></div></section>
+<section class="section contact" id="contact"><div class="container contact-grid"><div><div class="eyebrow">Visit / Connect</div><h2>Come closer to the Devdaha story.</h2><p>Public listings place Devdaha English Boarding Secondary School in the Devdaha area of Rupandehi, Lumbini Province, Nepal. A published contact listing gives the school's phone number as +977 985 702 6285.</p><a class="home-btn" href="Devdaha.html">EXPLORE THE MAIN WEBSITE</a></div><div class="contact-box"><div><b>School</b>Devdaha English Boarding Secondary School</div><div><b>Location</b>Devdaha, Rupandehi, Lumbini Province, Nepal</div><div><b>Phone</b>+977 985 702 6285</div><div><b>Established</b>2053 B.S. / 1996 A.D. (as shown in the current site identity)</div></div></div></section>
 </main>
-<footer class="footer"><strong>Devdaha E.B.H. School</strong> · About the School · <a href="Devdaha.html">Return to Home</a></footer>
+<footer class="footer"><strong>Devdaha E.B.S.S. School</strong> · About the School · <a href="Devdaha.html">Return to Home</a></footer>
 
 <style id="about-clean-clarity">
 /* Clean subpage presentation: white base, blue structure, gold accents. */
@@ -159,36 +356,71 @@ body *{opacity:1!important;filter:none!important;}
 }
 </style>
 
-<script id="devdaha-premium-subpage-motion-script">
+<script id="devdaha-universal-subpage-nav-js">(function(){const n=document.getElementById('subpage-nav');if(!n)return;const toggle=n.querySelector('.subnav-toggle'),mob=n.querySelector('.subnav-mobile');toggle&&toggle.addEventListener('click',()=>{const open=toggle.classList.toggle('open');mob.classList.toggle('open',open);mob.setAttribute('aria-hidden',String(!open));toggle.setAttribute('aria-expanded',String(open));});n.querySelectorAll('.subnav-drop>button').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const p=b.parentElement;document.querySelectorAll('#subpage-nav .subnav-drop.open').forEach(x=>x!==p&&x.classList.remove('open'));p.classList.toggle('open');b.setAttribute('aria-expanded',String(p.classList.contains('open')))}));n.querySelectorAll('.submobile-group').forEach(b=>b.addEventListener('click',()=>{b.nextElementSibling.classList.toggle('open')}));document.addEventListener('click',e=>{if(!n.contains(e.target))n.querySelectorAll('.subnav-drop.open').forEach(x=>x.classList.remove('open'));});})();</script>
+<script id="devdaha-exact-root-nav-js">
 (function(){
- const init=()=>{
-   const candidates=[...document.querySelectorAll('section,article,.feature,.notice-card,.download-card,.photo-card,.eca-card,.principle,.life-card,.timeline-item,.hero-card,.contact-box,.testimonial,.testimonial-card,.gallery-grid,.photo-grid,.eca-grid,.downloads-grid,.devdaha-managed-block,.devdaha-cms-testimonial')]
-     .filter(el=>!el.closest('nav,footer,.devdaha-editor-panel,.devdaha-editor-mask,[aria-hidden="true"]'));
-   candidates.forEach(el=>el.classList.add('ds-reveal'));
-   document.querySelectorAll('.gallery-grid,.photo-grid,.eca-grid,.downloads-grid,.devdaha-managed-testimonials,.devdaha-managed-blocks,.devdaha-gallery-managed-grid').forEach(g=>g.classList.add('ds-stagger'));
-   if('IntersectionObserver' in window){
-     const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');io.unobserve(e.target)}}),{threshold:.08,rootMargin:'0px 0px -6% 0px'});
-     candidates.forEach(el=>io.observe(el));
-   }else candidates.forEach(el=>el.classList.add('is-visible'));
- };
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-})();
-</script>
-
-
-<script id="devdaha-theme-beauty-v2-js">
-(function(){
- function init(){
-  const bar=document.createElement('div');bar.className='ds-page-accent';document.body.prepend(bar);
-  const selectors='section, .hero-card, .feature, .card, .principle, .life-card, .download-card, .notice-card, .photo-card, .eca-card, .testimonial, .testimonial-card, .event-card, .achievement-card, .year-card, .magazine-card, .contact-box, .timeline-item';
-  const els=[...document.querySelectorAll(selectors)].filter(el=>!el.closest('nav,footer,.devdaha-editor-panel,[aria-hidden="true"]'));
-  els.forEach((el,i)=>{el.classList.add('ds-beauty-reveal');el.style.transitionDelay=Math.min((i%8)*55,350)+'ms'});
-  if('IntersectionObserver' in window){
-   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('ds-in');io.unobserve(e.target)}}),{threshold:.08,rootMargin:'0px 0px -7% 0px'});els.forEach(e=>io.observe(e));
-  }else els.forEach(e=>e.classList.add('ds-in'));
-  const update=()=>{const h=document.documentElement.scrollHeight-innerHeight;bar.style.width=(h>0?(scrollY/h)*100:0)+'%'};addEventListener('scroll',update,{passive:true});update();
- }
- document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init,{once:true}):init();
+  function initNav(){
+    var root=document.getElementById('site-nav');
+    var burger=document.getElementById('hamburger');
+    var mobile=document.getElementById('mobile-menu');
+    if(!root) return;
+    // Desktop dropdowns: same tap + hover behavior as root.
+    root.querySelectorAll('.nav-dropdown').forEach(function(drop){
+      var btn=drop.querySelector('.nav-dropdown-toggle');
+      if(!btn || btn.dataset.navReady==='1') return;
+      btn.dataset.navReady='1';
+      btn.addEventListener('click',function(e){
+        e.preventDefault();
+        var open=!drop.classList.contains('open');
+        root.querySelectorAll('.nav-dropdown.open').forEach(function(d){
+          if(d!==drop){d.classList.remove('open'); var b=d.querySelector('.nav-dropdown-toggle'); if(b)b.setAttribute('aria-expanded','false');}
+        });
+        drop.classList.toggle('open',open);
+        btn.setAttribute('aria-expanded',String(open));
+      });
+    });
+    document.addEventListener('click',function(e){
+      if(!root.contains(e.target)) root.querySelectorAll('.nav-dropdown.open').forEach(function(d){d.classList.remove('open');var b=d.querySelector('.nav-dropdown-toggle');if(b)b.setAttribute('aria-expanded','false');});
+    },true);
+    // Mobile menu.
+    function setMobile(open){
+      if(!burger||!mobile) return;
+      burger.classList.toggle('open',open);
+      mobile.classList.toggle('open',open);
+      burger.setAttribute('aria-expanded',String(open));
+      burger.setAttribute('aria-label',open?'Close navigation':'Open navigation');
+      mobile.setAttribute('aria-hidden',String(!open));
+      document.body.classList.toggle('mobile-nav-open',open);
+    }
+    if(burger && mobile && burger.dataset.navReady!=='1'){
+      burger.dataset.navReady='1';
+      burger.addEventListener('click',function(){setMobile(!mobile.classList.contains('open'));});
+      var back=document.getElementById('mobile-menu-back');
+      if(back) back.addEventListener('click',function(){setMobile(false);});
+      mobile.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){setMobile(false);});});
+    }
+    root.querySelectorAll('#mobile-menu .mobile-menu-group-toggle').forEach(function(btn){
+      if(btn.dataset.groupReady==='1') return; btn.dataset.groupReady='1';
+      btn.addEventListener('click',function(e){
+        e.preventDefault(); var group=btn.closest('.mobile-menu-group'); var open=group.classList.toggle('open'); btn.setAttribute('aria-expanded',String(open));
+      });
+    });
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Escape'){
+        root.querySelectorAll('.nav-dropdown.open').forEach(function(d){d.classList.remove('open');var b=d.querySelector('.nav-dropdown-toggle');if(b)b.setAttribute('aria-expanded','false');});
+        if(mobile&&mobile.classList.contains('open')) setMobile(false);
+      }
+    });
+    // Active navigation for subpages.
+    var file=(location.pathname.split('/').pop()||'Devdaha.html').toLowerCase();
+    root.querySelectorAll('.nav-links > a, .nav-dropdown-menu a').forEach(function(a){
+      var href=(a.getAttribute('href')||'').toLowerCase();
+      var target=href.split('#')[0].split('/').pop();
+      var active=(target && target===file);
+      a.classList.toggle('active',active);
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initNav,{once:true}); else initNav();
 })();
 </script>
 </body>
