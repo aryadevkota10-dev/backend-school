@@ -42,7 +42,14 @@ const mapMedia = row => row ? { ...row, id: String(row.id), _id: undefined, url:
 const normalizeItem = (body, existing = {}) => {
   const out = { ...existing };
   for (const k of ['type','page','title','body','description','link','link_text','image_id','file_id','date','time','location','category','visible','published','featured','sort_order','meta_json']) if (body[k] !== undefined) out[k] = body[k];
-  out.id = out.id || uid(); out.type = String(out.type || 'block'); out.page = out.page ? String(out.page) : null;
+  out.id = out.id || uid(); out.type = String(out.type || 'block');
+  const defaultPageByType = {
+    notice:'notice.html', gallery:'our-gallery.html', event:'events-programs.html',
+    achievement:'our-achievements.html', 'academic-achievement':'our-academic-achievement.html',
+    testimonial:'testimonials.html', magazine:'school-magazine.html', eca:'weekly-eca.html',
+    year:'year-in-review.html', download:'downloads.html'
+  };
+  out.page = String(out.page || defaultPageByType[out.type] || existing.page || '') || null;
   out.title = String(out.title || ''); out.body = String(out.body || ''); out.description = String(out.description || ''); out.link = String(out.link || ''); out.link_text = String(out.link_text || 'Learn More');
   out.image_id = out.image_id ? String(out.image_id) : null; out.file_id = out.file_id ? String(out.file_id) : null; out.date = out.date || null; out.time = out.time || null; out.location = String(out.location || ''); out.category = String(out.category || '');
   out.visible = body.visible === undefined ? (existing.visible === undefined ? 1 : Number(Boolean(existing.visible))) : (bool(body.visible) ? 1 : 0);
