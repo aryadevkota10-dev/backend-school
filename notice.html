@@ -653,13 +653,56 @@ button:hover,a.button:hover,.home-btn:hover,.download-btn:hover,.back:hover{tran
 #site-nav.devdaha-reference-header{position:sticky !important;top:0 !important;z-index:10000 !important;}
 #site-nav .devdaha-header-shell{position:relative !important;}
 #mobile-menu{z-index:10001 !important;}
-</style></head>
+</style>
+<style id="notice-page-final-fix">
+/* Notice page final layout fix — keeps the existing white/blue/gold subpage theme. */
+.notice-area{padding:0 0 72px!important;background:linear-gradient(180deg,#f7f9fc 0%,#fff 42%,#f7f9fc 100%)!important;min-height:calc(100vh - 80px)}
+.notice-page-hero{position:relative;overflow:hidden;padding:68px 0 58px;background:linear-gradient(135deg,#ffffff 0%,#f3f7fc 62%,#edf3f9 100%);border-bottom:1px solid #dce5ef}
+.notice-page-hero:before{content:"";position:absolute;width:360px;height:360px;border:72px solid rgba(199,161,58,.08);border-radius:50%;right:-130px;top:-180px;pointer-events:none}
+.notice-page-hero:after{content:"";position:absolute;left:-120px;bottom:-210px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(22,94,168,.08),transparent 68%);pointer-events:none}
+.notice-page-hero .wrap{position:relative;z-index:1}
+.notice-page-hero .eyebrow{display:inline-block;margin-bottom:10px;color:#b88919!important;font:800 .72rem/1 Manrope,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+.notice-page-hero h1{margin:0;color:#163a67!important;font-family:Fraunces,Georgia,serif!important;font-size:clamp(2.35rem,5vw,4.25rem)!important;line-height:1.03!important;letter-spacing:-.03em!important}
+.notice-page-hero h1 span{color:#b88919!important}
+.notice-page-hero p{max-width:760px;margin:16px 0 0;color:#60758b!important;font-size:1rem;line-height:1.8}
+.notice-page-content{padding-top:34px}
+.notice-page-content>.wrap{width:min(1120px,92vw)!important}
+.notice-section-heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:0 0 18px}
+.notice-section-heading h2{margin:0;color:#163a67!important;font:700 clamp(1.35rem,2.8vw,2rem)/1.2 Fraunces,Georgia,serif!important}
+.notice-section-heading .rule{height:1px;flex:1;background:linear-gradient(90deg,rgba(199,161,58,.7),transparent);margin-bottom:7px}
+.devdaha-notice-board{margin-top:0!important}
+.devdaha-notice-latest{margin-bottom:30px!important}
+.notice-page-empty{display:none;margin-top:22px;padding:34px 24px;text-align:center;border:1px dashed #cfdbe7;border-radius:20px;background:#fff;box-shadow:0 12px 32px rgba(11,63,120,.06)}
+.notice-page-empty strong{display:block;color:#163a67;font:700 1.45rem/1.2 Fraunces,Georgia,serif}
+.notice-page-empty span{display:block;margin-top:8px;color:#70849a;font-size:.92rem}
+#devdaha-managed-notices:empty + .notice-page-empty{display:block}
+@media(max-width:700px){
+ .notice-page-hero{padding:52px 0 42px}
+ .notice-page-hero p{font-size:.92rem}
+ .notice-page-content{padding-top:26px}
+ .notice-section-heading{display:block}
+ .notice-section-heading .rule{display:none}
+}
+</style>
+</head>
 <body>
-<header id="site-nav" class="devdaha-reference-header"><div class="devdaha-header-shell"><div class="devdaha-main-row"><a aria-label="Devdaha English Boarding Secondary School home" class="nav-mark" href="Devdaha.html#hero"><span aria-label="Devdaha E.B.S.S. logo" class="school-logo-switch"><img alt="Devdaha E.B.S.S. logo" class="school-logo-img school-logo-exact" src="assets/logo.png"/></span><span aria-label="Devdaha English Boarding Secondary School" class="school-wordmark school-wordmark-single"><span class="brand-line brand-line-main">DEVDAHA</span><span class="brand-line brand-line-sub">E.B.S. SCHOOL</span></span></a><nav aria-label="Primary navigation" class="nav-links"><a data-nav="" href="Devdaha.html#hero">Home</a><div class="nav-dropdown"><button aria-expanded="false" aria-haspopup="true" class="nav-dropdown-toggle" type="button">About <span class="nav-chevron">⌄</span></button><div aria-label="About menu" class="nav-dropdown-menu"><a class="about-menu-link" href="about-school.html">About Us</a><a class="about-menu-link" href="message-from-chairman.html">Message From Chairman</a><a class="about-menu-link" href="message-from-principal.html">Message From Principal</a><a class="about-menu-link" href="mission-vision.html">Mission &amp; Vision</a><a class="about-menu-link" href="history.html">History</a></div></div><div class="nav-dropdown nav-more-info"><button aria-expanded="false" aria-haspopup="true" class="nav-dropdown-toggle" type="button">More Info <span class="nav-chevron">⌄</span></button><div aria-label="More Info menu" class="nav-dropdown-menu"><a data-nav="" href="Devdaha.html#facilities">Facilities</a><a data-nav="" href="weekly-eca.html">Weekly ECA</a><a data-nav="" href="school-magazine.html">Magazine</a><a data-nav="" href="testimonials.html">Testimonials</a><a data-nav="" href="downloads.html">Downloads</a></div></div><a data-nav="" href="Devdaha.html#gallery">Gallery</a><a data-nav="" href="Devdaha.html#suggestion-box">Suggestion Box</a><a data-nav="" href="notice.html">Notice</a><a data-nav="" href="Devdaha.html#footer">Contact</a><span id="nav-underline" aria-hidden="true"></span></nav><button class="nav-cta" data-admission-open="" type="button">Enroll Now</button><button aria-controls="mobile-menu" aria-expanded="false" aria-label="Open navigation" id="hamburger" type="button"><span></span><span></span><span></span></button></div></div></header><div aria-hidden="true" aria-label="Mobile navigation" id="mobile-menu"><div class="mobile-menu-head"><span class="mobile-menu-title">MENU</span><button aria-label="Close navigation" id="mobile-menu-back" type="button">✕</button></div><a href="Devdaha.html#hero">Home</a><div class="mobile-menu-group mobile-about-group"><button type="button" class="mobile-menu-group-toggle" aria-expanded="false">About <span>⌄</span></button><div class="mobile-menu-group-items about-mobile-items"><a href="about-school.html">About Us</a><a href="message-from-chairman.html">Message From Chairman</a><a href="message-from-principal.html">Message From Principal</a><a href="mission-vision.html">Mission &amp; Vision</a><a href="history.html">History</a></div></div><div class="mobile-menu-group mobile-more-info-group"><button type="button" class="mobile-menu-group-toggle" aria-expanded="false">More Info <span>⌄</span></button><div class="mobile-menu-group-items mobile-more-info-items"><a href="Devdaha.html#facilities">Facilities</a><a href="weekly-eca.html">Weekly ECA</a><a href="school-magazine.html">Magazine</a><a href="testimonials.html">Testimonials</a><a href="downloads.html">Downloads</a></div></div><a href="Devdaha.html#gallery">Gallery</a><a href="Devdaha.html#suggestion-box">Suggestion Box</a><a href="notice.html">Notice</a><a href="Devdaha.html#footer">Contact</a><a class="mobile-menu-admin" href="admin-login.html">Admin Login</a><a class="mobile-menu-apply" data-admission-open="" href="#">Enroll Now</a></div><main class="notice-area"><div class="wrap">
-
-
-
-</div></main>
+<header id="site-nav" class="devdaha-reference-header"><div class="devdaha-header-shell"><div class="devdaha-main-row"><a aria-label="Devdaha English Boarding Secondary School home" class="nav-mark" href="Devdaha.html#hero"><span aria-label="Devdaha E.B.S.S. logo" class="school-logo-switch"><img alt="Devdaha E.B.S.S. logo" class="school-logo-img school-logo-exact" src="assets/logo.png"/></span><span aria-label="Devdaha English Boarding Secondary School" class="school-wordmark school-wordmark-single"><span class="brand-line brand-line-main">DEVDAHA</span><span class="brand-line brand-line-sub">E.B.S. SCHOOL</span></span></a><nav aria-label="Primary navigation" class="nav-links"><a data-nav="" href="Devdaha.html#hero">Home</a><div class="nav-dropdown"><button aria-expanded="false" aria-haspopup="true" class="nav-dropdown-toggle" type="button">About <span class="nav-chevron">⌄</span></button><div aria-label="About menu" class="nav-dropdown-menu"><a class="about-menu-link" href="about-school.html">About Us</a><a class="about-menu-link" href="message-from-chairman.html">Message From Chairman</a><a class="about-menu-link" href="message-from-principal.html">Message From Principal</a><a class="about-menu-link" href="vice-principal.html">From the Desk of Vice Principal</a><a class="about-menu-link" href="mission-vision.html">Mission &amp; Vision</a><a class="about-menu-link" href="history.html">History</a></div></div><div class="nav-dropdown nav-more-info"><button aria-expanded="false" aria-haspopup="true" class="nav-dropdown-toggle" type="button">More Info <span class="nav-chevron">⌄</span></button><div aria-label="More Info menu" class="nav-dropdown-menu"><a data-nav="" href="Devdaha.html#facilities">Facilities</a><a data-nav="" href="weekly-eca.html">Weekly ECA</a><a data-nav="" href="school-magazine.html">Magazine</a><a data-nav="" href="testimonials.html">Testimonials</a><a data-nav="" href="downloads.html">Downloads</a></div></div><a data-nav="" href="Devdaha.html#gallery">Gallery</a><a data-nav="" href="Devdaha.html#suggestion-box">Suggestion Box</a><a data-nav="" href="notice.html">Notice</a><a data-nav="" href="Devdaha.html#footer">Contact</a><span id="nav-underline" aria-hidden="true"></span></nav><button class="nav-cta" data-admission-open="" type="button">Enroll Now</button><button aria-controls="mobile-menu" aria-expanded="false" aria-label="Open navigation" id="hamburger" type="button"><span></span><span></span><span></span></button></div></div></header><div aria-hidden="true" aria-label="Mobile navigation" id="mobile-menu"><div class="mobile-menu-head"><span class="mobile-menu-title">MENU</span><button aria-label="Close navigation" id="mobile-menu-back" type="button">✕</button></div><a href="Devdaha.html#hero">Home</a><div class="mobile-menu-group mobile-about-group"><button type="button" class="mobile-menu-group-toggle" aria-expanded="false">About <span>⌄</span></button><div class="mobile-menu-group-items about-mobile-items"><a href="about-school.html">About Us</a><a href="message-from-chairman.html">Message From Chairman</a><a href="message-from-principal.html">Message From Principal</a><a href="vice-principal.html">From the Desk of Vice Principal</a><a href="mission-vision.html">Mission &amp; Vision</a><a href="history.html">History</a></div></div><div class="mobile-menu-group mobile-more-info-group"><button type="button" class="mobile-menu-group-toggle" aria-expanded="false">More Info <span>⌄</span></button><div class="mobile-menu-group-items mobile-more-info-items"><a href="Devdaha.html#facilities">Facilities</a><a href="weekly-eca.html">Weekly ECA</a><a href="school-magazine.html">Magazine</a><a href="testimonials.html">Testimonials</a><a href="downloads.html">Downloads</a></div></div><a href="Devdaha.html#gallery">Gallery</a><a href="Devdaha.html#suggestion-box">Suggestion Box</a><a href="notice.html">Notice</a><a href="Devdaha.html#footer">Contact</a><a class="mobile-menu-admin" href="admin-login.html">Admin Login</a><a class="mobile-menu-apply" data-admission-open="" href="#">Enroll Now</a></div><main class="notice-area">
+<section class="notice-page-hero" aria-labelledby="notice-page-title">
+  <div class="wrap">
+    <span class="eyebrow">School Updates</span>
+    <h1 id="notice-page-title">Notice <span>Board</span></h1>
+    <p>Important announcements, academic updates, programs, and official information from Devdaha English Boarding Secondary School.</p>
+  </div>
+</section>
+<section class="notice-page-content" aria-labelledby="notice-list-heading">
+  <div class="wrap">
+    <div class="notice-section-heading">
+      <h2 id="notice-list-heading">Latest notices</h2><span class="rule" aria-hidden="true"></span>
+    </div>
+    <div id="notice-host-wrap"><div class="devdaha-managed-notices" id="devdaha-managed-notices"></div><div class="notice-page-empty"><strong>No notices published yet</strong><span>New school notices will appear here when they are published.</span></div></div>
+  </div>
+</section>
+</main>
 <script src="admin-system.js"></script>
 
 <style id="mobile-tablet-admin-menu-final-fix">
