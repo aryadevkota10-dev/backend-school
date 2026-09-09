@@ -1,0 +1,172 @@
+/* Devdaha E.B.S.S. shared sub-page navigation
+   Used by About, Alumni and other standalone pages. */
+:root{--nav-blue:#082b57;--nav-blue-deep:#061f3d;--nav-gold:#d4af37;--nav-gold-bright:#f1cf65;--nav-cream:#fff7e2;--nav-text:#fff;}
+#site-nav.devdaha-reference-header{
+  position:sticky;top:0;z-index:10000;width:100%;
+  background:rgba(6,31,61,.98);
+  border-bottom:1px solid rgba(212,175,55,.26);
+  box-shadow:0 10px 28px rgba(8,43,87,.18);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+#site-nav .devdaha-header-shell{width:100%;}
+#site-nav .devdaha-main-row{
+  width:100%;min-height:76px;height:76px;
+  padding:8px clamp(12px,3vw,34px);
+  display:flex;align-items:center;gap:18px;box-sizing:border-box;
+}
+#site-nav .nav-mark{
+  display:flex;align-items:center;gap:10px;min-width:0;flex:0 0 auto;
+  margin:0;padding:0;color:#fff;text-decoration:none;
+}
+#site-nav .school-logo-switch,#site-nav .school-logo-img{
+  width:58px;height:58px;min-width:58px;min-height:58px;max-width:58px;max-height:58px;
+  object-fit:contain;display:block;
+}
+#site-nav .school-logo-img{animation:none;}
+#site-nav .nav-mark:hover .school-logo-img{filter:drop-shadow(0 0 10px rgba(212,175,55,.42));}
+#site-nav .school-wordmark-single{
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+  line-height:1;white-space:nowrap;
+}
+#site-nav .school-wordmark-single .brand-line-main{
+  font:800 16px/1 Manrope,Arial,sans-serif;
+  letter-spacing:.08em;color:#fff;
+}
+#site-nav .school-wordmark-single .brand-line-sub{
+  margin-top:4px;font:700 9px/1 Manrope,Arial,sans-serif;
+  letter-spacing:.18em;color:#d7c27a;
+}
+#site-nav .nav-links{
+  display:flex;align-items:center;justify-content:flex-end;gap:clamp(9px,1.3vw,20px);
+  flex:1 1 auto;min-width:0;margin-left:auto;white-space:nowrap;
+}
+#site-nav .nav-links>a,#site-nav .nav-dropdown-toggle{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  padding:29px 0 27px;margin:0;border:0;background:transparent;color:#fff;
+  font:800 10px/1 Manrope,Arial,sans-serif;letter-spacing:.045em;text-transform:uppercase;
+  text-decoration:none;white-space:nowrap;cursor:pointer;
+}
+#site-nav .nav-links>a::after,#site-nav .nav-dropdown-toggle::after{
+  content:"";position:absolute;left:50%;bottom:17px;width:100%;height:2px;
+  background:var(--nav-gold-bright);border-radius:999px;
+  transform:translateX(-50%) scaleX(0);transform-origin:center;
+  transition:transform .24s ease;pointer-events:none;
+  box-shadow:0 0 8px rgba(241,207,101,.45);
+}
+#site-nav .nav-links>a:hover::after,#site-nav .nav-links>a:focus-visible::after,
+#site-nav .nav-dropdown:hover>.nav-dropdown-toggle::after,#site-nav .nav-dropdown.open>.nav-dropdown-toggle::after,
+#site-nav .nav-dropdown-toggle:focus-visible::after{transform:translateX(-50%) scaleX(1);}
+#site-nav .nav-links>a:hover,#site-nav .nav-links>a:focus-visible,#site-nav .nav-links>a.active,
+#site-nav .nav-dropdown-toggle:hover,#site-nav .nav-dropdown-toggle:focus-visible,
+#site-nav .nav-dropdown.open>.nav-dropdown-toggle{color:var(--nav-gold-bright);outline:none;}
+#site-nav .nav-dropdown{position:relative;height:76px;display:flex;align-items:center;margin:0;padding:0;}
+#site-nav .nav-chevron{font-size:12px;line-height:1;transform:translateY(-1px);}
+#site-nav .nav-dropdown-menu{
+  position:absolute;top:calc(100% - 1px);left:50%;display:block;visibility:hidden;opacity:0;
+  pointer-events:none;transform:translateX(-50%) translateY(8px);
+  width:248px;min-width:248px;padding:7px 0;margin:0;
+  background:#fff;background-image:none;border:1px solid rgba(8,43,87,.14);
+  border-top:3px solid var(--nav-gold);border-radius:0 0 14px 14px;
+  box-shadow:0 18px 42px rgba(8,43,87,.18);overflow:hidden;z-index:11000;
+  transition:opacity .18s ease,transform .18s ease,visibility .18s ease;
+}
+#site-nav .nav-dropdown:hover>.nav-dropdown-menu,#site-nav .nav-dropdown.open>.nav-dropdown-menu,
+#site-nav .nav-dropdown:focus-within>.nav-dropdown-menu{
+  visibility:visible;opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);
+}
+#site-nav .nav-dropdown-menu a{
+  position:relative;display:flex;align-items:center;min-height:46px;width:100%;box-sizing:border-box;
+  padding:10px 16px 10px 31px;margin:0;background:#fff;color:#082b57;border:0;border-bottom:1px solid #eef1f4;
+  border-radius:0;font:700 12px/1.25 Manrope,Arial,sans-serif;letter-spacing:0;text-transform:none;
+  text-decoration:none;white-space:normal;transition:background .18s ease,color .18s ease,padding-left .18s ease;
+}
+#site-nav .nav-dropdown-menu a:last-child{border-bottom:0;}
+#site-nav .nav-dropdown-menu a::before{
+  content:"";position:absolute;left:14px;top:50%;width:6px;height:6px;border-radius:50%;
+  background:var(--nav-gold);transform:translateY(-50%);
+}
+#site-nav .nav-dropdown-menu a:hover,#site-nav .nav-dropdown-menu a:focus-visible,
+#site-nav .nav-dropdown-menu a.active,#site-nav .nav-dropdown-menu a.active-about{
+  background:var(--nav-cream);color:#0b5ea8;padding-left:35px;outline:none;
+}
+#site-nav .nav-dropdown-menu a:hover::before,#site-nav .nav-dropdown-menu a:focus-visible::before,
+#site-nav .nav-dropdown-menu a.active::before,#site-nav .nav-dropdown-menu a.active-about::before{background:#0b5ea8;}
+#site-nav .nav-cta{
+  display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;height:38px;min-height:38px;
+  margin:0 0 0 8px;padding:0 16px;border:1px solid var(--nav-gold);border-radius:999px;
+  background:var(--nav-gold);color:#082b57;font:800 10px/1 Manrope,Arial,sans-serif;
+  letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;cursor:pointer;
+}
+#site-nav .nav-cta:hover,#site-nav .nav-cta:focus-visible{background:#efd36f;color:#082b57;outline:none;}
+#site-nav #hamburger{
+  display:none;flex:0 0 auto;width:44px;height:44px;min-width:44px;min-height:44px;margin-left:auto;
+  padding:0;border:1px solid rgba(242,211,110,.35);border-radius:10px;
+  background:rgba(255,255,255,.04);position:relative;align-items:center;justify-content:center;cursor:pointer;
+}
+#site-nav #hamburger span{position:absolute;left:11px;right:11px;height:2px;margin:0;background:#f2cd61;border-radius:2px;transition:transform .2s ease,opacity .2s ease,top .2s ease;}
+#site-nav #hamburger span:nth-child(1){top:13px}#site-nav #hamburger span:nth-child(2){top:21px}#site-nav #hamburger span:nth-child(3){top:29px}
+#site-nav #hamburger.open span:nth-child(1){top:21px;transform:rotate(45deg)}
+#site-nav #hamburger.open span:nth-child(2){opacity:0}
+#site-nav #hamburger.open span:nth-child(3){top:21px;transform:rotate(-45deg)}
+#mobile-menu{
+  position:fixed;left:0;right:0;top:76px;z-index:9999;max-height:calc(100vh - 76px);overflow:auto;
+  padding:14px 16px 22px;background:#fff;color:#082b57;border-top:3px solid var(--nav-gold);
+  box-shadow:0 18px 45px rgba(6,31,61,.22);display:none;
+}
+#mobile-menu .mobile-menu-head{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 12px;margin-bottom:4px;border-bottom:1px solid #eef1f4;}
+#mobile-menu .mobile-menu-title{font:900 11px/1 Manrope,Arial,sans-serif;letter-spacing:.16em;color:#082b57;}
+#mobile-menu #mobile-menu-back{border:0;background:transparent;color:#082b57;font-size:20px;cursor:pointer;padding:5px 8px;}
+#mobile-menu>a,#mobile-menu .mobile-menu-group{display:block;}
+#mobile-menu>a{padding:13px 4px;color:#082b57;font:800 12px/1.25 Manrope,Arial,sans-serif;border-bottom:1px solid #eef1f4;}
+#mobile-menu>a:hover,#mobile-menu>a:focus-visible{background:var(--nav-cream);color:#0b5ea8;outline:none;}
+#mobile-menu .mobile-menu-group{border-bottom:1px solid #eef1f4;}
+#mobile-menu .mobile-menu-group-toggle{
+  display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 4px;
+  background:#fff;color:#082b57;border:0;text-align:left;font:800 12px/1.25 Manrope,Arial,sans-serif;cursor:pointer;
+}
+#mobile-menu .mobile-menu-group-toggle:hover,#mobile-menu .mobile-menu-group.open>.mobile-menu-group-toggle{background:var(--nav-cream);color:#0b5ea8;}
+#mobile-menu .mobile-menu-group-items{display:none;padding:0;background:#fff;}
+#mobile-menu .mobile-menu-group.open .mobile-menu-group-items{display:block;}
+#mobile-menu .mobile-menu-group-items a{
+  display:block;position:relative;min-height:44px;padding:11px 18px 11px 35px;background:#fff;color:#082b57;
+  border-top:1px solid #f1f2f4;font:700 12px/1.35 Manrope,Arial,sans-serif;
+}
+#mobile-menu .mobile-menu-group-items a::before{content:"";position:absolute;left:17px;top:50%;width:6px;height:6px;border-radius:50%;background:var(--nav-gold);transform:translateY(-50%);}
+#mobile-menu .mobile-menu-group-items a:hover,#mobile-menu .mobile-menu-group-items a:focus-visible,
+#mobile-menu .mobile-menu-group-items a.active{background:var(--nav-cream);color:#0b5ea8;outline:none;}
+#mobile-menu .mobile-menu-admin{margin-top:12px;border:1px solid #183d64;border-radius:10px;background:linear-gradient(135deg,#183d64,#0d3b73)!important;color:#fff!important;text-align:center;}
+#mobile-menu .mobile-menu-apply{margin-top:10px;border:1px solid var(--nav-gold);border-radius:10px;background:var(--nav-gold);color:#082b57;}
+body.mobile-nav-open{overflow:hidden;}
+@media(max-width:1180px) and (min-width:901px){
+  #site-nav .devdaha-main-row{padding-left:12px;padding-right:12px;gap:12px;}
+  #site-nav .nav-links{gap:9px;}
+  #site-nav .nav-links>a,#site-nav .nav-dropdown-toggle{font-size:9px;letter-spacing:.03em;}
+  #site-nav .nav-cta{padding:0 12px;font-size:9px;}
+}
+@media(max-width:1040px){
+  #site-nav .nav-links{gap:7px;}
+  #site-nav .nav-links>a,#site-nav .nav-dropdown-toggle{font-size:8.5px;letter-spacing:.02em;}
+  #site-nav .nav-cta{padding:0 10px;font-size:8.5px;}
+}
+@media(max-width:900px){
+  #site-nav .devdaha-main-row{height:70px;min-height:70px;padding:7px 13px;}
+  #site-nav .nav-links,#site-nav .nav-cta{display:none;}
+  #site-nav .nav-mark{flex:1 1 auto;}
+  #site-nav .school-logo-switch,#site-nav .school-logo-img{width:50px;height:50px;min-width:50px;min-height:50px;max-width:50px;max-height:50px;}
+  #site-nav .school-wordmark-single .brand-line-main{font-size:14px;}
+  #site-nav .school-wordmark-single .brand-line-sub{font-size:8px;letter-spacing:.14em;}
+  #site-nav #hamburger{display:flex;}
+  #mobile-menu{top:70px;max-height:calc(100vh - 70px);display:none;}
+  #mobile-menu.open,#mobile-menu[aria-hidden="false"]{display:block;}
+}
+@media(max-width:560px){
+  #site-nav .devdaha-main-row{height:64px;min-height:64px;padding:6px 10px;}
+  #site-nav .school-logo-switch,#site-nav .school-logo-img{width:44px;height:44px;min-width:44px;min-height:44px;max-width:44px;max-height:44px;}
+  #site-nav .school-wordmark-single .brand-line-main{font-size:12px;}
+  #site-nav .school-wordmark-single .brand-line-sub{font-size:7px;letter-spacing:.11em;}
+  #site-nav #hamburger{width:42px;height:42px;min-width:42px;min-height:42px;}
+  #mobile-menu{top:64px;max-height:calc(100vh - 64px);}
+}
+@media(prefers-reduced-motion:reduce){
+  #site-nav *,#mobile-menu *{transition:none!important;}
+}
