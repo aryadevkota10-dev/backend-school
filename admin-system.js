@@ -168,6 +168,7 @@ function renderPublicMagazines(items){if(PAGE_KEY!=='school-magazine.html')retur
 function renderPublicItems(data){
   const testimonials=data.testimonials||[];
   renderPublicMagazines(data.magazines||[]);
+  if(PAGE_KEY==='school-magazine.html'||PAGE_KEY==='weekly-eca.html')return;
   const managedAll=[...(data.galleries||[]),...(data.events||[]),...(data.achievements||[]),...(data.eca||[])];
   if(PAGE_KEY==='testimonials.html'){
     renderPublicTestimonials(testimonials);
