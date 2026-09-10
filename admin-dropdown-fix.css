@@ -1,0 +1,10 @@
+/* Reliable, touch-friendly native admin dropdowns */
+select{appearance:auto!important;-webkit-appearance:auto!important;position:relative!important;z-index:20!important;display:block!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;cursor:pointer!important;background:#fff!important;color:#17324d!important}
+.field select,.toolbar select,.editor-controls select{min-height:44px!important}
+.alumni-admin-toolbar select{min-width:280px;flex:1}
+.alumni-admin-editor{display:grid;gap:10px}
+.alumni-admin-row{padding:14px;border:1px solid var(--line,#d9e4ee);border-radius:15px;background:#fff}
+.alumni-admin-fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.alumni-file-btn{position:relative;overflow:hidden;display:inline-flex;align-items:center}
+@media(max-width:900px){.alumni-admin-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.alumni-admin-fields{grid-template-columns:1fr}.alumni-admin-toolbar select{min-width:0;width:100%}.alumni-file-btn{width:100%;justify-content:center}}

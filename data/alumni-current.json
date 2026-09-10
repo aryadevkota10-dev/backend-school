@@ -1,0 +1,737 @@
+[
+  {
+    "year": 2064,
+    "students": [
+      {
+        "sno": 1,
+        "name": "Gagan Kandel",
+        "om": "",
+        "percentage": "91.75",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 2,
+        "name": "Prakash Shrestha",
+        "om": "702",
+        "percentage": "87.75",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 3,
+        "name": "Sushil Chhetri",
+        "om": "674",
+        "percentage": "84.25",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 4,
+        "name": "Tikaram Pokhrel",
+        "om": "672",
+        "percentage": "84",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 5,
+        "name": "Paras Paudel",
+        "om": "670",
+        "percentage": "83.75",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 6,
+        "name": "Amrit Dhungana",
+        "om": "638.96",
+        "percentage": "79.87",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 7,
+        "name": "Rajesh Shrestha",
+        "om": "630",
+        "percentage": "78.75",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 8,
+        "name": "Ashok Lama",
+        "om": "624",
+        "percentage": "78",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 9,
+        "name": "Kamal Neupane",
+        "om": "622.96",
+        "percentage": "77.87",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 10,
+        "name": "Kamal Kunwar",
+        "om": "600",
+        "percentage": "75",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 11,
+        "name": "Anjali Kafle",
+        "om": "596",
+        "percentage": "74.5",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 12,
+        "name": "Tulsi Parajuli",
+        "om": "584",
+        "percentage": "73",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 13,
+        "name": "Lila Sharma",
+        "om": "582",
+        "percentage": "72.75",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 14,
+        "name": "Subash Gurung",
+        "om": "580",
+        "percentage": "725",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 15,
+        "name": "Parbati Chhetri",
+        "om": "576",
+        "percentage": "72",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 16,
+        "name": "Puja Neupane",
+        "om": "566",
+        "percentage": "70.75",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 17,
+        "name": "Sarita Dhakal",
+        "om": "529.04",
+        "percentage": "66.13",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 18,
+        "name": "Srijana Pun",
+        "om": "528.96",
+        "percentage": "66.12",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      },
+      {
+        "sno": 19,
+        "name": "Kolipa K.C",
+        "om": "520",
+        "percentage": "65",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2064"
+      }
+    ]
+  },
+  {
+    "year": 2065,
+    "students": [
+      {
+        "sno": 20,
+        "name": "Pravesh Khanal",
+        "om": "723.04",
+        "percentage": "90.38",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 21,
+        "name": "Joseph Gurung",
+        "om": "713.04",
+        "percentage": "89.13",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 22,
+        "name": "Shiva Kandel",
+        "om": "658",
+        "percentage": "82.25",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 23,
+        "name": "Rahul Pandey",
+        "om": "658",
+        "percentage": "82.25",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 24,
+        "name": "Yuvraj Regmi",
+        "om": "649.04",
+        "percentage": "81.13",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 25,
+        "name": "Dinesh Bista",
+        "om": "645.04",
+        "percentage": "80.63",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 26,
+        "name": "Jenesis Gurung",
+        "om": "641.04",
+        "percentage": "80.13",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 27,
+        "name": "Manoj Gurung",
+        "om": "606",
+        "percentage": "75.75",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 28,
+        "name": "Deena Pandey",
+        "om": "596",
+        "percentage": "74.5",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 29,
+        "name": "Milan Thapa",
+        "om": "589.04",
+        "percentage": "73.63",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 30,
+        "name": "Laxman Karki",
+        "om": "579.04",
+        "percentage": "72.38",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 31,
+        "name": "SharmilaLamichhane",
+        "om": "576",
+        "percentage": "72",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 32,
+        "name": "Diwa Pandey",
+        "om": "575.04",
+        "percentage": "71.88",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 33,
+        "name": "Kamala Thapa",
+        "om": "569.04",
+        "percentage": "71.13",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 34,
+        "name": "Sagar Parajuli",
+        "om": "565.04",
+        "percentage": "70.63",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 36,
+        "name": "Ratna Karki",
+        "om": "540",
+        "percentage": "",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 37,
+        "name": "Rakshya Sahi",
+        "om": "537.04",
+        "percentage": "",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 38,
+        "name": "Uma Tiwari",
+        "om": "537.04",
+        "percentage": "",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 39,
+        "name": "Sunil Singh",
+        "om": "529.04",
+        "percentage": "",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 40,
+        "name": "Shanta Bista",
+        "om": "510",
+        "percentage": "",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 41,
+        "name": "Rojina Gurung",
+        "om": "508",
+        "percentage": "",
+        "division": "",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 42,
+        "name": "Preeti Gurung",
+        "om": "492",
+        "percentage": "",
+        "division": "",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": 43,
+        "name": "Prakash Adhikari",
+        "om": "730",
+        "percentage": "",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": "",
+        "name": "Manisha Poudel",
+        "om": "",
+        "percentage": "",
+        "division": "",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      },
+      {
+        "sno": "",
+        "name": "Ayinash Malla",
+        "om": "560",
+        "percentage": "",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2065"
+      }
+    ]
+  },
+  {
+    "year": 2066,
+    "students": [
+      {
+        "sno": 44,
+        "name": "Hari Basnsa Aryal",
+        "om": "704.96",
+        "percentage": "",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 45,
+        "name": "Anita Chhantel",
+        "om": "698.96",
+        "percentage": "",
+        "division": "",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 46,
+        "name": "Manish Shrestha",
+        "om": "670",
+        "percentage": "",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 48,
+        "name": "Himal Shrees Magar",
+        "om": "666",
+        "percentage": "",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 49,
+        "name": "Jharna Shrees Magar",
+        "om": "662.96",
+        "percentage": "82.87",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 50,
+        "name": "Rachana Kunwar",
+        "om": "662",
+        "percentage": "82.75",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 51,
+        "name": "Narayan M.C",
+        "om": "660.96",
+        "percentage": "82.62",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 52,
+        "name": "Bimal Tiwari",
+        "om": "660.96",
+        "percentage": "82.62",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 53,
+        "name": "Hira Budhathoki",
+        "om": "658.96",
+        "percentage": "82.37",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 54,
+        "name": "Amrit Poudel",
+        "om": "652.96",
+        "percentage": "81.62",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 55,
+        "name": "Shital Sapkota",
+        "om": "648.96",
+        "percentage": "81.12",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 56,
+        "name": "Manisha Neupane",
+        "om": "646.96",
+        "percentage": "80.87",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 57,
+        "name": "Karma Gurung",
+        "om": "642.96",
+        "percentage": "80.37",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 58,
+        "name": "Khem Bahadur Saru",
+        "om": "642.96",
+        "percentage": "80.37",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 59,
+        "name": "Aashish Kafle",
+        "om": "642",
+        "percentage": "80.25",
+        "division": "Distinction",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 60,
+        "name": "Aashish Malla",
+        "om": "636.96",
+        "percentage": "79.62",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 61,
+        "name": "Parash Adhikari",
+        "om": "620",
+        "percentage": "775",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 62,
+        "name": "Sanju Bharati",
+        "om": "608.96",
+        "percentage": "76.12",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 63,
+        "name": "Usha Adhikari",
+        "om": "612",
+        "percentage": "765",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 64,
+        "name": "Suman Pun",
+        "om": "610.96",
+        "percentage": "76,37",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 65,
+        "name": "Bashanta Shrestha",
+        "om": "604.56",
+        "percentage": "75.57",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 66,
+        "name": "Seema Karki",
+        "om": "602.96",
+        "percentage": "75.37",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 67,
+        "name": "Rojan Gurung",
+        "om": "596.96",
+        "percentage": "74.62",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 68,
+        "name": "Kabita Karlai",
+        "om": "596",
+        "percentage": "74.5",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 69,
+        "name": "Aashik Shrestha",
+        "om": "586",
+        "percentage": "73.25",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      },
+      {
+        "sno": 70,
+        "name": "Ashmita Gurung",
+        "om": "586.96",
+        "percentage": "73.37",
+        "division": "First",
+        "gpa": "",
+        "grade": "",
+        "year": "2066"
+      }
+    ]
+  },
+  {
+    "year": 2079,
+    "students": []
+  },
+  {
+    "year": 2080,
+    "students": []
+  },
+  {
+    "year": 2081,
+    "students": []
+  },
+  {
+    "year": 2082,
+    "students": []
+  },
+  {
+    "year": 2083,
+    "students": []
+  }
+]
