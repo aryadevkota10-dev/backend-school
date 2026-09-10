@@ -617,62 +617,81 @@ button:hover,a.button:hover,.home-btn:hover,.download-btn:hover,.back:hover{tran
 <!-- PHOTO-FOLDER-CONNECTION -->
 <script>
 (function() {
-(function() {
 
   const photos = [
-    {
-      src: "PHOTOS/organized/our-academic-achievement/see-result-student-gaurav-khanal-district-topper.jpg",
-      title: "SEE Achievement – Gaurav Khanal"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/see-result-student-gagan-kandel-topper.jpg",
-      title: "SEE Achievement – Gagan Kandel"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/SEE-Result-15th-Batch.webp",
-      title: "SEE Result – 15th Batch"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/slc-result-3rd-batch-distinction-holders.webp",
-      title: "SLC Distinction Holders"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/see-result-17th-batch-2080.webp",
-      title: "SEE Result – 17th Batch"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/SEE-Result-16th-Batch.webp",
-      title: "SEE Result – 16th Batch"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/slc-result-3rd-batch-distinction-holders-blue.webp",
-      title: "SLC Distinction Holders"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/SEE-Result-13th-Batch.webp",
-      title: "SEE Result – 13th Batch"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/slc-result-4th-batch-distinction-holders.webp",
-      title: "SLC Distinction Holders – 4th Batch"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/SEE-Result-14th-Batch.webp",
-      title: "SEE Result – 14th Batch"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/slc-result-4th-batch-distinction-holders-2067.webp",
-      title: "SLC Distinction Holders – 4th Batch"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/SEE-webp",
-      title: "SEE Distinction Holders"
-    },
-    {
-      src: "PHOTOS/organized/our-academic-achievement/slc-result-distinction-holders-2071.webp",
-      title: "SLC Distinction Holders"
-    }
-  ];
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-student-gaurav-khanal-district-topper.jpg",
+    title: "SEE Achievement – Gaurav Khanal"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-student-gagan-kandel-topper.jpg",
+    title: "SEE Achievement – Gagan Kandel"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/slc-result-4th-batch-distinction-holders-2067.webp",
+    title: "SLC Result – 1st Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/slc-result-3rd-batch-distinction-holders.webp",
+    title: "SLC Result – 2nd Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/slc-result-3rd-batch-distinction-holders-blue.webp",
+    title: "SLC Result – 3rd Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/slc-result-4th-batch-distinction-holders.webp",
+    title: "SLC Result – 4th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/slc-result-distinction-holders-2071.webp",
+    title: "SLC Result – 6th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-10th-batch-2073.webp",
+    title: "SLC Result – 8th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-11th-batch-2074.webp",
+    title: "SLC Result – 9th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-12th-batch-2075.webp",
+    title: "SEE Result – 10th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-school-see-achievement-poster.webp",
+    title: "SEE Result – 11th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-17th-batch-2080.webp",
+    title: "SEE Result – 12th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-9th-batch-2072.webp",
+    title: "SEE Result – 13th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-13th-batch-2076.webp",
+    title: "SEE Result – 14th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-15th-batch-2078.webp",
+    title: "SEE Result – 15th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-16th-batch-2079.webp",
+    title: "SEE Result – 16th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-18th-batch-result.webp",
+    title: "SEE Result – 17th Batch"
+  },
+  {
+    src: "PHOTOS/organized/our-academic-achievement/see-result-18th-batch-result-poster.webp",
+    title: "SEE Result – 18th Batch"
+  }
+];
 
   const grid = document.querySelector('.photo-grid, .gallery-grid');
 
