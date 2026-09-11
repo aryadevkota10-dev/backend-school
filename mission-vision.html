@@ -338,6 +338,69 @@
   @keyframes mvGoalBadgeFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
   @media(max-width:980px){.mv-goal-card{grid-template-columns:1fr}.mv-goal-image{min-height:340px}}@media(max-width:560px){.mv-goal-image{min-height:290px}.mv-goal-badge{width:90px;height:90px;left:16px;bottom:16px;font-size:10px}}
 </style>
+
+<style id="devdaha-mobile-dropdown-contained-final-fix">
+/* Mobile-only: About and More Info are strictly collapsed until tapped.
+   Their items stay in the mobile menu's normal flow and can never render outside it. */
+@media (max-width:900px){
+  #mobile-menu .mobile-about-group,
+  #mobile-menu .mobile-more-info-group{
+    position:static !important;
+    width:100% !important;
+    max-width:100% !important;
+    overflow:visible !important;
+  }
+  #mobile-menu .mobile-about-group:not(.open) .about-mobile-items,
+  #mobile-menu .mobile-more-info-group:not(.open) .mobile-more-info-items{
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    height:0 !important;
+    max-height:0 !important;
+    min-height:0 !important;
+    padding:0 !important;
+    margin:0 !important;
+    overflow:hidden !important;
+    position:static !important;
+  }
+  #mobile-menu .mobile-about-group.open .about-mobile-items,
+  #mobile-menu .mobile-more-info-group.open .mobile-more-info-items{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+    position:static !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+  }
+  #mobile-menu .mobile-about-group .mobile-menu-group-items a,
+  #mobile-menu .mobile-more-info-group .mobile-menu-group-items a{
+    position:static !important;
+    width:100% !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+    transform:none !important;
+  }
+}
+</style>
+
+<script id="devdaha-mobile-dropdown-contained-final-script">
+(function(){
+  function resetMobileDropdowns(){
+    var menu=document.getElementById('mobile-menu');
+    if(!menu) return;
+    menu.querySelectorAll('.mobile-menu-group').forEach(function(group){
+      var btn=group.querySelector('.mobile-menu-group-toggle');
+      group.classList.remove('open');
+      if(btn) btn.setAttribute('aria-expanded','false');
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',resetMobileDropdowns,{once:true});
+  else resetMobileDropdowns();
+})();
+</script>
 </head><body>
 <header id="site-nav" class="devdaha-reference-header"><div class="devdaha-header-shell"><div class="devdaha-main-row"><a aria-label="Devdaha English Boarding Secondary School home" class="nav-mark" href="Devdaha.html#hero"><span aria-label="Devdaha E.B.S.S. logo" class="school-logo-switch"><img alt="Devdaha E.B.S.S. logo" class="school-logo-img school-logo-exact" src="assets/logo.png"/></span><span aria-label="Devdaha English Boarding Secondary School" class="school-wordmark school-wordmark-single"><span class="brand-line brand-line-main">DEVDAHA</span><span class="brand-line brand-line-sub">E.B.S. SCHOOL</span></span></a><nav aria-label="Primary navigation" class="nav-links"><a data-nav="" href="Devdaha.html#hero">Home</a><div class="nav-dropdown"><button aria-expanded="false" aria-haspopup="true" class="nav-dropdown-toggle" type="button">About <span class="nav-chevron">⌄</span></button><div aria-label="About menu" class="nav-dropdown-menu"><a class="about-menu-link" href="about-school.html">About Us</a><a class="about-menu-link" href="message-from-chairman.html">Message From Chairman</a><a class="about-menu-link" href="message-from-principal.html">Message From Principal</a><a class="about-menu-link" href="vice-principal.html">From the Desk of Vice Principal</a><a class="about-menu-link" href="mission-vision.html">Mission &amp; Vision</a><a class="about-menu-link" href="alumni.html">Alumni</a></div></div><div class="nav-dropdown nav-more-info"><button aria-expanded="false" aria-haspopup="true" class="nav-dropdown-toggle" type="button">More Info <span class="nav-chevron">⌄</span></button><div aria-label="More Info menu" class="nav-dropdown-menu"><a data-nav="" href="Devdaha.html#facilities">Facilities</a><a data-nav="" href="weekly-eca.html">Weekly ECA</a><a data-nav="" href="school-magazine.html">Magazine</a><a data-nav="" href="testimonials.html">Testimonials</a><a data-nav="" href="downloads.html">Downloads</a></div></div><a data-nav="" href="Devdaha.html#gallery">Gallery</a><a data-nav="" href="Devdaha.html#suggestion-box">Suggestion Box</a><a data-nav="" href="notice.html">Notice</a><a data-nav="" href="Devdaha.html#footer">Contact</a><span id="nav-underline" aria-hidden="true"></span></nav><button class="nav-cta" data-admission-open="" type="button">Enroll Now</button><button aria-controls="mobile-menu" aria-expanded="false" aria-label="Open navigation" id="hamburger" type="button"><span></span><span></span><span></span></button></div></div></header><div aria-hidden="true" aria-label="Mobile navigation" id="mobile-menu"><div class="mobile-menu-head"><span class="mobile-menu-title">MENU</span><button aria-label="Close navigation" id="mobile-menu-back" type="button">✕</button></div><a href="Devdaha.html#hero">Home</a><div class="mobile-menu-group mobile-about-group"><button type="button" class="mobile-menu-group-toggle" aria-expanded="false">About <span>⌄</span></button><div class="mobile-menu-group-items about-mobile-items"><a href="about-school.html">About Us</a><a href="message-from-chairman.html">Message From Chairman</a><a href="message-from-principal.html">Message From Principal</a><a href="mission-vision.html">Mission &amp; Vision</a><a href="alumni.html">Alumni</a></div></div><div class="mobile-menu-group mobile-more-info-group"><button type="button" class="mobile-menu-group-toggle" aria-expanded="false">More Info <span>⌄</span></button><div class="mobile-menu-group-items mobile-more-info-items"><a href="Devdaha.html#facilities">Facilities</a><a href="weekly-eca.html">Weekly ECA</a><a href="school-magazine.html">Magazine</a><a href="testimonials.html">Testimonials</a><a href="downloads.html">Downloads</a></div></div><a href="Devdaha.html#gallery">Gallery</a><a href="Devdaha.html#suggestion-box">Suggestion Box</a><a href="notice.html">Notice</a><a href="Devdaha.html#footer">Contact</a><a class="mobile-menu-admin" href="admin-login.html">Admin Login</a><a class="mobile-menu-apply" data-admission-open="" href="#">Enroll Now</a></div><main class="mv-page">
   <section class="mv-hero">
