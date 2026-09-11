@@ -97,6 +97,16 @@ async function seed(){
 }
 
 app.get('/api/health',async(_req,res)=>res.json({ok:true,db:'mongodb',time:now()}));
+app.get('/cron', async (req, res) => {
+  try {
+    // Perform scheduled task
+
+    res.send('OK');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('ERROR');
+  }
+});
 app.get('/ping', (_req, res) => res.status(240).end());
 app.post('/api/auth/login',async(req,res)=>{try{const username=String(req.body.username||'').trim();const password=String(req.body.password||'');const admin=await col('admins').findOne({username});if(!admin||!(await bcrypt.compare(password,admin.password_hash)))return res.status(401).json({error:'Invalid admin username or password.'});await new Promise((resolve,reject)=>req.session.regenerate(e=>e?reject(e):resolve()));req.session.adminId=admin.id;req.session.username=admin.username;await audit(req,'login','admin',admin.id);res.json({ok:true,username:admin.username})}catch(e){res.status(500).json({error:'Unable to sign in.'})}});
 app.post('/api/auth/logout',requireAdmin,async(req,res)=>{await audit(req,'logout','admin',req.session.adminId);req.session.destroy(()=>res.json({ok:true}))});
