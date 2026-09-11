@@ -1802,7 +1802,65 @@ window.addEventListener('DOMContentLoaded', function(){
 <script id="about-dropdown-final-active-script">
 (function(){function run(){var file=(location.pathname.split('/').pop()||'Devdaha.html').toLowerCase();document.querySelectorAll('#site-nav .about-menu-link').forEach(function(a){a.classList.toggle('active-about',(a.getAttribute('href')||'').split('#')[0].toLowerCase()===file&&file!=='devdaha.html');});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();})();
 </script>
-<style id="standalone-mission-vision-nav-style">#site-nav .mission-vision-nav-link{padding:10px 12px;color:#f2cd61;font:800 11px/1 Manrope,Arial,sans-serif;position:relative;text-decoration:none}#site-nav .mission-vision-nav-link:after{content:"";position:absolute;left:50%;bottom:4px;width:0;height:2px;background:#f2cd61;transform:translateX(-50%);transition:width .25s ease}#site-nav .mission-vision-nav-link:hover:after,#site-nav .mission-vision-nav-link.active:after{width:68%}@media(max-width:900px){#mobile-menu .mobile-mission-vision-link{display:block;padding:13px 4px;color:#082b57;font:800 12px/1.25 Manrope,Arial,sans-serif;border-bottom:1px solid #eef1f4;background:#fff}#mobile-menu .mobile-mission-vision-link:hover{background:#fff0e7;color:#ff5b2f}}</style></body>
+<style id="standalone-mission-vision-nav-style">#site-nav .mission-vision-nav-link{padding:10px 12px;color:#f2cd61;font:800 11px/1 Manrope,Arial,sans-serif;position:relative;text-decoration:none}#site-nav .mission-vision-nav-link:after{content:"";position:absolute;left:50%;bottom:4px;width:0;height:2px;background:#f2cd61;transform:translateX(-50%);transition:width .25s ease}#site-nav .mission-vision-nav-link:hover:after,#site-nav .mission-vision-nav-link.active:after{width:68%}@media(max-width:900px){#mobile-menu .mobile-mission-vision-link{display:block;padding:13px 4px;color:#082b57;font:800 12px/1.25 Manrope,Arial,sans-serif;border-bottom:1px solid #eef1f4;background:#fff}#mobile-menu .mobile-mission-vision-link:hover{background:#fff0e7;color:#ff5b2f}}</style>
+<style id="mobile-submenu-strict-fix">
+@media (max-width: 900px){
+  #mobile-menu .mobile-menu-group-items{
+    display:none !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:hidden !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+  #mobile-menu .mobile-menu-group.open > .mobile-menu-group-items{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    overflow:visible !important;
+  }
+  #mobile-menu .mobile-menu-group-toggle{
+    touch-action:manipulation !important;
+    cursor:pointer !important;
+  }
+}
+</style>
+
+<script id="mobile-submenu-strict-fix-script">
+(function(){
+  function initStrictMobileSubmenus(){
+    var menu=document.getElementById('mobile-menu');
+    if(!menu) return;
+    var groups=menu.querySelectorAll('.mobile-menu-group');
+    groups.forEach(function(group){
+      var btn=group.querySelector(':scope > .mobile-menu-group-toggle');
+      var items=group.querySelector(':scope > .mobile-menu-group-items');
+      if(!btn || !items) return;
+      group.classList.remove('open');
+      btn.setAttribute('aria-expanded','false');
+      btn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        var open=!group.classList.contains('open');
+        groups.forEach(function(other){
+          if(other!==group){
+            other.classList.remove('open');
+            var ob=other.querySelector(':scope > .mobile-menu-group-toggle');
+            if(ob) ob.setAttribute('aria-expanded','false');
+          }
+        });
+        group.classList.toggle('open',open);
+        btn.setAttribute('aria-expanded',String(open));
+      },true);
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initStrictMobileSubmenus,{once:true});
+  else initStrictMobileSubmenus();
+})();
+</script>
+</body>
 <style id="final-years-rooted-mobile-menu-fix">
 /* Only the requested fixes: clearer YEARS ROOTED + working/animated small-screen menu. */
 #hero .years-rooted-label.designed-years{

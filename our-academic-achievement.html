@@ -1068,6 +1068,64 @@ button:hover,a.button:hover,.home-btn:hover,.download-btn:hover,.back:hover{tran
 }
 </style>
 
+
+<style id="mobile-submenu-strict-fix">
+@media (max-width: 900px){
+  #mobile-menu .mobile-menu-group-items{
+    display:none !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:hidden !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+  #mobile-menu .mobile-menu-group.open > .mobile-menu-group-items{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    overflow:visible !important;
+  }
+  #mobile-menu .mobile-menu-group-toggle{
+    touch-action:manipulation !important;
+    cursor:pointer !important;
+  }
+}
+</style>
+
+<script id="mobile-submenu-strict-fix-script">
+(function(){
+  function initStrictMobileSubmenus(){
+    var menu=document.getElementById('mobile-menu');
+    if(!menu) return;
+    var groups=menu.querySelectorAll('.mobile-menu-group');
+    groups.forEach(function(group){
+      var btn=group.querySelector(':scope > .mobile-menu-group-toggle');
+      var items=group.querySelector(':scope > .mobile-menu-group-items');
+      if(!btn || !items) return;
+      group.classList.remove('open');
+      btn.setAttribute('aria-expanded','false');
+      btn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        var open=!group.classList.contains('open');
+        groups.forEach(function(other){
+          if(other!==group){
+            other.classList.remove('open');
+            var ob=other.querySelector(':scope > .mobile-menu-group-toggle');
+            if(ob) ob.setAttribute('aria-expanded','false');
+          }
+        });
+        group.classList.toggle('open',open);
+        btn.setAttribute('aria-expanded',String(open));
+      },true);
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initStrictMobileSubmenus,{once:true});
+  else initStrictMobileSubmenus();
+})();
+</script>
 </body></html>
 <!-- RESTORE PREVIOUS GALLERY PHOTO + BLUE TITLE PRESENTATION — append-only. -->
 <style id="restore-previous-gallery-photo-blue-title">
