@@ -37,7 +37,22 @@ function readEmbeddedAlumni(){
     const obj=JSON.parse(m[1]); return Object.keys(obj).map((year,i)=>({id:uid(),year:Number(year),sort_order:i,students:Array.isArray(obj[year])?obj[year].map(r=>({sno:String(r[0]??''),name:String(r[1]??''),om:String(r[2]??''),percentage:String(r[3]??''),division:String(r[4]??''),gpa:String(r[5]??''),grade:String(r[6]??''),year:String(r[7]||year)})):[],updated_at:now()}));
   }catch(e){console.error('Embedded alumni read failed:',e.message);return []}
 }
-async function seedAlumni(){const c=col('alumni_years');if(await c.countDocuments()===0){const rows=readEmbeddedAlumni();const have=new Set(rows.map(x=>x.year));for(let y=2064;y<=2083;y++)if(!have.has(y))rows.push({id:uid(),year:y,sort_order:rows.length,students:[],updated_at:now()});if(rows.length)await c.insertMany(rows)}}
+async function seedAlumni(){
+  const c=col('alumni_years');
+  const embedded=readEmbeddedAlumni();
+  const existing=await c.find({}).toArray();
+  if(existing.length===0){
+    const rows=[...embedded];
+    const have=new Set(rows.map(x=>x.year));
+    for(let y=2064;y<=2083;y++) if(!have.has(y)) rows.push({id:uid(),year:y,sort_order:rows.length,students:[],updated_at:now()});
+    if(rows.length) await c.insertMany(rows);
+    return;
+  }
+  const have=new Set(existing.map(x=>Number(x.year)));
+  const missing=embedded.filter(x=>!have.has(Number(x.year))).map((x,i)=>({...x,sort_order:existing.length+i,updated_at:now()}));
+  for(let y=2064;y<=2083;y++) if(!have.has(y)) missing.push({id:uid(),year:y,sort_order:existing.length+missing.length,students:[],updated_at:now()});
+  if(missing.length) await c.insertMany(missing);
+}
 function normalizeAlumniRows(year,students){return (Array.isArray(students)?students:[]).map(r=>({sno:String(r.sno??r[0]??''),name:String(r.name??r[1]??''),om:String(r.om??r[2]??''),percentage:String(r.percentage??r[3]??''),division:String(r.division??r[4]??''),gpa:String(r.gpa??r[5]??''),grade:String(r.grade??r[6]??''),year:String(r.year||year)}))}
 
 const uid = () => crypto.randomUUID();
