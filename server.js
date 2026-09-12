@@ -39,19 +39,46 @@ function readEmbeddedAlumni(){
 }
 async function seedAlumni(){
   const c=col('alumni_years');
+  const settings=col('settings');
   const embedded=readEmbeddedAlumni();
   const existing=await c.find({}).toArray();
+
+  // Initial seed: create all embedded years plus protected empty years 2064-2083.
   if(existing.length===0){
     const rows=[...embedded];
-    const have=new Set(rows.map(x=>x.year));
+    const have=new Set(rows.map(x=>Number(x.year)));
     for(let y=2064;y<=2083;y++) if(!have.has(y)) rows.push({id:uid(),year:y,sort_order:rows.length,students:[],updated_at:now()});
     if(rows.length) await c.insertMany(rows);
+    await settings.updateOne({key:'alumni_embedded_backfill_v1'},{$set:{key:'alumni_embedded_backfill_v1',value:1,updated_at:now()}},{upsert:true});
     return;
   }
+
+  // Add any missing years without touching existing records.
   const have=new Set(existing.map(x=>Number(x.year)));
   const missing=embedded.filter(x=>!have.has(Number(x.year))).map((x,i)=>({...x,sort_order:existing.length+i,updated_at:now()}));
   for(let y=2064;y<=2083;y++) if(!have.has(y)) missing.push({id:uid(),year:y,sort_order:existing.length+missing.length,students:[],updated_at:now()});
   if(missing.length) await c.insertMany(missing);
+
+  // One-time recovery for the broken/partial migration where years existed in MongoDB
+  // but their student arrays were empty, causing the public page to show no data after 2066.
+  // Only empty years are backfilled, so real admin edits are never overwritten.
+  const migrationKey='alumni_embedded_backfill_v1';
+  const alreadyBackfilled=await settings.findOne({key:migrationKey});
+  if(!alreadyBackfilled && embedded.length){
+    const current=await c.find({}).toArray();
+    const embeddedByYear=new Map(embedded.map(x=>[Number(x.year),x]));
+    let restored=0;
+    for(const row of current){
+      const y=Number(row.year);
+      const source=embeddedByYear.get(y);
+      if(source && (!Array.isArray(row.students) || row.students.length===0) && Array.isArray(source.students) && source.students.length){
+        await c.updateOne({_id:row._id},{$set:{students:source.students,updated_at:now()}});
+        restored++;
+      }
+    }
+    await settings.updateOne({key:migrationKey},{$set:{key:migrationKey,value:{restored,completed_at:now()},updated_at:now()}},{upsert:true});
+    console.log(`Alumni embedded backfill completed: restored ${restored} year(s).`);
+  }
 }
 function normalizeAlumniRows(year,students){return (Array.isArray(students)?students:[]).map(r=>({sno:String(r.sno??r[0]??''),name:String(r.name??r[1]??''),om:String(r.om??r[2]??''),percentage:String(r.percentage??r[3]??''),division:String(r.division??r[4]??''),gpa:String(r.gpa??r[5]??''),grade:String(r.grade??r[6]??''),year:String(r.year||year)}))}
 
