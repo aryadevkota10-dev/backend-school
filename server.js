@@ -205,9 +205,18 @@ app.get('/api/admin/backup',requireAdmin,async(_req,res)=>{const tables={admins:
 app.post('/api/admin/restore',requireAdmin,async(req,res)=>{const b=req.body;if(!b||b.version!==3||!b.tables)return res.status(400).json({error:'Invalid CMS backup.'});try{for(const name of ['page_overrides','page_sources','content_items','media','settings','marquee','nav_items','alumni_years']){await col(name).deleteMany({});const rows=Array.isArray(b.tables[name])?b.tables[name]:[];if(rows.length)await col(name).insertMany(rows.map(x=>{const y={...x};delete y._id;return y}))}await audit(req,'restore','backup',null);res.json({ok:true})}catch(e){res.status(400).json({error:'Restore failed: '+e.message})}});
 
 app.use((req,res,next)=>{if(req.path.startsWith('/data/')||req.path.startsWith('/scripts/')||req.path==='/server.js'||req.path==='/package.json'||req.path.startsWith('/.env'))return res.status(404).end();next()});
+
+// React single-page public shell. Keep admin/auth pages and API endpoints untouched.
+const SPA_PUBLIC_PATHS = new Set(['/','/Devdaha.html','/about-school.html','/message-from-chairman.html','/message-from-principal.html','/vice-principal.html','/mission-vision.html','/alumni.html','/weekly-eca.html','/school-magazine.html','/testimonials.html','/downloads.html','/our-gallery.html','/notice.html','/events-programs.html','/our-achievements.html','/our-academic-achievement.html','/creative-corner.html']);
+app.use((req,res,next)=>{
+  if(req.method==='GET' && SPA_PUBLIC_PATHS.has(req.path)) return res.sendFile(path.join(ROOT,'index.html'));
+  next();
+});
 app.use(async(req,res,next)=>{try{if(req.method==='GET'){let page=null;if(req.path==='/'||req.path==='/Devdaha.html')page='Devdaha.html';else if(/^\/[A-Za-z0-9_.-]+\.html$/i.test(req.path))page=path.basename(req.path);if(page==='alumni.html'){const file=path.join(ROOT,'alumni.html');if(fs.existsSync(file)){let source=fs.readFileSync(file,'utf8');const rows=await col('alumni_years').find({}).sort({sort_order:1,year:1}).toArray();const data={};rows.forEach(x=>{data[String(x.year)]=(x.students||[]).map(r=>Array.isArray(r)?r:[r.sno??'',r.name??'',r.om??'',r.percentage??'',r.division??'',r.gpa??'',r.grade??'',r.year||x.year]);});source=source.replace(/<script id="alumni-data">[\s\S]*?<\/script>/,`<script id="alumni-data">const ALUMNI_DATA=${JSON.stringify(data)};<\/script>`);res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');return res.type('html').send(source)}}
 if(page&&!['admin.html','admin-login.html','admin-reset-password.html'].includes(page.toLowerCase())){const row=await col('page_sources').findOne({page});if(row?.source){res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.type('html').send(row.source);return}}}next()}catch(e){next(e)}});
-app.use(express.static(ROOT,{index:'Devdaha.html',extensions:false,dotfiles:'deny'}));
+
+
+app.use(express.static(ROOT,{index:'index.html',extensions:false,dotfiles:'deny'}));
 app.use((err,_req,res,_next)=>{console.error(err);if(err.code==='LIMIT_FILE_SIZE')return res.status(413).json({error:'File is too large.'});res.status(500).json({error:err.message||'Server error.'})});
 
 if(require.main===module){init().then(()=>app.listen(PORT,()=>console.log(`Devdaha MongoDB CMS running on ${PUBLIC_BASE_URL}`))).catch(e=>{console.error('Failed to start MongoDB CMS:',e);process.exit(1)});}
