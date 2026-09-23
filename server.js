@@ -1,0 +1,214 @@
+'use strict';
+require('dotenv').config();
+const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
+const express = require('express');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const { MongoClient, ObjectId, GridFSBucket } = require('mongodb');
+const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const multer = require('multer');
+const helmet = require('helmet');
+
+const ROOT = __dirname;
+const PORT = Number(process.env.PORT || 3000);
+const MONGODB_URI = String(process.env.MONGODB_URI || '').trim();
+const MONGODB_DB = String(process.env.MONGODB_DB || 'devdaha_school_cms').trim();
+const UPLOAD_DIR = path.resolve(ROOT, process.env.UPLOAD_DIR || './uploads');
+const MAX_UPLOAD = Number(process.env.MAX_UPLOAD_MB || 100) * 1024 * 1024;
+const SESSION_SECRET = String(process.env.SESSION_SECRET || '').trim();
+const PUBLIC_BASE_URL = String(process.env.PUBLIC_BASE_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
+
+if (!MONGODB_URI) throw new Error('MONGODB_URI is required. Configure it in .env before starting the CMS.');
+if (SESSION_SECRET.length < 32) throw new Error('SESSION_SECRET must be at least 32 characters.');
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+const client = new MongoClient(MONGODB_URI, { maxPoolSize: 20, serverSelectionTimeoutMS: 10000 });
+let db;
+let gridfs;
+let initPromise;
+const now = () => new Date();
+function readEmbeddedAlumni(){
+  try{
+    const file=path.join(ROOT,'alumni.html'); if(!fs.existsSync(file)) return [];
+    const html=fs.readFileSync(file,'utf8'); const m=html.match(/const ALUMNI_DATA=(\{.*?\});/s); if(!m) return [];
+    const obj=JSON.parse(m[1]); return Object.keys(obj).map((year,i)=>({id:uid(),year:Number(year),sort_order:i,students:Array.isArray(obj[year])?obj[year].map(r=>({sno:String(r[0]??''),name:String(r[1]??''),om:String(r[2]??''),percentage:String(r[3]??''),division:String(r[4]??''),gpa:String(r[5]??''),grade:String(r[6]??''),year:String(r[7]||year)})):[],updated_at:now()}));
+  }catch(e){console.error('Embedded alumni read failed:',e.message);return []}
+}
+async function seedAlumni(){
+  const c=col('alumni_years');
+  const settings=col('settings');
+  const embedded=readEmbeddedAlumni();
+  const existing=await c.find({}).toArray();
+
+  // Initial seed: create all embedded years plus protected empty years 2064-2083.
+  if(existing.length===0){
+    const rows=[...embedded];
+    const have=new Set(rows.map(x=>Number(x.year)));
+    for(let y=2064;y<=2083;y++) if(!have.has(y)) rows.push({id:uid(),year:y,sort_order:rows.length,students:[],updated_at:now()});
+    if(rows.length) await c.insertMany(rows);
+    await settings.updateOne({key:'alumni_embedded_backfill_v1'},{$set:{key:'alumni_embedded_backfill_v1',value:1,updated_at:now()}},{upsert:true});
+    return;
+  }
+
+  // Add any missing years without touching existing records.
+  const have=new Set(existing.map(x=>Number(x.year)));
+  const missing=embedded.filter(x=>!have.has(Number(x.year))).map((x,i)=>({...x,sort_order:existing.length+i,updated_at:now()}));
+  for(let y=2064;y<=2083;y++) if(!have.has(y)) missing.push({id:uid(),year:y,sort_order:existing.length+missing.length,students:[],updated_at:now()});
+  if(missing.length) await c.insertMany(missing);
+
+  // One-time recovery for the broken/partial migration where years existed in MongoDB
+  // but their student arrays were empty, causing the public page to show no data after 2066.
+  // Only empty years are backfilled, so real admin edits are never overwritten.
+  const migrationKey='alumni_embedded_backfill_v1';
+  const alreadyBackfilled=await settings.findOne({key:migrationKey});
+  if(!alreadyBackfilled && embedded.length){
+    const current=await c.find({}).toArray();
+    const embeddedByYear=new Map(embedded.map(x=>[Number(x.year),x]));
+    let restored=0;
+    for(const row of current){
+      const y=Number(row.year);
+      const source=embeddedByYear.get(y);
+      if(source && (!Array.isArray(row.students) || row.students.length===0) && Array.isArray(source.students) && source.students.length){
+        await c.updateOne({_id:row._id},{$set:{students:source.students,updated_at:now()}});
+        restored++;
+      }
+    }
+    await settings.updateOne({key:migrationKey},{$set:{key:migrationKey,value:{restored,completed_at:now()},updated_at:now()}},{upsert:true});
+    console.log(`Alumni embedded backfill completed: restored ${restored} year(s).`);
+  }
+}
+function normalizeAlumniRows(year,students){return (Array.isArray(students)?students:[]).map(r=>({sno:String(r.sno??r[0]??''),name:String(r.name??r[1]??''),om:String(r.om??r[2]??''),percentage:String(r.percentage??r[3]??''),division:String(r.division??r[4]??''),gpa:String(r.gpa??r[5]??''),grade:String(r.grade??r[6]??''),year:String(r.year||year)}))}
+
+const uid = () => crypto.randomUUID();
+const bool = v => v === true || v === 1 || v === '1' || v === 'true';
+const asInt = (v, fallback = 0) => Number.isFinite(Number(v)) ? Number(v) : fallback;
+const safeJson = (v, fallback = {}) => { try { return typeof v === 'string' ? JSON.parse(v) : v; } catch { return fallback; } };
+const col = name => db.collection(name);
+const toId = id => String(id);
+const cleanName = name => path.basename(String(name || 'file'));
+const extForMime = mime => ({'image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp','image/gif':'.gif','image/svg+xml':'.svg','video/mp4':'.mp4','video/webm':'.webm','video/quicktime':'.mov','application/pdf':'.pdf','audio/mpeg':'.mp3','audio/wav':'.wav','text/plain':'.txt'})[mime] || path.extname(cleanName(mime));
+const mapMedia = row => row ? { ...row, id: String(row.id), _id: undefined, url: row.url || (row.source_path ? `/${row.source_path}` : (row.stored_name ? `/api/media/${encodeURIComponent(row.id)}` : '')) } : null;
+const normalizeItem = (body, existing = {}) => {
+  const out = { ...existing };
+  for (const k of ['type','page','title','body','description','link','link_text','image_id','file_id','date','time','location','category','visible','published','featured','sort_order','meta_json']) if (body[k] !== undefined) out[k] = body[k];
+  out.id = out.id || uid(); out.type = String(out.type || 'block');
+  const defaultPageByType = {
+    notice:'notice.html', gallery:'our-gallery.html', event:'events-programs.html',
+    achievement:'our-achievements.html', 'academic-achievement':'our-academic-achievement.html',
+    testimonial:'testimonials.html', magazine:'school-magazine.html', eca:'weekly-eca.html',
+    year:'year-in-review.html', download:'downloads.html'
+  };
+  out.page = String(out.page || defaultPageByType[out.type] || existing.page || '') || null;
+  out.title = String(out.title || ''); out.body = String(out.body || ''); out.description = String(out.description || ''); out.link = String(out.link || ''); out.link_text = String(out.link_text || 'Learn More');
+  out.image_id = out.image_id ? String(out.image_id) : null; out.file_id = out.file_id ? String(out.file_id) : null; out.date = out.date || null; out.time = out.time || null; out.location = String(out.location || ''); out.category = String(out.category || '');
+  out.visible = body.visible === undefined ? (existing.visible === undefined ? 1 : Number(Boolean(existing.visible))) : (bool(body.visible) ? 1 : 0);
+  out.published = body.published === undefined ? (existing.published === undefined ? 1 : Number(Boolean(existing.published))) : (bool(body.published) ? 1 : 0);
+  out.featured = bool(out.featured) ? 1 : 0; out.sort_order = asInt(out.sort_order, 0); out.meta_json = safeJson(out.meta_json, {});
+  return out;
+};
+async function itemWithMedia(row){ if(!row)return null; const mediaId = row.image_id || row.file_id; const media=mediaId ? await col('media').findOne({id:String(mediaId)}) : null; return {...row,meta:safeJson(row.meta_json,{}),media:mapMedia(media),file_media:row.file_id ? mapMedia(media) : null}; }
+async function audit(req, action, type, id, details = {}) { await col('audit_log').insertOne({admin_id:req.session.adminId||null,action,entity_type:type||null,entity_id:id?String(id):null,details,created_at:now()}); }
+function requireAdmin(req,res,next){if(!req.session.adminId)return res.status(401).json({error:'Authentication required.'});next();}
+function requirePassword(p){const s=String(p||'');return s.length>=10 && /[A-Za-z]/.test(s) && /\d/.test(s);}
+function hashToken(token){return crypto.createHash('sha256').update(token).digest('hex');}
+
+const diskStorage = multer.diskStorage({ destination: (_req,_file,cb)=>cb(null,UPLOAD_DIR), filename: (_req,file,cb)=>cb(null,`${crypto.randomUUID()}${path.extname(cleanName(file.originalname)).toLowerCase() || extForMime(file.mimetype)}`) });
+const memoryStorage = multer.memoryStorage();
+const upload = multer({storage:process.env.VERCEL ? memoryStorage : diskStorage,limits:{fileSize:MAX_UPLOAD,files:50},fileFilter:(_req,file,cb)=>/^(image|video|application|audio|text)\//.test(file.mimetype)?cb(null,true):cb(new Error('Unsupported file type.'))});
+
+const app=express(); app.disable('x-powered-by'); app.set('trust proxy',1); app.use(helmet({contentSecurityPolicy:false})); app.use(express.json({limit:'10mb'})); app.use(express.urlencoded({extended:true,limit:'10mb'}));
+app.use(session({name:'devdaha.sid',secret:SESSION_SECRET,resave:false,saveUninitialized:false,store:MongoStore.create({mongoUrl:MONGODB_URI,dbName:MONGODB_DB,collectionName:'sessions',ttl:8*60*60}),cookie:{httpOnly:true,sameSite:'lax',secure:process.env.NODE_ENV==='production',maxAge:8*60*60*1000}}));
+async function init(){if(db)return; if(!MONGODB_URI)throw new Error('MONGODB_URI is required.'); if(!initPromise){initPromise=(async()=>{await client.connect();db=client.db(MONGODB_DB);gridfs=new GridFSBucket(db,{bucketName:'cms_media'});await seed();await seedAlumni();})();} await initPromise}
+app.use(async(_req,_res,next)=>{try{await init();next()}catch(e){next(e)}});
+
+function smtpTransport(){const host=process.env.SMTP_HOST, port=Number(process.env.SMTP_PORT||587), user=process.env.SMTP_USER, pass=process.env.SMTP_PASS;if(!host||!user||!pass)return null;return nodemailer.createTransport({host,port,secure:port===465,auth:{user,pass}})}
+
+async function seed(){
+  const settings=col('settings');
+  const admins=col('admins'); const username=String(process.env.ADMIN_USERNAME||'').trim(); const password=String(process.env.ADMIN_PASSWORD||'');
+  if(username && password && requirePassword(password)){const exists=await admins.findOne({username});if(!exists){const t=now();await admins.insertOne({id:uid(),username,password_hash:await bcrypt.hash(password,12),created_at:t,updated_at:t});console.log(`Created initial admin account: ${username}`)}}
+  if(!(await settings.findOne({key:'schoolName'})))await settings.insertOne({key:'schoolName',value:'DEVDAHA E.B.S.S. SCHOOL',updated_at:now()}); if(!(await settings.findOne({key:'tagline'})))await settings.insertOne({key:'tagline',value:'A legacy of excellence. A future of endless possibilities.',updated_at:now()});
+
+  const oldSchool=await settings.findOne({key:'schoolName',value:/E\.B\.H\.?|HIGH SCHOOL/i}); if(oldSchool) await settings.updateOne({_id:oldSchool._id},{$set:{value:'DEVDAHA E.B.S.S. SCHOOL',updated_at:now()}});
+  const nav=col('nav_items'); if(await nav.countDocuments()===0){const items=[['Home','#hero'],['Facilities','#facilities'],['Weekly ECA','weekly-eca.html'],['Magazine','#magazine'],['Testimonials','testimonials.html'],['Gallery','#gallery'],['Suggestion Box','#suggestion-box'],['Notice','notice.html'],['Contact','#footer']];await nav.insertMany(items.map((x,i)=>({id:uid(),label:x[0],href:x[1],visible:1,sort_order:i,updated_at:now()})))}
+  const marquee=col('marquee'); if(!(await marquee.findOne({key:'top'})))await marquee.insertOne({key:'top',label:'',text:'[[LOGO]] DEVDAHA ENGLISH BOARDING SECONDARY SCHOOL [[LOGO]] SINCE 1996',speed:45,active:1,updated_at:now()}); if(!(await marquee.findOne({key:'notice'})))await marquee.insertOne({key:'notice',label:'Notice',text:'Stay connected with the latest notices, school announcements and updates from Devdaha English Boarding Secondary School.',speed:45,active:1,updated_at:now()});
+  const media=col('media'); if(await media.countDocuments()===0){const files=[];for(const root of ['assets','PHOTOS']){const abs=path.join(ROOT,root);if(!fs.existsSync(abs))continue;const walk=d=>{for(const ent of fs.readdirSync(d,{withFileTypes:true})){const full=path.join(d,ent.name);if(ent.isDirectory())walk(full);else if(/\.(png|jpe?g|gif|webp|svg|mp4|webm|mov|pdf)$/i.test(ent.name))files.push(full)}};walk(abs)}if(files.length){await media.insertMany(files.map(f=>{const rel=path.relative(ROOT,f).split(path.sep).join('/');const t=now();const ext=path.extname(f).toLowerCase();const mime={'.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.gif':'image/gif','.webp':'image/webp','.svg':'image/svg+xml','.mp4':'video/mp4','.webm':'video/webm','.mov':'video/quicktime','.pdf':'application/pdf'}[ext]||'application/octet-stream';return{id:uid(),original_name:path.basename(f),stored_name:path.basename(f),mime_type:mime,size:fs.statSync(f).size,title:path.parse(f).name,description:'',alt_text:'',folder:rel.startsWith('PHOTOS/')?rel.split('/')[1]:'assets',source_path:rel,visible:1,created_at:t,updated_at:t}}))}}
+}
+
+app.get('/api/health',async(_req,res)=>res.json({ok:true,db:'mongodb',time:now()}));
+app.get('/cron', async (req, res) => {
+  try {
+    // Perform scheduled task
+
+    res.send('OK');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('ERROR');
+  }
+});
+app.get('/ping', (_req, res) => res.status(240).end());
+app.post('/api/auth/login',async(req,res)=>{try{const username=String(req.body.username||'').trim();const password=String(req.body.password||'');const admin=await col('admins').findOne({username});if(!admin||!(await bcrypt.compare(password,admin.password_hash)))return res.status(401).json({error:'Invalid admin username or password.'});await new Promise((resolve,reject)=>req.session.regenerate(e=>e?reject(e):resolve()));req.session.adminId=admin.id;req.session.username=admin.username;await audit(req,'login','admin',admin.id);res.json({ok:true,username:admin.username})}catch(e){res.status(500).json({error:'Unable to sign in.'})}});
+app.post('/api/auth/logout',requireAdmin,async(req,res)=>{await audit(req,'logout','admin',req.session.adminId);req.session.destroy(()=>res.json({ok:true}))});
+app.get('/api/auth/me',(req,res)=>res.json({authenticated:!!req.session.adminId,username:req.session.username||null}));
+app.post('/api/auth/forgot-password',async(req,res)=>{try{const identity=String(req.body.username||req.body.email||'').trim();const generic={ok:true,message:'If that admin account exists, a password reset link has been sent.'};if(!identity)return res.json(generic);const admin=await col('admins').findOne({$or:[{username:identity},{email:identity}]});if(!admin)return res.json(generic);const raw=crypto.randomBytes(40).toString('hex');const expires=new Date(Date.now()+15*60*1000);await col('admins').updateOne({_id:admin._id},{$set:{reset_token_hash:hashToken(raw),reset_token_expires:expires,updated_at:now()}});const link=`${PUBLIC_BASE_URL}/admin-reset-password.html?token=${encodeURIComponent(raw)}`;const transporter=smtpTransport();if(!transporter){if(process.env.DEV_RESET_MODE==='true'){console.log(`DEV PASSWORD RESET for ${admin.username}: ${link}`);return res.json(generic)}return res.status(503).json({error:'Password reset email is not configured. Set SMTP_HOST, SMTP_USER and SMTP_PASS in .env.'})}await transporter.sendMail({from:process.env.SMTP_FROM||process.env.SMTP_USER,to:admin.email||process.env.ADMIN_RESET_EMAIL,subject:'Devdaha School Admin Password Reset',text:`A password reset was requested for your Devdaha School admin account. Open this link within 15 minutes:\n\n${link}\n\nIf you did not request this, ignore this email.`,html:`<p>A password reset was requested for your Devdaha School admin account.</p><p><a href="${link}">Reset your password</a></p><p>This link expires in 15 minutes.</p>`});res.json(generic)}catch(e){console.error(e);res.status(500).json({error:'Unable to start password reset.'})}});
+app.post('/api/auth/reset-password',async(req,res)=>{try{const token=String(req.body.token||'');const password=String(req.body.password||'');if(token.length<40||!requirePassword(password))return res.status(400).json({error:'Use a valid reset link and a password with at least 10 characters including letters and numbers.'});const admin=await col('admins').findOne({reset_token_hash:hashToken(token),reset_token_expires:{$gt:now()}});if(!admin)return res.status(400).json({error:'This password reset link is invalid or expired.'});await col('admins').updateOne({_id:admin._id},{$set:{password_hash:await bcrypt.hash(password,12),updated_at:now()},$unset:{reset_token_hash:'',reset_token_expires:''}});res.json({ok:true,message:'Password changed successfully. You can now sign in.'})}catch(e){res.status(500).json({error:'Unable to reset password.'})}});
+
+app.get('/api/public/content',async(req,res)=>{res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');const page=String(req.query.page||'Devdaha.html');const overrides={};for(const x of await col('page_overrides').find({page}).toArray())overrides[x.selector]=safeJson(x.data_json,{});const visible={visible:1,published:1};const items=await col('content_items').find({$and:[{page},visible]}).sort({featured:-1,sort_order:1,updated_at:-1}).toArray();const grouped={galleries:[],events:[],achievements:[],testimonials:[],magazines:[],eca:[],blocks:[],notices:[],downloads:[]};for(const raw of items){const x=await itemWithMedia(raw);const k={gallery:'galleries',event:'events',achievement:'achievements','academic-achievement':'achievements',testimonial:'testimonials',magazine:'magazines',eca:'eca',block:'blocks',notice:'notices',download:'downloads'}[raw.type];if(k)grouped[k].push(x)}const ms=await col('marquee').find({}).toArray();const marquee={};ms.forEach(x=>marquee[x.key]=x);const ss=await col('settings').find({}).toArray();const settings={};ss.forEach(x=>settings[x.key]=x.value);const navigation=await col('nav_items').find({}).sort({sort_order:1,label:1}).toArray();res.json({page,overrides,...grouped,marquee,settings,navigation})});
+app.use('/uploads',express.static(UPLOAD_DIR,{maxAge:'7d',fallthrough:false}));
+
+app.get('/api/admin/dashboard',requireAdmin,async(_req,res)=>{const types=['notice','gallery','event','achievement','academic-achievement','testimonial','magazine','eca','block','download'];const counts={};for(const t of types)counts[t]=await col('content_items').countDocuments({type:t});counts.media=await col('media').countDocuments();counts.alumni=await col('alumni_years').countDocuments();counts.admins=await col('admins').countDocuments();counts.pages=(await col('content_items').distinct('page')).filter(Boolean).length;counts.unpublished=await col('content_items').countDocuments({$or:[{published:0},{visible:0}]});const recent=await col('content_items').find({}).sort({updated_at:-1}).limit(10).project({id:1,type:1,page:1,title:1,updated_at:1}).toArray();const uploads=(await col('media').find({}).sort({created_at:-1}).limit(10).toArray()).map(mapMedia);res.json({counts,recent,uploads})});
+
+app.get('/api/admin/admins',requireAdmin,async(_req,res)=>{const rows=await col('admins').find({}).project({id:1,username:1,email:1,created_at:1,updated_at:1}).sort({created_at:1}).toArray();res.json(rows.map(x=>({...x,id:String(x.id||x._id)}))) });
+app.post('/api/admin/admins',requireAdmin,async(req,res)=>{const username=String(req.body.username||'').trim(),email=String(req.body.email||'').trim(),password=String(req.body.password||'');if(!/^[A-Za-z0-9._-]{3,80}$/.test(username))return res.status(400).json({error:'Invalid username.'});if(!requirePassword(password))return res.status(400).json({error:'Password must be at least 10 characters and include letters and numbers.'});if(await col('admins').findOne({username}))return res.status(409).json({error:'Username already exists.'});const t=now(),row={id:uid(),username,email:email||null,password_hash:await bcrypt.hash(password,12),created_at:t,updated_at:t};await col('admins').insertOne(row);await audit(req,'create','admin',row.id,{username});res.status(201).json({id:row.id,username,row,email:row.email})});
+app.put('/api/admin/admins/:id',requireAdmin,async(req,res)=>{const id=String(req.params.id),old=await col('admins').findOne({id});if(!old)return res.status(404).json({error:'Admin not found.'});const username=String(req.body.username??old.username).trim(),email=String(req.body.email??old.email??'').trim();if(!/^[A-Za-z0-9._-]{3,80}$/.test(username))return res.status(400).json({error:'Invalid username.'});if(await col('admins').findOne({username,id:{$ne:id}}))return res.status(409).json({error:'Username already exists.'});const set={username,email:email||null,updated_at:now()};if(req.body.password){if(!requirePassword(req.body.password))return res.status(400).json({error:'Password must be at least 10 characters and include letters and numbers.'});set.password_hash=await bcrypt.hash(String(req.body.password),12)}await col('admins').updateOne({id},{$set:set});if(id===String(req.session.adminId))req.session.username=username;await audit(req,'update','admin',id,{username});res.json({id,username,email:set.email})});
+app.delete('/api/admin/admins/:id',requireAdmin,async(req,res)=>{const id=String(req.params.id);if(id===String(req.session.adminId))return res.status(400).json({error:'You cannot delete the account you are currently using.'});if(await col('admins').countDocuments({})<=1)return res.status(400).json({error:'The last administrator cannot be deleted.'});const old=await col('admins').findOne({id});if(!old)return res.status(404).json({error:'Admin not found.'});await col('recycle_bin').insertOne({entity_type:'admin',entity_id:id,payload:{id:old.id,username:old.username,email:old.email},deleted_at:now()});await col('admins').deleteOne({id});await audit(req,'delete','admin',id,{username:old.username});res.json({ok:true})});
+app.get('/api/admin/audit-log',requireAdmin,async(req,res)=>{const limit=Math.min(500,Math.max(1,asInt(req.query.limit,200)));const rows=await col('audit_log').find({}).sort({created_at:-1}).limit(limit).toArray();res.json(rows.map(x=>({...x,id:String(x._id),_id:undefined})))});
+
+app.get('/api/admin/pages',requireAdmin,async(_req,res)=>{const base=['Devdaha.html','about-school.html','creative-corner.html','events-programs.html','notice.html','our-academic-achievement.html','our-achievements.html','our-gallery.html','school-magazine.html','testimonials.html','weekly-eca.html','year-in-review.html'];const files=fs.readdirSync(ROOT).filter(x=>x.toLowerCase().endsWith('.html')&&!['admin.html','admin-login.html','admin-reset-password.html'].includes(x));res.json([...new Set([...base,...files])])});
+app.get('/api/admin/page-source',requireAdmin,async(req,res)=>{const page=path.basename(String(req.query.page||'Devdaha.html'));if(!/^[-A-Za-z0-9_.]+\.html$/i.test(page)||['admin.html','admin-login.html','admin-reset-password.html'].includes(page.toLowerCase()))return res.status(400).json({error:'Invalid public page.'});const stored=await col('page_sources').findOne({page});const file=path.join(ROOT,page);const original=fs.existsSync(file)?fs.readFileSync(file,'utf8'):'';res.json({page,source:stored?.source||original,customized:!!stored,originalLength:original.length});});
+app.put('/api/admin/page-source',requireAdmin,async(req,res)=>{const page=path.basename(String(req.body.page||''));const source=String(req.body.source||'');if(!/^[-A-Za-z0-9_.]+\.html$/i.test(page)||['admin.html','admin-login.html','admin-reset-password.html'].includes(page.toLowerCase()))return res.status(400).json({error:'Invalid public page.'});if(source.length>15*1024*1024)return res.status(413).json({error:'Page source is too large.'});await col('page_sources').updateOne({page},{$set:{page,source,updated_at:now(),updated_by:req.session.adminId||null}},{upsert:true});await col('page_overrides').deleteMany({page});await audit(req,'update','page_source',page,{bytes:Buffer.byteLength(source,'utf8')});res.json({ok:true,page,bytes:Buffer.byteLength(source,'utf8')});});
+app.delete('/api/admin/page-source',requireAdmin,async(req,res)=>{const page=path.basename(String(req.body.page||''));await col('page_sources').deleteOne({page});await audit(req,'reset','page_source',page);res.json({ok:true});});
+app.get('/api/admin/overrides',requireAdmin,async(req,res)=>{const rows=await col('page_overrides').find({page:String(req.query.page||'Devdaha.html')}).sort({selector:1}).toArray();res.json(rows.map(x=>({...x,id:String(x.id||x._id),_id:undefined,data:safeJson(x.data_json,{})})))})
+app.put('/api/admin/overrides',requireAdmin,async(req,res)=>{const page=String(req.body.page||''),selector=String(req.body.selector||''),data=req.body.data||{};if(!page||!selector||typeof data!=='object')return res.status(400).json({error:'page, selector and data are required.'});const result=await col('page_overrides').updateOne({page,selector},{$set:{page,selector,data_json:data,updated_at:now()}},{upsert:true});if(result.matchedCount===0&&result.upsertedCount===0)await col('page_overrides').insertOne({id:uid(),page,selector,data_json:data,updated_at:now()});await audit(req,'upsert','page_override',`${page}:${selector}`);res.json({ok:true})});
+app.delete('/api/admin/overrides',requireAdmin,async(req,res)=>{const page=String(req.body.page||''),selector=String(req.body.selector||'');await col('page_overrides').deleteOne({page,selector});await audit(req,'delete','page_override',`${page}:${selector}`);res.json({ok:true})});
+
+app.get('/api/admin/items',requireAdmin,async(req,res)=>{const q={};if(req.query.type)q.type=String(req.query.type);if(req.query.page)q.page=String(req.query.page);if(req.query.q){const rx=new RegExp(String(req.query.q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');q.$or=[{title:rx},{body:rx},{description:rx}]};const rows=await col('content_items').find(q).sort({featured:-1,sort_order:1,updated_at:-1}).toArray();res.json(await Promise.all(rows.map(itemWithMedia))) });
+app.post('/api/admin/items',requireAdmin,async(req,res)=>{const x=normalizeItem(req.body);const t=now();x.created_at=t;x.updated_at=t;await col('content_items').insertOne(x);await audit(req,'create','content_item',x.id,{type:x.type,page:x.page});res.json(await itemWithMedia(x))});
+app.put('/api/admin/items/:id',requireAdmin,async(req,res)=>{const old=await col('content_items').findOne({id:String(req.params.id)});if(!old)return res.status(404).json({error:'Item not found.'});const x=normalizeItem(req.body,old);x.id=old.id;x.created_at=old.created_at;x.updated_at=now();await col('content_items').replaceOne({id:x.id},x);await audit(req,'update','content_item',x.id);res.json(await itemWithMedia(x))});
+app.delete('/api/admin/items/:id',requireAdmin,async(req,res)=>{const id=String(req.params.id),old=await col('content_items').findOne({id});if(!old)return res.status(404).json({error:'Item not found.'});await col('recycle_bin').insertOne({entity_type:'content_item',entity_id:id,payload:old,deleted_at:now()});await col('content_items').deleteOne({id});await audit(req,'delete','content_item',id);res.json({ok:true})});
+app.post('/api/admin/items/:id/restore',requireAdmin,async(req,res)=>{const id=String(req.params.id),r=await col('recycle_bin').find({entity_type:'content_item',entity_id:id}).sort({deleted_at:-1}).limit(1).next();if(!r)return res.status(404).json({error:'No recycle-bin copy found.'});await col('content_items').replaceOne({id},r.payload,{upsert:true});await audit(req,'restore','content_item',id);res.json(await itemWithMedia(r.payload))});
+app.post('/api/admin/reorder',requireAdmin,async(req,res)=>{const ids=Array.isArray(req.body.ids)?req.body.ids.map(String):[];await Promise.all(ids.map((id,i)=>col('content_items').updateOne({id},{$set:{sort_order:i,updated_at:now()}})));await audit(req,'reorder','content_item',null,{ids});res.json({ok:true})});
+
+app.get('/api/admin/media',requireAdmin,async(req,res)=>{const q={};if(req.query.folder)q.folder=String(req.query.folder);if(req.query.q){const rx=new RegExp(String(req.query.q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');q.$or=[{title:rx},{original_name:rx},{description:rx}]};res.json((await col('media').find(q).sort({created_at:-1}).toArray()).map(mapMedia))});
+app.post('/api/admin/media',requireAdmin,upload.array('files',50),async(req,res)=>{const files=req.files||[];const title=String(req.body.title||''),description=String(req.body.description||''),alt=String(req.body.alt_text||''),folder=String(req.body.folder||'general');const t=now();try{const out=[];for(const f of files){const id=uid();let storedName=null;if(process.env.VERCEL){storedName=id;await new Promise((resolve,reject)=>{const stream=gridfs.openUploadStream(id,{metadata:{original_name:cleanName(f.originalname),mime_type:f.mimetype,media_id:id,folder}});stream.on('error',reject);stream.on('finish',resolve);stream.end(f.buffer);});}else{storedName=f.filename;}const row={id,original_name:cleanName(f.originalname),stored_name:storedName,mime_type:f.mimetype,size:f.size,title:title||path.parse(f.originalname).name,description,alt_text:alt,folder,source_path:null,storage:process.env.VERCEL?'gridfs':'disk',visible:1,created_at:t,updated_at:t};await col('media').insertOne(row);out.push(mapMedia(row))}await audit(req,'upload','media',null,{count:out.length});res.json(out)}catch(e){if(!process.env.VERCEL)for(const f of files){try{if(f.path)fs.unlinkSync(f.path)}catch{}}res.status(500).json({error:'Media upload failed.'})}});
+app.get('/api/media/:id',async(req,res)=>{const m=await col('media').findOne({id:String(req.params.id)});if(!m||!m.stored_name||m.source_path)return res.status(404).end();if(m.storage==='gridfs' && gridfs){res.setHeader('Content-Type',m.mime_type||'application/octet-stream');res.setHeader('Content-Disposition',`inline; filename*=UTF-8''${encodeURIComponent(m.original_name||'file')}`);const stream=gridfs.openDownloadStreamByName(m.stored_name);stream.on('error',()=>res.status(404).end());return stream.pipe(res);}const full=path.join(UPLOAD_DIR,m.stored_name);if(!fs.existsSync(full))return res.status(404).end();res.sendFile(full);});
+app.put('/api/admin/media/:id',requireAdmin,async(req,res)=>{const id=String(req.params.id),m=await col('media').findOne({id});if(!m)return res.status(404).json({error:'Media not found.'});const set={updated_at:now()};for(const k of ['title','description','alt_text','folder'])if(req.body[k]!==undefined)set[k]=String(req.body[k]);if(req.body.visible!==undefined)set.visible=bool(req.body.visible)?1:0;await col('media').updateOne({id},{$set:set});const x=await col('media').findOne({id});await audit(req,'update','media',id);res.json(mapMedia(x))});
+app.delete('/api/admin/media/:id',requireAdmin,async(req,res)=>{const id=String(req.params.id),m=await col('media').findOne({id});if(!m)return res.status(404).json({error:'Media not found.'});await col('recycle_bin').insertOne({entity_type:'media',entity_id:id,payload:m,deleted_at:now()});await col('media').deleteOne({id});if(!m.source_path){try{fs.unlinkSync(path.join(UPLOAD_DIR,m.stored_name))}catch{}}await audit(req,'delete','media',id);res.json({ok:true})});
+
+
+app.get('/api/alumni',async(_req,res)=>{const rows=await col('alumni_years').find({}).sort({sort_order:1,year:1}).toArray();res.setHeader('Cache-Control','no-store');res.json(rows.map(x=>({id:String(x.id||x._id||''),year:Number(x.year),students:x.students||[]})))});
+app.get('/api/admin/alumni',requireAdmin,async(_req,res)=>{const rows=await col('alumni_years').find({}).sort({sort_order:1,year:1}).toArray();res.json(rows.map(x=>({id:String(x.id||x._id||''),year:Number(x.year),students:x.students||[],updated_at:x.updated_at})))});
+app.put('/api/admin/alumni',requireAdmin,async(req,res)=>{const years=Array.isArray(req.body.years)?req.body.years:[];const clean=[];const seen=new Set();for(let i=0;i<years.length;i++){const y=Number(years[i].year);if(!Number.isInteger(y)||y<1900||y>2200)return res.status(400).json({error:'Invalid alumni year.'});if(seen.has(y))return res.status(400).json({error:`Duplicate alumni year ${y}.`});seen.add(y);const students=normalizeAlumniRows(y,years[i].students);const sno=new Set();for(const r of students){if(r.sno){if(sno.has(r.sno))return res.status(400).json({error:`Duplicate S.No ${r.sno} in ${y}.`});sno.add(r.sno)}}clean.push({id:String(years[i].id||uid()),year:y,sort_order:i,students,updated_at:now()})}const old=await col('alumni_years').find({}).toArray();if(old.length)await col('recycle_bin').insertOne({entity_type:'alumni_directory_snapshot',entity_id:uid(),payload:old,deleted_at:now()});await col('alumni_years').deleteMany({});if(clean.length)await col('alumni_years').insertMany(clean);await audit(req,'update','alumni_directory',null,{years:clean.map(x=>x.year),totalRows:clean.reduce((n,x)=>n+x.students.length,0)});res.json(clean.map(x=>({id:x.id,year:x.year,students:x.students})))});
+
+app.get('/api/admin/settings',requireAdmin,async(_req,res)=>{const rows=await col('settings').find({}).toArray();const out={};rows.forEach(x=>out[x.key]=x.value);res.json(out)});
+app.put('/api/admin/settings',requireAdmin,async(req,res)=>{for(const [k,v] of Object.entries(req.body||{}))await col('settings').updateOne({key:k},{$set:{key:k,value:v,updated_at:now()}},{upsert:true});await audit(req,'update','settings',null,{keys:Object.keys(req.body||{})});res.json({ok:true})});
+app.get('/api/admin/marquee',requireAdmin,async(_req,res)=>res.json(await col('marquee').find({}).sort({key:1}).toArray()));
+app.put('/api/admin/marquee/:key',requireAdmin,async(req,res)=>{const key=String(req.params.key),old=await col('marquee').findOne({key})||{key,label:'',text:'',speed:45,active:1};const x={key,label:String(req.body.label??old.label),text:String(req.body.text??old.text),speed:Math.max(1,Math.min(300,asInt(req.body.speed,old.speed||45))),active:bool(req.body.active??old.active)?1:0,updated_at:now()};await col('marquee').replaceOne({key},x,{upsert:true});await audit(req,'update','marquee',key);res.json(x)});
+app.get('/api/admin/navigation',requireAdmin,async(_req,res)=>res.json(await col('nav_items').find({}).sort({sort_order:1,label:1}).toArray()));
+app.put('/api/admin/navigation',requireAdmin,async(req,res)=>{const items=Array.isArray(req.body.items)?req.body.items:[];await col('nav_items').deleteMany({});if(items.length)await col('nav_items').insertMany(items.map((x,i)=>({id:String(x.id||uid()),label:String(x.label||''),href:String(x.href||''),visible:bool(x.visible)?1:0,sort_order:i,updated_at:now()})));await audit(req,'update','navigation',null,{count:items.length});res.json(await col('nav_items').find({}).sort({sort_order:1}).toArray())});
+app.get('/api/admin/search',requireAdmin,async(req,res)=>{const term=String(req.query.q||'').trim();if(!term)return res.json({items:[],media:[]});const rx=new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');const items=await col('content_items').find({$or:[{title:rx},{body:rx},{description:rx}]}).sort({updated_at:-1}).limit(100).project({id:1,type:1,page:1,title:1,description:1,updated_at:1}).toArray();const media=await col('media').find({$or:[{title:rx},{original_name:rx},{description:rx}]}).sort({updated_at:-1}).limit(100).project({id:1,title:1,folder:1,updated_at:1}).toArray();res.json({items,media})});
+app.get('/api/admin/recycle-bin',requireAdmin,async(_req,res)=>res.json(await col('recycle_bin').find({}).sort({deleted_at:-1}).limit(100).project({entity_type:1,entity_id:1,deleted_at:1}).toArray()));
+app.get('/api/admin/backup',requireAdmin,async(_req,res)=>{const tables={admins:await col('admins').find({}).project({id:1,username:1,email:1,created_at:1,updated_at:1}).toArray(),page_overrides:await col('page_overrides').find({}).toArray(),page_sources:await col('page_sources').find({}).toArray(),content_items:await col('content_items').find({}).toArray(),media:await col('media').find({}).toArray(),settings:await col('settings').find({}).toArray(),marquee:await col('marquee').find({}).toArray(),nav_items:await col('nav_items').find({}).toArray(),alumni_years:await col('alumni_years').find({}).toArray()};res.setHeader('Content-Disposition','attachment; filename="devdaha-cms-backup.json"');res.json({version:3,createdAt:now(),database:'mongodb',tables})});
+app.post('/api/admin/restore',requireAdmin,async(req,res)=>{const b=req.body;if(!b||b.version!==3||!b.tables)return res.status(400).json({error:'Invalid CMS backup.'});try{for(const name of ['page_overrides','page_sources','content_items','media','settings','marquee','nav_items','alumni_years']){await col(name).deleteMany({});const rows=Array.isArray(b.tables[name])?b.tables[name]:[];if(rows.length)await col(name).insertMany(rows.map(x=>{const y={...x};delete y._id;return y}))}await audit(req,'restore','backup',null);res.json({ok:true})}catch(e){res.status(400).json({error:'Restore failed: '+e.message})}});
+
+app.use((req,res,next)=>{if(req.path.startsWith('/data/')||req.path.startsWith('/scripts/')||req.path==='/server.js'||req.path==='/package.json'||req.path.startsWith('/.env'))return res.status(404).end();next()});
+app.use(async(req,res,next)=>{try{if(req.method==='GET'){let page=null;if(req.path==='/'||req.path==='/Devdaha.html')page='Devdaha.html';else if(/^\/[A-Za-z0-9_.-]+\.html$/i.test(req.path))page=path.basename(req.path);if(page==='alumni.html'){const file=path.join(ROOT,'alumni.html');if(fs.existsSync(file)){let source=fs.readFileSync(file,'utf8');const rows=await col('alumni_years').find({}).sort({sort_order:1,year:1}).toArray();const data={};rows.forEach(x=>{data[String(x.year)]=(x.students||[]).map(r=>Array.isArray(r)?r:[r.sno??'',r.name??'',r.om??'',r.percentage??'',r.division??'',r.gpa??'',r.grade??'',r.year||x.year]);});source=source.replace(/<script id="alumni-data">[\s\S]*?<\/script>/,`<script id="alumni-data">const ALUMNI_DATA=${JSON.stringify(data)};<\/script>`);res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');return res.type('html').send(source)}}
+if(page&&!['admin.html','admin-login.html','admin-reset-password.html'].includes(page.toLowerCase())){const row=await col('page_sources').findOne({page});if(row?.source){res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.type('html').send(row.source);return}}}next()}catch(e){next(e)}});
+app.use(express.static(ROOT,{index:'Devdaha.html',extensions:false,dotfiles:'deny'}));
+app.use((err,_req,res,_next)=>{console.error(err);if(err.code==='LIMIT_FILE_SIZE')return res.status(413).json({error:'File is too large.'});res.status(500).json({error:err.message||'Server error.'})});
+
+if(require.main===module){init().then(()=>app.listen(PORT,()=>console.log(`Devdaha MongoDB CMS running on ${PUBLIC_BASE_URL}`))).catch(e=>{console.error('Failed to start MongoDB CMS:',e);process.exit(1)});}
+module.exports={app,init};
