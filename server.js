@@ -89,16 +89,26 @@ const safeJson = (v, fallback = {}) => { try { return typeof v === 'string' ? JS
 const col = name => db.collection(name);
 const toId = id => String(id);
 const cleanName = name => path.basename(String(name || 'file'));
-const PUBLIC_MEDIA_BASE = String(
+const BACKEND_PUBLIC_URL = String(
+  process.env.BACKEND_PUBLIC_URL ||
   process.env.PUBLIC_BASE_URL ||
-  (process.env.NODE_ENV === 'production' ? 'https://devdaha-school-backend.onrender.com' : '')
+  (process.env.NODE_ENV === 'production' ? 'https://devdaha-school-backend.onrender.com' : `http://localhost:${PORT}`)
 ).replace(/\/$/, '');
 const extForMime = mime => ({'image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp','image/gif':'.gif','image/svg+xml':'.svg','video/mp4':'.mp4','video/webm':'.webm','video/quicktime':'.mov','application/pdf':'.pdf','audio/mpeg':'.mp3','audio/wav':'.wav','text/plain':'.txt'})[mime] || path.extname(cleanName(mime));
 const mapMedia = row => {
   if (!row) return null;
-  const relative = row.url || (row.source_path ? `/${row.source_path}` : (row.stored_name ? `/api/media/${encodeURIComponent(row.id)}` : ''));
-  const absolute = relative && /^https?:\/\//i.test(relative) ? relative : (relative ? `${PUBLIC_MEDIA_BASE}${relative}` : '');
-  return { ...row, id: String(row.id), _id: undefined, url: absolute };
+  const id = String(row.id || '');
+  let url = '';
+  if (row.url && /^https?:\/\//i.test(String(row.url))) {
+    url = String(row.url);
+  } else if (row.storage === 'gridfs' || (row.stored_name && !row.source_path)) {
+    url = id ? `${BACKEND_PUBLIC_URL}/api/media/${encodeURIComponent(id)}` : '';
+  } else if (row.source_path) {
+    url = `${BACKEND_PUBLIC_URL}/${String(row.source_path).replace(/^\/+/, '')}`;
+  } else if (row.url) {
+    url = `${BACKEND_PUBLIC_URL}/${String(row.url).replace(/^\/+/, '')}`;
+  }
+  return { ...row, id, _id: undefined, url };
 };
 const normalizeItem = (body, existing = {}) => {
   const out = { ...existing };
@@ -118,7 +128,19 @@ const normalizeItem = (body, existing = {}) => {
   out.featured = bool(out.featured) ? 1 : 0; out.sort_order = asInt(out.sort_order, 0); out.meta_json = safeJson(out.meta_json, {});
   return out;
 };
-async function itemWithMedia(row){ if(!row)return null; const mediaId = row.image_id || row.file_id; const media=mediaId ? await col('media').findOne({id:String(mediaId)}) : null; return {...row,meta:safeJson(row.meta_json,{}),media:mapMedia(media),file_media:row.file_id ? mapMedia(media) : null}; }
+async function itemWithMedia(row){
+  if(!row)return null;
+  const mediaId = row.image_id || row.file_id || row.media_id || row.imageId || row.mediaId || null;
+  let media = mediaId ? await col('media').findOne({id:String(mediaId)}) : null;
+  if(!media){
+    const direct = row.image_url || row.imageUrl || row.media_url || row.mediaUrl || '';
+    if(direct){
+      const url = /^https?:\/\//i.test(String(direct)) ? String(direct) : `${BACKEND_PUBLIC_URL}/${String(direct).replace(/^\/+/, '')}`;
+      media = {id:String(mediaId||''),url,mime_type:row.mime_type||row.media_type||'image/*',original_name:row.original_name||row.title||'School media',alt_text:row.alt_text||row.title||''};
+    }
+  }
+  return {...row,meta:safeJson(row.meta_json,{}),media:mapMedia(media)||media,file_media:row.file_id ? (mapMedia(media)||media) : null};
+}
 async function audit(req, action, type, id, details = {}) { await col('audit_log').insertOne({admin_id:req.session.adminId||null,action,entity_type:type||null,entity_id:id?String(id):null,details,created_at:now()}); }
 function requireAdmin(req,res,next){if(!req.session.adminId)return res.status(401).json({error:'Authentication required.'});next();}
 function requirePassword(p){const s=String(p||'');return s.length>=10 && /[A-Za-z]/.test(s) && /\d/.test(s);}
@@ -128,12 +150,12 @@ const diskStorage = multer.diskStorage({ destination: (_req,_file,cb)=>cb(null,U
 const memoryStorage = multer.memoryStorage();
 const upload = multer({storage:process.env.VERCEL ? memoryStorage : diskStorage,limits:{fileSize:MAX_UPLOAD,files:50},fileFilter:(_req,file,cb)=>/^(image|video|application|audio|text)\//.test(file.mimetype)?cb(null,true):cb(new Error('Unsupported file type.'))});
 
-const app=express(); app.disable('x-powered-by'); app.set('trust proxy',1); app.use(helmet({contentSecurityPolicy:false})); app.use(express.json({limit:'10mb'})); app.use(express.urlencoded({extended:true,limit:'10mb'}));
+const app=express(); app.disable('x-powered-by'); app.set('trust proxy',1); app.use(helmet({contentSecurityPolicy:false,crossOriginResourcePolicy:{policy:'cross-origin'}})); app.use(express.json({limit:'10mb'})); app.use(express.urlencoded({extended:true,limit:'10mb'}));
 const PUBLIC_FRONTEND_ORIGINS = new Set(
   String(process.env.PUBLIC_FRONTEND_ORIGINS || 'https://devdahaebss.edu.np,https://www.devdahaebss.edu.np')
     .split(',').map(x=>x.trim()).filter(Boolean)
 );
-const SESSION_SAMESITE = String(process.env.SESSION_SAMESITE || (process.env.NODE_ENV === 'production' ? 'none' : 'lax')).toLowerCase();
+const SESSION_SAMESITE = String(process.env.SESSION_SAMESITE || 'none').toLowerCase();
 const SESSION_SECURE = process.env.NODE_ENV === 'production' || SESSION_SAMESITE === 'none';
 app.use(session({name:'devdaha.sid',secret:SESSION_SECRET,resave:false,saveUninitialized:false,store:MongoStore.create({mongoUrl:MONGODB_URI,dbName:MONGODB_DB,collectionName:'sessions',ttl:8*60*60}),cookie:{httpOnly:true,sameSite:SESSION_SAMESITE,secure:SESSION_SECURE,maxAge:8*60*60*1000}}));
 app.use((req,res,next)=>{
@@ -149,7 +171,7 @@ app.use((req,res,next)=>{
     res.setHeader('Access-Control-Allow-Credentials','true');
     res.setHeader('Vary','Origin');
     res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers','Content-Type');
+    res.setHeader('Access-Control-Allow-Headers','Content-Type, X-Requested-With, Accept');
   }
   if(req.method==='OPTIONS') return res.status(originAllowed?204:403).end();
   next();
@@ -190,9 +212,11 @@ app.get('/api/auth/me',(req,res)=>res.json({authenticated:!!req.session.adminId,
 app.post('/api/auth/forgot-password',async(req,res)=>{try{const identity=String(req.body.username||req.body.email||'').trim();const generic={ok:true,message:'If that admin account exists, a password reset link has been sent.'};if(!identity)return res.json(generic);const admin=await col('admins').findOne({$or:[{username:identity},{email:identity}]});if(!admin)return res.json(generic);const raw=crypto.randomBytes(40).toString('hex');const expires=new Date(Date.now()+15*60*1000);await col('admins').updateOne({_id:admin._id},{$set:{reset_token_hash:hashToken(raw),reset_token_expires:expires,updated_at:now()}});const link=`${PUBLIC_BASE_URL}/admin-reset-password.html?token=${encodeURIComponent(raw)}`;const transporter=smtpTransport();if(!transporter){if(process.env.DEV_RESET_MODE==='true'){console.log(`DEV PASSWORD RESET for ${admin.username}: ${link}`);return res.json(generic)}return res.status(503).json({error:'Password reset email is not configured. Set SMTP_HOST, SMTP_USER and SMTP_PASS in .env.'})}await transporter.sendMail({from:process.env.SMTP_FROM||process.env.SMTP_USER,to:admin.email||process.env.ADMIN_RESET_EMAIL,subject:'Devdaha School Admin Password Reset',text:`A password reset was requested for your Devdaha School admin account. Open this link within 15 minutes:\n\n${link}\n\nIf you did not request this, ignore this email.`,html:`<p>A password reset was requested for your Devdaha School admin account.</p><p><a href="${link}">Reset your password</a></p><p>This link expires in 15 minutes.</p>`});res.json(generic)}catch(e){console.error(e);res.status(500).json({error:'Unable to start password reset.'})}});
 app.post('/api/auth/reset-password',async(req,res)=>{try{const token=String(req.body.token||'');const password=String(req.body.password||'');if(token.length<40||!requirePassword(password))return res.status(400).json({error:'Use a valid reset link and a password with at least 10 characters including letters and numbers.'});const admin=await col('admins').findOne({reset_token_hash:hashToken(token),reset_token_expires:{$gt:now()}});if(!admin)return res.status(400).json({error:'This password reset link is invalid or expired.'});await col('admins').updateOne({_id:admin._id},{$set:{password_hash:await bcrypt.hash(password,12),updated_at:now()},$unset:{reset_token_hash:'',reset_token_expires:''}});res.json({ok:true,message:'Password changed successfully. You can now sign in.'})}catch(e){res.status(500).json({error:'Unable to reset password.'})}});
 
-app.get('/api/public/highlights',async(_req,res)=>{try{res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');const rows=await col('content_items').find({type:'highlight',visible:{$in:[1,true,'1']},published:{$in:[1,true,'1']},$or:[{image_id:{$exists:true,$nin:[null,'']}},{file_id:{$exists:true,$nin:[null,'']}}]}).sort({created_at:-1,updated_at:-1}).limit(200).toArray();const items=(await Promise.all(rows.map(itemWithMedia))).filter(x=>x&&x.media&&x.media.url).sort((a,b)=>{const ta=Date.parse(a.created_at||a.updated_at||a.date||'')||0;const tb=Date.parse(b.created_at||b.updated_at||b.date||'')||0;return tb-ta});items.forEach(x=>{x.source_label='School Highlights'});res.json({items,latest:items[0]||null})}catch(e){console.error('Public highlights error:',e);res.status(500).json({error:'Unable to load highlights.'})}});
+app.get('/api/public/highlights',async(_req,res)=>{try{res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');const rows=await col('content_items').find({type:'highlight',visible:{$in:[1,true,'1']},published:{$in:[1,true,'1']},$or:[{image_id:{$exists:true,$nin:[null,'']}},{file_id:{$exists:true,$nin:[null,'']}},{media_id:{$exists:true,$nin:[null,'']}},{image_url:{$exists:true,$nin:[null,'']}},{imageUrl:{$exists:true,$nin:[null,'']}},{media_url:{$exists:true,$nin:[null,'']}},{mediaUrl:{$exists:true,$nin:[null,'']}}]}).sort({created_at:-1,updated_at:-1,date:-1}).limit(200).toArray();const items=(await Promise.all(rows.map(itemWithMedia))).filter(x=>x&&x.media&&x.media.url).sort((a,b)=>{const ta=Date.parse(a.created_at||a.updated_at||a.date||'')||0;const tb=Date.parse(b.created_at||b.updated_at||b.date||'')||0;return tb-ta});items.forEach(x=>{x.source_label='School Highlights'});res.json({items,latest:items[0]||null})}catch(e){console.error('Public highlights error:',e);res.status(500).json({error:'Unable to load highlights.'})}});
 app.get('/api/public/content',async(req,res)=>{res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');const page=String(req.query.page||'Devdaha.html');const overrides={};for(const x of await col('page_overrides').find({page}).toArray())overrides[x.selector]=safeJson(x.data_json,{});const visibility={visible:{$in:[1,true,'1']},published:{$in:[1,true,'1']}};const items=await col('content_items').find({$and:[{page},visibility]}).sort({featured:-1,sort_order:1,updated_at:-1,created_at:-1}).toArray();const grouped={galleries:[],events:[],achievements:[],testimonials:[],magazines:[],eca:[],blocks:[],notices:[],downloads:[]};for(const raw of items){const x=await itemWithMedia(raw);const k={gallery:'galleries',event:'events',achievement:'achievements','academic-achievement':'achievements',testimonial:'testimonials',magazine:'magazines',eca:'eca',block:'blocks',notice:'notices',download:'downloads'}[raw.type];if(k)grouped[k].push(x)}const ms=await col('marquee').find({}).toArray();const marquee={};ms.forEach(x=>marquee[x.key]=x);const ss=await col('settings').find({}).toArray();const settings={};ss.forEach(x=>settings[x.key]=x.value);const navigation=await col('nav_items').find({}).sort({sort_order:1,label:1}).toArray();res.json({page,overrides,...grouped,marquee,settings,navigation})});
 app.use('/uploads',express.static(UPLOAD_DIR,{maxAge:'7d',fallthrough:false}));
+app.use('/assets',express.static(path.join(ROOT,'assets'),{maxAge:'7d',fallthrough:false}));
+app.use('/PHOTOS',express.static(path.join(ROOT,'PHOTOS'),{maxAge:'7d',fallthrough:false}));
 
 app.get('/api/admin/dashboard',requireAdmin,async(_req,res)=>{const types=['notice','gallery','event','achievement','academic-achievement','highlight','testimonial','magazine','eca','block','download'];const counts={};for(const t of types)counts[t]=await col('content_items').countDocuments({type:t});counts.media=await col('media').countDocuments();counts.alumni=await col('alumni_years').countDocuments();counts.admins=await col('admins').countDocuments();counts.pages=(await col('content_items').distinct('page')).filter(Boolean).length;counts.unpublished=await col('content_items').countDocuments({$or:[{published:0},{visible:0}]});const recent=await col('content_items').find({}).sort({updated_at:-1}).limit(10).project({id:1,type:1,page:1,title:1,updated_at:1}).toArray();const uploads=(await col('media').find({}).sort({created_at:-1}).limit(10).toArray()).map(mapMedia);res.json({counts,recent,uploads})});
 
@@ -219,7 +243,7 @@ app.post('/api/admin/reorder',requireAdmin,async(req,res)=>{const ids=Array.isAr
 
 app.get('/api/admin/media',requireAdmin,async(req,res)=>{const q={};if(req.query.folder)q.folder=String(req.query.folder);if(req.query.q){const rx=new RegExp(String(req.query.q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');q.$or=[{title:rx},{original_name:rx},{description:rx}]};res.json((await col('media').find(q).sort({created_at:-1}).toArray()).map(mapMedia))});
 app.post('/api/admin/media',requireAdmin,upload.array('files',50),async(req,res)=>{const files=req.files||[];const title=String(req.body.title||''),description=String(req.body.description||''),alt=String(req.body.alt_text||''),folder=String(req.body.folder||'general');const t=now();try{if(!gridfs)throw new Error('Persistent media storage is not ready.');const out=[];for(const f of files){const id=uid();const storedName=id;await new Promise((resolve,reject)=>{const stream=gridfs.openUploadStream(storedName,{metadata:{original_name:cleanName(f.originalname),mime_type:f.mimetype,media_id:id,folder,uploaded_at:t}});stream.on('error',reject);stream.on('finish',resolve);if(f.buffer){stream.end(f.buffer)}else if(f.path){const src=fs.createReadStream(f.path);src.on('error',reject);src.pipe(stream)}else{reject(new Error('Uploaded file data is unavailable.'))}});const row={id,original_name:cleanName(f.originalname),stored_name:storedName,mime_type:f.mimetype,size:f.size,title:title||path.parse(f.originalname).name,description,alt_text:alt,folder,source_path:null,storage:'gridfs',visible:1,created_at:t,updated_at:t};await col('media').insertOne(row);if(f.path){try{fs.unlinkSync(f.path)}catch{}}out.push(mapMedia(row))}await audit(req,'upload','media',null,{count:out.length,storage:'gridfs'});res.json(out)}catch(e){for(const f of files){try{if(f.path)fs.unlinkSync(f.path)}catch{}}console.error('Persistent media upload failed:',e);res.status(500).json({error:'Media upload failed.'})}});
-app.get('/api/media/:id',async(req,res)=>{res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');const m=await col('media').findOne({id:String(req.params.id)});if(!m||!m.stored_name||m.source_path)return res.status(404).end();if(m.storage==='gridfs' && gridfs){res.setHeader('Content-Type',m.mime_type||'application/octet-stream');res.setHeader('Content-Disposition',`inline; filename*=UTF-8''${encodeURIComponent(m.original_name||'file')}`);const stream=gridfs.openDownloadStreamByName(m.stored_name);stream.on('error',()=>res.status(404).end());return stream.pipe(res);}const full=path.join(UPLOAD_DIR,m.stored_name);if(!fs.existsSync(full))return res.status(404).end();res.sendFile(full);});
+app.get('/api/media/:id',async(req,res)=>{res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');const m=await col('media').findOne({id:String(req.params.id)});if(!m||!m.stored_name)return res.status(404).end();if(m.source_path){const safeRoot=path.resolve(ROOT),full=path.resolve(ROOT,m.source_path);if(!full.startsWith(safeRoot+path.sep))return res.status(400).end();if(!fs.existsSync(full))return res.status(404).end();res.type(m.mime_type||path.extname(full));return res.sendFile(full);} if(m.storage==='gridfs' && gridfs){res.setHeader('Content-Type',m.mime_type||'application/octet-stream');res.setHeader('Content-Disposition',`inline; filename*=UTF-8''${encodeURIComponent(m.original_name||'file')}`);const stream=gridfs.openDownloadStreamByName(m.stored_name);stream.on('error',()=>res.status(404).end());return stream.pipe(res);}const full=path.join(UPLOAD_DIR,m.stored_name);if(!fs.existsSync(full))return res.status(404).end();res.sendFile(full);});
 app.put('/api/admin/media/:id',requireAdmin,async(req,res)=>{const id=String(req.params.id),m=await col('media').findOne({id});if(!m)return res.status(404).json({error:'Media not found.'});const set={updated_at:now()};for(const k of ['title','description','alt_text','folder'])if(req.body[k]!==undefined)set[k]=String(req.body[k]);if(req.body.visible!==undefined)set.visible=bool(req.body.visible)?1:0;await col('media').updateOne({id},{$set:set});const x=await col('media').findOne({id});await audit(req,'update','media',id);res.json(mapMedia(x))});
 app.delete('/api/admin/media/:id',requireAdmin,async(req,res)=>{const id=String(req.params.id),m=await col('media').findOne({id});if(!m)return res.status(404).json({error:'Media not found.'});await col('recycle_bin').insertOne({entity_type:'media',entity_id:id,payload:m,deleted_at:now()});await col('media').deleteOne({id});if(!m.source_path){try{fs.unlinkSync(path.join(UPLOAD_DIR,m.stored_name))}catch{}}await audit(req,'delete','media',id);res.json({ok:true})});
 
