@@ -69,8 +69,14 @@ function injectStyle(){
     .devdaha-highlight-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;}
     .devdaha-highlight-card{overflow:hidden;background:#fff;border:1px solid #dbe5ee;border-top:3px solid #d4af37;border-radius:22px;box-shadow:0 18px 48px rgba(8,43,87,.09);transition:transform .3s ease,box-shadow .3s ease;}
     .devdaha-highlight-card:hover{transform:translateY(-6px);box-shadow:0 26px 58px rgba(8,43,87,.14);}
-    .devdaha-highlight-card-media{height:230px;background:#edf3f8;overflow:hidden;}
-    .devdaha-highlight-card-media img{width:100%;height:100%;object-fit:cover;display:block;}
+    .devdaha-highlight-card-media{height:230px;background:#edf3f8;overflow:hidden;position:relative;}
+    .devdaha-highlight-card-media img,.devdaha-highlight-card-media video{width:100%;height:100%;object-fit:cover;display:block;}
+    .devdaha-highlight-card-media audio{width:min(92%,420px);margin:0 auto;}
+    .devdaha-highlight-card-media-audio,.devdaha-highlight-card-media-file{display:flex;align-items:center;justify-content:center;gap:12px;flex-direction:column;padding:18px;text-align:center;color:#0b3f78;}
+    .devdaha-highlight-card-media-file iframe{width:100%;height:100%;border:0;background:#fff;}
+    .devdaha-highlight-media-icon{display:grid;place-items:center;width:54px;height:54px;border-radius:16px;background:#fff7dc;border:1px solid #ead28a;color:#9a7519;font:800 .95rem/1 Manrope,Arial,sans-serif;}
+    .devdaha-highlight-media-name{max-width:90%;font:700 .76rem/1.35 Manrope,Arial,sans-serif;color:#687b8f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .devdaha-highlight-open-media{display:inline-flex;padding:8px 12px;border-radius:999px;background:#0b3f78;color:#fff;font:800 .66rem/1 Manrope,Arial,sans-serif;text-transform:uppercase;letter-spacing:.05em;text-decoration:none;}
     .devdaha-highlight-card-body{padding:20px;}
     .devdaha-highlight-card-kicker{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;font:800 .68rem/1 Manrope,Arial,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#9a7519;}
     .devdaha-highlight-card-kicker span{padding:6px 8px;border-radius:999px;background:#fff7dc;border:1px solid #ead28a;}
@@ -88,8 +94,13 @@ function injectStyle(){
     .hero-highlight-dialog{display:block;overflow:hidden;text-decoration:none;color:inherit;border:1px solid rgba(236,207,131,.45);border-radius:22px;background:linear-gradient(180deg,rgba(10,13,8,.86),rgba(10,13,8,.70));box-shadow:0 25px 75px rgba(0,0,0,.34),0 0 0 1px rgba(255,255,255,.03) inset;backdrop-filter:blur(18px);cursor:pointer;transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease;}
     .hero-highlight-dialog:hover,.hero-highlight-dialog:focus-visible{transform:translateY(-4px);border-color:rgba(236,207,131,.82);box-shadow:0 30px 82px rgba(0,0,0,.42),0 0 0 1px rgba(236,207,131,.08) inset;outline:none;}
     .hero-highlight-dialog:active{transform:translateY(-1px) scale(.992);}
-    .hero-highlight-media{height:170px;background:rgba(255,255,255,.05);overflow:hidden;}
-    .hero-highlight-media img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92) brightness(.9);transition:transform .6s cubic-bezier(.22,1,.36,1);}
+    .hero-highlight-media{height:170px;background:rgba(255,255,255,.05);overflow:hidden;position:relative;}
+    .hero-highlight-media img,.hero-highlight-media video{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92) brightness(.9);transition:transform .6s cubic-bezier(.22,1,.36,1);}
+    .hero-highlight-media-video video{pointer-events:none;}
+    .hero-highlight-media-badge{position:absolute;left:11px;bottom:10px;padding:5px 8px;border-radius:999px;background:rgba(0,0,0,.58);color:#fff;font:800 .56rem/1 Manrope,Arial,sans-serif;letter-spacing:.08em;}
+    .hero-highlight-media-audio,.hero-highlight-media-file{display:flex;align-items:center;justify-content:center;gap:10px;flex-direction:column;padding:18px;color:#f2ead9;text-align:center;}
+    .hero-highlight-media-icon,.hero-highlight-file-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:rgba(201,162,74,.18);border:1px solid rgba(236,207,131,.45);font:800 .82rem/1 Manrope,Arial,sans-serif;color:#f1cf5e;}
+    .hero-highlight-media-name{max-width:90%;font:700 .68rem/1.35 Manrope,Arial,sans-serif;color:#cfc6ae;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
     .hero-highlight-dialog:hover .hero-highlight-media img,.hero-highlight-dialog:focus-visible .hero-highlight-media img{transform:scale(1.045);}
     .hero-highlight-copy{padding:16px 17px 17px;}
     .hero-highlight-kicker{font:800 .61rem/1 Manrope,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#eccf83;}
@@ -316,18 +327,48 @@ function highlightsTime(x){
 let heroHighlightPollTimer=null;
 let heroHighlightLastSignature='';
 let heroHighlightRefreshBusy=false;
+function highlightMediaType(x){
+  const mime=String(x?.media?.mime_type||'').toLowerCase();
+  if(mime.startsWith('image/'))return 'image';
+  if(mime.startsWith('video/'))return 'video';
+  if(mime.startsWith('audio/'))return 'audio';
+  if(mime==='application/pdf' || mime.endsWith('/pdf'))return 'pdf';
+  return 'file';
+}
+function highlightMediaHeroMarkup(x){
+  const url=x?.media?.url?esc(x.media.url):'';
+  if(!url)return '';
+  const type=highlightMediaType(x);
+  const label=esc(x?.media?.original_name||x?.title||'School media');
+  if(type==='image')return `<div class="hero-highlight-media"><img src="${url}" alt="${esc(x.media.alt_text||x.title||'School highlight')}" loading="lazy"></div>`;
+  if(type==='video')return `<div class="hero-highlight-media hero-highlight-media-video"><video src="${url}" muted autoplay loop playsinline preload="metadata" aria-label="${label}"></video><span class="hero-highlight-media-badge">VIDEO</span></div>`;
+  if(type==='audio')return `<div class="hero-highlight-media hero-highlight-media-audio"><div class="hero-highlight-media-icon">♫</div><div class="hero-highlight-media-name">${label}</div><span class="hero-highlight-media-badge">AUDIO</span></div>`;
+  if(type==='pdf')return `<div class="hero-highlight-media hero-highlight-media-file"><div class="hero-highlight-file-icon">PDF</div><div class="hero-highlight-media-name">${label}</div></div>`;
+  return `<div class="hero-highlight-media hero-highlight-media-file"><div class="hero-highlight-file-icon">MEDIA</div><div class="hero-highlight-media-name">${label}</div></div>`;
+}
+function highlightMediaPageMarkup(x){
+  const url=x?.media?.url?esc(x.media.url):'';
+  if(!url)return '';
+  const type=highlightMediaType(x);
+  const label=esc(x?.media?.original_name||x?.title||'School media');
+  if(type==='image')return `<div class="devdaha-highlight-card-media"><img src="${url}" alt="${esc(x.media.alt_text||x.title||'School highlight')}" loading="lazy"></div>`;
+  if(type==='video')return `<div class="devdaha-highlight-card-media"><video src="${url}" controls preload="metadata" playsinline aria-label="${label}"></video></div>`;
+  if(type==='audio')return `<div class="devdaha-highlight-card-media devdaha-highlight-card-media-audio"><div class="devdaha-highlight-media-icon">♫</div><div class="devdaha-highlight-media-name">${label}</div><audio src="${url}" controls preload="metadata" aria-label="${label}"></audio></div>`;
+  if(type==='pdf')return `<div class="devdaha-highlight-card-media devdaha-highlight-card-media-file"><iframe src="${url}" title="${label}" loading="lazy"></iframe><a class="devdaha-highlight-open-media" href="${url}" target="_blank" rel="noopener">Open PDF</a></div>`;
+  return `<div class="devdaha-highlight-card-media devdaha-highlight-card-media-file"><div class="devdaha-highlight-media-icon">MEDIA</div><div class="devdaha-highlight-media-name">${label}</div><a class="devdaha-highlight-open-media" href="${url}" target="_blank" rel="noopener">Open media</a></div>`;
+}
 function renderHeroHighlights(payload){
   const box=document.getElementById('hero-highlights-preview');
   if(!box)return;
   const items=(payload?.items||[]).filter(x=>x.type==='highlight'&&x.media?.url).slice().sort((a,b)=>highlightsTime(b)-highlightsTime(a));
   const latest=items[0];
   if(!latest){heroHighlightLastSignature='';box.classList.remove('is-visible');box.innerHTML='';return;}
-  const signature=[latest.id,latest.updated_at,latest.created_at,latest.date,latest.media?.url,latest.title].map(v=>String(v??'')).join('|');
+  const signature=[latest.id,latest.updated_at,latest.created_at,latest.date,latest.media?.url,latest.media?.mime_type,latest.title].map(v=>String(v??'')).join('|');
   if(signature===heroHighlightLastSignature && box.classList.contains('is-visible'))return;
   heroHighlightLastSignature=signature;
   const raw=String(latest.description||latest.body||'').trim();
   const excerpt=raw.length>155?raw.slice(0,152).trimEnd()+'…':raw;
-  const media=latest.media?.url?`<div class="hero-highlight-media"><img src="${esc(latest.media.url)}" alt="${esc(latest.media.alt_text||latest.title||'School highlight')}" loading="lazy"></div>`:'';
+  const media=highlightMediaHeroMarkup(latest);
   box.innerHTML=`<a class="hero-highlight-dialog" href="highlights.html" aria-label="Open latest school highlight: ${esc(latest.title||'School Highlight')}">${media}<div class="hero-highlight-copy"><div class="hero-highlight-kicker">Latest Highlight</div><div class="hero-highlight-source">${esc(latest.source_label||latest.page||'School highlight')}</div><h3>${esc(latest.title||'School Highlight')}</h3><p>${esc(excerpt)}</p><span class="hero-highlight-action" aria-hidden="true">View Highlights</span></div></a>`;
   box.classList.add('is-visible');
   const card=box.querySelector('.hero-highlight-dialog');
@@ -355,7 +396,7 @@ function renderHighlightsPage(payload){
   const grid=document.createElement('div');grid.className='devdaha-highlight-list';
   items.forEach(x=>{
     const article=document.createElement('article');article.className='devdaha-highlight-card';article.dataset.devdahaItemId=String(x.id);article.dataset.devdahaItemType=String(x.type||'');
-    const media=x.media?.url?`<div class="devdaha-highlight-card-media"><img src="${esc(x.media.url)}" alt="${esc(x.media.alt_text||x.title||'School highlight')}" loading="lazy"></div>`:'';
+    const media=highlightMediaPageMarkup(x);
     const copy=String(x.description||x.body||'').trim();
     const text=copy.length>360?copy.slice(0,357).trimEnd()+'…':copy;
     article.innerHTML=`${media}<div class="devdaha-highlight-card-body"><div class="devdaha-highlight-card-kicker"><span>${esc(x.source_label||'School Highlight')}</span>${x.featured?'<span>Featured</span>':''}</div><h2>${esc(x.title||'School Highlight')}</h2><p>${esc(text)}</p>${x.link?`<a class="devdaha-highlight-card-link" href="${esc(x.link)}"${/^https?:\/\//i.test(x.link)?' target="_blank" rel="noopener"':''}>${esc(x.link_text||'Learn More')}</a>`:''}</div>`;
