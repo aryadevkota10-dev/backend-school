@@ -5,9 +5,9 @@ This package upgrades **only the administration/CMS layer** of the existing scho
 ## What changed
 
 - Replaced browser-only admin credentials with server-side authentication.
-- Added SQLite persistent database for CMS records.
+- Added MongoDB persistent database for CMS records with server-side sessions.
 - Added server-side session authentication with hashed passwords.
-- Added persistent server-side media storage in `uploads/`.
+- Added persistent server-side media storage through MongoDB GridFS, with the original `uploads/` path retained for legacy/local media compatibility.
 - Added admin API with permission checks.
 - Added dashboard, pages, visual editor, notices, media library, galleries, events, achievements, testimonials, magazine, ECA, year-in-review, content blocks, school information, navigation, marquees, search, recycle bin, and backup/restore controls.
 - Existing `assets/` and `PHOTOS/` media are indexed into the server-side media library on first startup without renaming or moving them.
@@ -34,10 +34,10 @@ Important production settings:
 - `SESSION_SECRET`: use a long random secret.
 - `ADMIN_USERNAME`: initial administrator username.
 - `ADMIN_PASSWORD`: initial administrator password. Change it before handing the site to the school.
-- `DB_PATH`: persistent location for the SQLite database.
-- `UPLOAD_DIR`: persistent location for uploaded media.
+- `MONGODB_URI` / `MONGODB_DB`: MongoDB connection details for the CMS.
+- `BACKEND_PUBLIC_URL`: public API/media URL used by the school website.
 
-The database is created automatically at first startup.
+Required MongoDB collections are created/used automatically at first startup.
 
 ## 3. Create/change the admin account
 
@@ -75,11 +75,7 @@ Admin login:
 
 ## 5. Deployment
 
-Deploy the entire folder to a Node-capable server. Keep these directories persistent:
-
-- `data/` — SQLite database
-- `uploads/` — administrator-uploaded media
-- existing `assets/` and `PHOTOS/` — original website media
+Deploy the entire folder to a Node-capable server. Keep MongoDB persistent and keep the website source/assets available. Admin-uploaded media is stored in MongoDB GridFS; existing `assets/`, `PHOTOS/`, and any legacy `uploads/` media are preserved.
 
 Put the application behind HTTPS in production. The session cookie is configured as secure when `NODE_ENV=production`.
 
@@ -94,7 +90,7 @@ A reverse proxy such as Nginx/Caddy can forward HTTPS traffic to the Node proces
 5. Use the dedicated management sections for structured content such as notices, galleries, events, achievements, testimonials, magazine, ECA and year-in-review.
 6. Upload media in **Media Library**, then reuse its Media ID from structured content forms.
 7. Use **Backup / Restore** to export or restore CMS data.
-8. Use **Recycle Bin** to review deleted CMS records.
+8. Use **Recycle Bin** to review, restore, or permanently remove deleted CMS records. The Pages section can also create new public HTML pages that are stored server-side and can then be edited with the full-page editor.
 
 ## 7. Backend/API behavior
 
@@ -110,11 +106,7 @@ Admin APIs require the authenticated server session. The browser is never given 
 
 The restore function replaces CMS-managed database records only. It does not overwrite public HTML, `assets/`, or `PHOTOS/` files.
 
-For complete disaster recovery, also back up the server filesystem containing:
-
-- `data/cms.sqlite`
-- `uploads/`
-- the website source/assets
+For complete disaster recovery, keep a MongoDB backup plus a copy of the website source/assets and any legacy `uploads/` media.
 
 ## Important compatibility note
 

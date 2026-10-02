@@ -278,6 +278,14 @@ function renderPublicNotices(data){
 }
 function renderPublicDownloads(data){if(PAGE_KEY!=='downloads.html')return;const arr=data.downloads||[];const host=document.getElementById('downloads-list')||document.querySelector('main');if(!host)return;host.innerHTML='';arr.forEach(x=>{const a=x.file_media?.url||x.media?.url||x.link||'';const card=document.createElement('article');card.className='download-card';card.innerHTML=`<div class=\"download-icon\" aria-hidden=\"true\">PDF</div><div class=\"download-body\"><h2>${esc(x.title||'Download')}</h2><p>${esc(x.description||x.body||'')}</p></div><a class=\"download-btn\" href=\"${esc(a)}\" target=\"_blank\" rel=\"noopener\" download>Download</a>`;host.appendChild(card)})}
 function renderPublicMagazines(items){if(PAGE_KEY!=='school-magazine.html')return;const host=document.getElementById('magazine-list');if(!host)return;host.innerHTML='';if(!items.length){host.innerHTML='<div class="magazine-empty-inline">No magazine editions have been published yet.</div>';return;}const grid=document.createElement('div');grid.className='devdaha-managed-magazines';items.slice().sort((a,b)=>(Date.parse(b.created_at||b.updated_at||'')||0)-(Date.parse(a.created_at||a.updated_at||'')||0)).forEach(x=>{const card=document.createElement('article');card.className='devdaha-managed-magazine';card.dataset.devdahaItemId=String(x.id);card.dataset.devdahaItemType='magazine';const img=x.media?.url?`<img src="${esc(x.media.url)}" alt="${esc(x.media.alt_text||x.title||'Magazine cover')}" loading="lazy">`:'';const link=x.link||x.file_media?.url||x.media?.url||'';card.innerHTML=`${img}<div class="devdaha-mag-body"><span class="tag">Magazine</span><h2>${esc(x.title||'School Magazine')}</h2><div class="devdaha-mag-date">${esc(x.date||'')}</div><p>${esc(x.description||x.body||'')}</p>${link?`<a href="${esc(link)}" target="_blank" rel="noopener">Open edition</a>`:''}</div>`;grid.appendChild(card)});host.appendChild(grid)}
+function cmsMediaId(x){return x?.image_id||x?.file_id||x?.media_id||x?.imageId||x?.mediaId||'';}
+function cmsMediaUrl(x){
+  const direct=x?.media?.url||x?.image_url||x?.imageUrl||x?.media_url||x?.mediaUrl||'';
+  if(direct)return String(direct);
+  const id=cmsMediaId(x);
+  return id?apiUrl('/api/media/'+encodeURIComponent(String(id))):'';
+}
+function cmsMediaMime(x){return String(x?.media?.mime_type||x?.mime_type||x?.media_type||'image/*').toLowerCase();}
 function contentTime(x){
   for(const k of ['created_at','createdAt','updated_at','updatedAt','date']){
     const v=x?.[k]; if(!v)continue;
@@ -301,7 +309,8 @@ function renderPublicItems(data){
 
   // Only admin-created CMS items with an actual uploaded image belong in the gallery grid.
   const managedAll=[...(data.galleries||[]),...(data.events||[]),...(data.achievements||[]),...(data.eca||[])]
-    .filter(x=>pageType.includes(String(x.type||'')) && x.media?.url)
+    .map(x=>({...x,__cmsMediaUrl:cmsMediaUrl(x),__cmsMediaMime:cmsMediaMime(x) }))
+    .filter(x=>pageType.includes(String(x.type||'')) && x.__cmsMediaUrl)
     .sort((a,b)=>contentTime(b)-contentTime(a));
 
   const originalGrid=document.querySelector('.photo-grid,.gallery-grid');
@@ -321,12 +330,25 @@ function renderPublicItems(data){
 
     const media=document.createElement('div');
     media.className='photo-wrap';
-    const img=document.createElement('img');
-    img.src=x.media.url;
-    img.alt=x.media.alt_text||x.title||'School photo';
-    img.loading='lazy';
-    img.addEventListener('error',()=>{ card.remove(); },{once:true});
-    media.appendChild(img);
+    const mediaUrl=x.__cmsMediaUrl;
+    const mime=x.__cmsMediaMime;
+    if(mime.startsWith('video/')){
+      const video=document.createElement('video');
+      video.src=mediaUrl; video.muted=true; video.controls=true; video.playsInline=true; video.preload='metadata';
+      video.setAttribute('aria-label',x.title||'School video');
+      media.appendChild(video);
+    }else if(mime.startsWith('audio/')){
+      const audio=document.createElement('audio'); audio.src=mediaUrl; audio.controls=true; audio.preload='metadata'; audio.style.width='100%'; media.appendChild(audio);
+    }else{
+      const img=document.createElement('img');
+      img.src=mediaUrl; img.alt=(x.media&&x.media.alt_text)||x.alt_text||x.title||'School photo'; img.loading='lazy';
+      img.addEventListener('error',()=>{
+        const id=cmsMediaId(x);
+        if(id && img.dataset.retry!=='1'){img.dataset.retry='1';img.src=apiUrl('/api/media/'+encodeURIComponent(String(id)));return;}
+        img.style.objectFit='contain'; img.style.padding='18px'; img.alt='School media';
+      },{once:false});
+      media.appendChild(img);
+    }
 
     const info=document.createElement('div');
     info.className='photo-info';
@@ -373,7 +395,8 @@ function highlightMediaType(x){
   return 'file';
 }
 function highlightMediaHeroMarkup(x){
-  const url=x?.media?.url?esc(x.media.url):'';
+  const rawUrl=cmsMediaUrl(x);
+  const url=rawUrl?esc(rawUrl):'';
   if(!url)return '';
   const type=highlightMediaType(x);
   const label=esc(x?.media?.original_name||x?.title||'School media');
@@ -384,7 +407,8 @@ function highlightMediaHeroMarkup(x){
   return `<div class="hero-highlight-media hero-highlight-media-file"><div class="hero-highlight-file-icon">MEDIA</div><div class="hero-highlight-media-name">${label}</div></div>`;
 }
 function highlightMediaPageMarkup(x){
-  const url=x?.media?.url?esc(x.media.url):'';
+  const rawUrl=cmsMediaUrl(x);
+  const url=rawUrl?esc(rawUrl):'';
   if(!url)return '';
   const type=highlightMediaType(x);
   const label=esc(x?.media?.original_name||x?.title||'School media');
