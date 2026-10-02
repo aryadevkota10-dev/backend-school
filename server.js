@@ -128,17 +128,20 @@ const memoryStorage = multer.memoryStorage();
 const upload = multer({storage:process.env.VERCEL ? memoryStorage : diskStorage,limits:{fileSize:MAX_UPLOAD,files:50},fileFilter:(_req,file,cb)=>/^(image|video|application|audio|text)\//.test(file.mimetype)?cb(null,true):cb(new Error('Unsupported file type.'))});
 
 const app=express(); app.disable('x-powered-by'); app.set('trust proxy',1); app.use(helmet({contentSecurityPolicy:false})); app.use(express.json({limit:'10mb'})); app.use(express.urlencoded({extended:true,limit:'10mb'}));
-app.use(session({name:'devdaha.sid',secret:SESSION_SECRET,resave:false,saveUninitialized:false,store:MongoStore.create({mongoUrl:MONGODB_URI,dbName:MONGODB_DB,collectionName:'sessions',ttl:8*60*60}),cookie:{httpOnly:true,sameSite:'lax',secure:process.env.NODE_ENV==='production',maxAge:8*60*60*1000}}));
 const PUBLIC_FRONTEND_ORIGINS = new Set(
   String(process.env.PUBLIC_FRONTEND_ORIGINS || 'https://devdahaebss.edu.np,https://www.devdahaebss.edu.np')
     .split(',').map(x=>x.trim()).filter(Boolean)
 );
+const SESSION_SAMESITE = String(process.env.SESSION_SAMESITE || (process.env.NODE_ENV === 'production' ? 'none' : 'lax')).toLowerCase();
+const SESSION_SECURE = process.env.NODE_ENV === 'production' || SESSION_SAMESITE === 'none';
+app.use(session({name:'devdaha.sid',secret:SESSION_SECRET,resave:false,saveUninitialized:false,store:MongoStore.create({mongoUrl:MONGODB_URI,dbName:MONGODB_DB,collectionName:'sessions',ttl:8*60*60}),cookie:{httpOnly:true,sameSite:SESSION_SAMESITE,secure:SESSION_SECURE,maxAge:8*60*60*1000}}));
 app.use((req,res,next)=>{
   const origin=req.headers.origin;
   if(origin && PUBLIC_FRONTEND_ORIGINS.has(origin)){
     res.setHeader('Access-Control-Allow-Origin',origin);
+    res.setHeader('Access-Control-Allow-Credentials','true');
     res.setHeader('Vary','Origin');
-    res.setHeader('Access-Control-Allow-Methods','GET,OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers','Content-Type');
   }
   if(req.method==='OPTIONS') return res.status(204).end();
