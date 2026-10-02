@@ -2,7 +2,7 @@
 'use strict';
 const PAGE_KEY=location.pathname.split('/').pop()||'Devdaha.html';
 const qs=new URLSearchParams(location.search);
-const API_BASE=(window.DEVDAHA_API_BASE || (['devdahaebss.edu.np','www.devdahaebss.edu.np'].includes(location.hostname) ? 'https://devdaha-school-backend.onrender.com' : '')).replace(/\/$/,'');
+const API_BASE=(window.DEVDAHA_API_BASE || (['localhost','127.0.0.1'].includes(location.hostname) ? '' : 'https://devdaha-school-backend.onrender.com')).replace(/\/$/,'');
 const apiUrl=path=>/^https?:\/\//i.test(path)?path:`${API_BASE}${String(path).startsWith('/')?'':'/'}${path}`;
 const VISUAL_EDIT_MODE=qs.get('adminMode')==='1'||qs.get('visualEditor')==='1'||window.self!==window.top;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -131,7 +131,44 @@ function injectStyle(){
   `;
   document.head.appendChild(extra);
 }
-async function publicLoad(){try{const data=await getJSON('/api/public/content?page='+encodeURIComponent(PAGE_KEY));const ov=data.overrides||{};Object.keys(ov).forEach(p=>{const el=findOverrideTarget(p,ov[p]);if(el)applyOverride(el,ov[p])});const mm=data.marquee?.top;if(mm&&mm.active&&document.querySelector('#marquee-track')){const track=document.querySelector('#marquee-track');if(mm.text){track.dataset.marqueeText=mm.text;try{localStorage.setItem('devdahaTopMarqueeText',mm.text)}catch{}}}const nm=data.marquee?.notice;const wrap=document.querySelector('.notice-marquee-wrap');if(nm&&wrap){const label=wrap.querySelector('.notice-label'),track=wrap.querySelector('.notice-track');if(label)label.textContent=nm.label||'Notice';if(track&&nm.text){track.innerHTML='';const s=document.createElement('span');s.className='notice-item';s.textContent=nm.text;track.appendChild(s);const c=s.cloneNode(true);c.setAttribute('aria-hidden','true');track.appendChild(c)}if(!nm.active)wrap.style.display='none'}applyPublicNavigation(data);applyPublicSettings(data);renderPublicBlocks(data);renderPublicItems(data);renderPublicNotices(data);renderPublicDownloads(data);if(PAGE_KEY==='Devdaha.html'){startHeroHighlightsAutoRefresh();try{const h=await getJSON('/api/public/highlights');renderHeroHighlights(h)}catch(e){console.warn('Devdaha highlights unavailable.',e)}}else if(PAGE_KEY==='highlights.html'){try{const h=await getJSON('/api/public/highlights');renderHighlightsPage(h)}catch(e){console.warn('Devdaha highlights unavailable.',e)}}}catch(e){console.warn('Devdaha CMS unavailable; original static content remains active.',e)}}
+async function publicLoad(){try{const data=await getJSON('/api/public/content?page='+encodeURIComponent(PAGE_KEY)+'&_t='+Date.now());const ov=data.overrides||{};Object.keys(ov).forEach(p=>{const el=findOverrideTarget(p,ov[p]);if(el)applyOverride(el,ov[p])});const mm=data.marquee?.top;if(mm&&mm.active&&document.querySelector('#marquee-track')){const track=document.querySelector('#marquee-track');if(mm.text){track.dataset.marqueeText=mm.text;try{localStorage.setItem('devdahaTopMarqueeText',mm.text)}catch{}}}const nm=data.marquee?.notice;const wrap=document.querySelector('.notice-marquee-wrap');if(nm&&wrap){const label=wrap.querySelector('.notice-label'),track=wrap.querySelector('.notice-track');if(label)label.textContent=nm.label||'Notice';if(track&&nm.text){track.innerHTML='';const s=document.createElement('span');s.className='notice-item';s.textContent=nm.text;track.appendChild(s);const c=s.cloneNode(true);c.setAttribute('aria-hidden','true');track.appendChild(c)}if(!nm.active)wrap.style.display='none'}applyPublicNavigation(data);applyPublicSettings(data);renderPublicBlocks(data);renderPublicItems(data);renderPublicNotices(data);renderPublicDownloads(data);devdahaCmsPublicSignature=publicContentSignature(data);startPublicCmsRealtime();if(PAGE_KEY==='Devdaha.html'){startHeroHighlightsAutoRefresh();try{const h=await getJSON('/api/public/highlights');renderHeroHighlights(h)}catch(e){console.warn('Devdaha highlights unavailable.',e)}}else if(PAGE_KEY==='highlights.html'){try{const h=await getJSON('/api/public/highlights');renderHighlightsPage(h)}catch(e){console.warn('Devdaha highlights unavailable.',e)}}}catch(e){console.warn('Devdaha CMS unavailable; original static content remains active.',e)}}
+let devdahaCmsPublicPollTimer=null;
+let devdahaCmsPublicSignature='';
+let devdahaCmsPublicPollBusy=false;
+function publicContentSignature(data){
+  const groups=['galleries','events','achievements','eca','testimonials','magazines','blocks','notices','downloads'];
+  const rows=[];
+  for(const g of groups){
+    for(const x of (data?.[g]||[])){
+      rows.push([g,x?.id||'',x?.updated_at||x?.created_at||'',x?.visible,x?.published,x?.image_id||'',x?.file_id||'',x?.media?.id||'',x?.media?.url||''].join('|'));
+    }
+  }
+  return rows.join('\n');
+}
+async function refreshPublicCmsLive(){
+  if(devdahaCmsPublicPollBusy || document.hidden) return;
+  devdahaCmsPublicPollBusy=true;
+  try{
+    const data=await getJSON('/api/public/content?page='+encodeURIComponent(PAGE_KEY)+'&_t='+Date.now());
+    const sig=publicContentSignature(data);
+    if(sig!==devdahaCmsPublicSignature){
+      devdahaCmsPublicSignature=sig;
+      renderPublicBlocks(data);
+      renderPublicItems(data);
+      renderPublicNotices(data);
+      renderPublicDownloads(data);
+    }
+  }catch(e){
+    console.warn('Live CMS refresh unavailable.',e);
+  }finally{devdahaCmsPublicPollBusy=false;}
+}
+function startPublicCmsRealtime(){
+  if(devdahaCmsPublicPollTimer) clearInterval(devdahaCmsPublicPollTimer);
+  const livePages=new Set(['our-gallery.html','our-achievements.html','our-academic-achievement.html','events-programs.html']);
+  if(!livePages.has(PAGE_KEY)) return;
+  devdahaCmsPublicPollTimer=setInterval(refreshPublicCmsLive,5000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshPublicCmsLive();},{passive:true});
+}
 function renderPublicBlocks(data){const arr=data.blocks||[];if(!arr.length)return;const old=document.getElementById('devdaha-managed-blocks');if(old)old.remove();const sec=document.createElement('section');sec.id='devdaha-managed-blocks';sec.className='devdaha-managed-blocks';arr.forEach(b=>{const el=document.createElement('article');el.className='devdaha-managed-block';el.innerHTML=`<h2>${esc(b.title)}</h2><p>${esc(b.body)}</p>${b.link?`<a href="${esc(b.link)}">${esc(b.link_text||'Learn More')}</a>`:''}`;sec.appendChild(el)});(document.querySelector('main')||document.body).appendChild(sec)}
 function applyPublicNavigation(data){const items=(data.navigation||[]).filter(x=>Number(x.visible)!==0).sort((a,b)=>(a.sort_order??0)-(b.sort_order??0));if(!items.length)return;const page=PAGE_KEY.toLowerCase();function normalizeHref(href,label){let h=String(href||'#');if(page!=='devdaha.html'){if(h==='#hero')return 'Devdaha.html#hero';if(h==='#facilities')return 'Devdaha.html#facilities';if(h==='#magazine')return 'school-magazine.html';if(h==='#gallery')return 'Devdaha.html#gallery';if(h==='#suggestion-box')return 'Devdaha.html#suggestion-box';if(h==='#footer')return 'Devdaha.html#footer';}return h}function sync(root){if(!root)return;const links=[...root.querySelectorAll('a')].filter(a=>!a.closest('.devdaha-admin-link'));const used=new Set();items.forEach(item=>{const id=String(item.id);let a=links.find(x=>x.dataset.cmsNavId===id);if(!a)a=links.find(x=>!used.has(x)&&((x.getAttribute('href')||'')===(item.href||'')||(x.textContent||'').trim().toLowerCase()===(item.label||'').trim().toLowerCase()));if(a){a.dataset.cmsNavId=id;a.textContent=item.label||'';a.href=normalizeHref(item.href,item.label)||'#';used.add(a)}})}sync(document.querySelector('#site-nav .nav-links'));sync(document.querySelector('#mobile-menu'))} 
 
