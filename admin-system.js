@@ -298,19 +298,30 @@ function renderPublicItems(data){
   renderPublicMagazines(data.magazines||[]);
   if(PAGE_KEY==='school-magazine.html'||PAGE_KEY==='weekly-eca.html')return;
 
-  const pageType={
-    'our-gallery.html':['gallery'],
-    'events-programs.html':['event'],
-    'our-achievements.html':['achievement','academic-achievement'],
-    'our-academic-achievement.html':['academic-achievement']
-  }[PAGE_KEY]||[];
+  const pageRules={
+    'our-gallery.html':{types:['gallery'],galleryPage:'our-gallery.html'},
+    'events-programs.html':{types:['event'],galleryPage:'events-programs.html'},
+    'our-achievements.html':{types:['achievement'],galleryPage:'our-achievements.html'},
+    'our-academic-achievement.html':{types:['academic-achievement'],galleryPage:'our-academic-achievement.html'}
+  }[PAGE_KEY];
   if(PAGE_KEY==='testimonials.html') renderPublicTestimonials(testimonials);
-  if(!pageType.length)return;
+  if(!pageRules)return;
 
-  // Only admin-created CMS items with an actual uploaded image belong in the gallery grid.
-  const managedAll=[...(data.galleries||[]),...(data.events||[]),...(data.achievements||[]),...(data.eca||[])]
-    .map(x=>({...x,__cmsMediaUrl:cmsMediaUrl(x),__cmsMediaMime:cmsMediaMime(x) }))
-    .filter(x=>pageType.includes(String(x.type||'')) && x.__cmsMediaUrl)
+  // Admin's Gallery Manager stores all four visual galleries as the same `gallery`
+  // CMS type and uses the selected page to decide where the photo belongs.
+  // The older renderer only accepted `event`/`achievement` records on those pages,
+  // which is why Gallery Manager uploads appeared on Our Gallery but not the other
+  // three gallery pages. Treat page-targeted gallery records exactly like the first
+  // gallery, while still accepting the dedicated Event/Achievement content types.
+  const galleryItems=(data.galleries||[])
+    .filter(x=>String(x.page||'')===pageRules.galleryPage);
+  const dedicated=[...(data.events||[]),...(data.achievements||[]),...(data.eca||[])]
+    .filter(x=>pageRules.types.includes(String(x.type||'')));
+
+  // Only admin-created CMS items with an actual uploaded media file belong in the gallery grid.
+  const managedAll=[...galleryItems,...dedicated]
+    .map(x=>({...x,__cmsMediaUrl:cmsMediaUrl(x),__cmsMediaMime:cmsMediaMime(x)}))
+    .filter(x=>x.__cmsMediaUrl)
     .sort((a,b)=>contentTime(b)-contentTime(a));
 
   const originalGrid=document.querySelector('.photo-grid,.gallery-grid');
