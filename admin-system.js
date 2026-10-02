@@ -57,14 +57,13 @@ function injectStyle(){
   const extra=document.createElement('style');
   extra.id='devdaha-gallery-layout-fix-style';
   extra.textContent=`
-    /* Managed CMS gallery items sit beside the original grid, never inside it. */
-    .devdaha-managed-gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;width:100%;margin:24px 0 0;}
-    .devdaha-managed-gallery-grid .photo-card{min-width:0;overflow:hidden;}
-    .devdaha-managed-gallery-grid .photo-wrap{height:240px;overflow:hidden;background:#eef3f8;}
-    .devdaha-managed-gallery-grid .photo-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
-    .devdaha-managed-gallery-grid .photo-info{padding:18px 18px 20px;min-width:0;}
-    .devdaha-managed-gallery-grid .photo-info h2{overflow-wrap:anywhere;word-break:normal;}
-    .devdaha-managed-gallery-grid .photo-info p{overflow-wrap:anywhere;white-space:pre-wrap;}
+    /* Managed CMS gallery cards live inside the same grid as the original gallery cards. */
+    .devdaha-managed-cms-card{min-width:0;width:100%;overflow:hidden;}
+    .devdaha-managed-cms-card .photo-wrap{width:100%;height:240px;overflow:hidden;background:#eef3f8;}
+    .devdaha-managed-cms-card .photo-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+    .devdaha-managed-cms-card .photo-info{padding:18px 18px 20px;min-width:0;}
+    .devdaha-managed-cms-card .photo-info h2{overflow-wrap:anywhere;word-break:normal;}
+    .devdaha-managed-cms-card .photo-info p{overflow-wrap:anywhere;white-space:pre-wrap;}
     .devdaha-highlight-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;}
     .devdaha-highlight-card{overflow:hidden;background:#fff;border:1px solid #dbe5ee;border-top:3px solid #d4af37;border-radius:22px;box-shadow:0 18px 48px rgba(8,43,87,.09);transition:transform .3s ease,box-shadow .3s ease;}
     .devdaha-highlight-card:hover{transform:translateY(-6px);box-shadow:0 26px 58px rgba(8,43,87,.14);}
@@ -223,32 +222,82 @@ function renderPublicNotices(data){
 }
 function renderPublicDownloads(data){if(PAGE_KEY!=='downloads.html')return;const arr=data.downloads||[];const host=document.getElementById('downloads-list')||document.querySelector('main');if(!host)return;host.innerHTML='';arr.forEach(x=>{const a=x.file_media?.url||x.media?.url||x.link||'';const card=document.createElement('article');card.className='download-card';card.innerHTML=`<div class=\"download-icon\" aria-hidden=\"true\">PDF</div><div class=\"download-body\"><h2>${esc(x.title||'Download')}</h2><p>${esc(x.description||x.body||'')}</p></div><a class=\"download-btn\" href=\"${esc(a)}\" target=\"_blank\" rel=\"noopener\" download>Download</a>`;host.appendChild(card)})}
 function renderPublicMagazines(items){if(PAGE_KEY!=='school-magazine.html')return;const host=document.getElementById('magazine-list');if(!host)return;host.innerHTML='';if(!items.length){host.innerHTML='<div class="magazine-empty-inline">No magazine editions have been published yet.</div>';return;}const grid=document.createElement('div');grid.className='devdaha-managed-magazines';items.slice().sort((a,b)=>(Date.parse(b.created_at||b.updated_at||'')||0)-(Date.parse(a.created_at||a.updated_at||'')||0)).forEach(x=>{const card=document.createElement('article');card.className='devdaha-managed-magazine';card.dataset.devdahaItemId=String(x.id);card.dataset.devdahaItemType='magazine';const img=x.media?.url?`<img src="${esc(x.media.url)}" alt="${esc(x.media.alt_text||x.title||'Magazine cover')}" loading="lazy">`:'';const link=x.link||x.file_media?.url||x.media?.url||'';card.innerHTML=`${img}<div class="devdaha-mag-body"><span class="tag">Magazine</span><h2>${esc(x.title||'School Magazine')}</h2><div class="devdaha-mag-date">${esc(x.date||'')}</div><p>${esc(x.description||x.body||'')}</p>${link?`<a href="${esc(link)}" target="_blank" rel="noopener">Open edition</a>`:''}</div>`;grid.appendChild(card)});host.appendChild(grid)}
+function contentTime(x){
+  for(const k of ['created_at','createdAt','updated_at','updatedAt','date']){
+    const v=x?.[k]; if(!v)continue;
+    const t=Date.parse(v); if(Number.isFinite(t))return t;
+  }
+  return Number(x?.id)||0;
+}
 function renderPublicItems(data){
   const testimonials=data.testimonials||[];
   renderPublicMagazines(data.magazines||[]);
   if(PAGE_KEY==='school-magazine.html'||PAGE_KEY==='weekly-eca.html')return;
-  const managedAll=[...(data.galleries||[]),...(data.events||[]),...(data.achievements||[]),...(data.eca||[])];
+
+  const pageType={
+    'our-gallery.html':['gallery'],
+    'events-programs.html':['event'],
+    'our-achievements.html':['achievement','academic-achievement'],
+    'our-academic-achievement.html':['academic-achievement']
+  }[PAGE_KEY]||[];
   if(PAGE_KEY==='testimonials.html') renderPublicTestimonials(testimonials);
-  if(!managedAll.length)return;
-  const old=document.getElementById('devdaha-managed-items');if(old)old.remove();
+  if(!pageType.length)return;
+
+  // Only admin-created CMS items with an actual uploaded image belong in the gallery grid.
+  const managedAll=[...(data.galleries||[]),...(data.events||[]),...(data.achievements||[]),...(data.eca||[])]
+    .filter(x=>pageType.includes(String(x.type||'')) && x.media?.url)
+    .sort((a,b)=>contentTime(b)-contentTime(a));
+
   const originalGrid=document.querySelector('.photo-grid,.gallery-grid');
-  const sec=document.createElement('section');sec.id='devdaha-managed-items';sec.className='devdaha-managed-media';
-  const grid=document.createElement('div');grid.className='devdaha-managed-gallery-grid';
+  if(!originalGrid)return;
+
+  const old=[...originalGrid.querySelectorAll('.devdaha-managed-cms-card')];
+  old.forEach(x=>x.remove());
+  if(!managedAll.length)return;
+
+  const frag=document.createDocumentFragment();
   managedAll.forEach(x=>{
     const card=document.createElement('article');
-    card.className='photo-card';
-    card.dataset.devdahaItemId=String(x.id);card.dataset.devdahaItemType=String(x.type||'');card.tabIndex=0;
-    const media=x.media?.url?`<div class="photo-wrap"><img src="${esc(x.media.url)}" alt="${esc(x.media.alt_text||x.title||'School media')}" loading="lazy"></div>`:'';
-    const label=String(x.category||x.type||'Gallery').replaceAll('-',' ');
-    card.innerHTML=`${media}<div class="photo-info"><span>${esc(label)}</span><h2>${esc(x.title||'Untitled')}</h2><p>${esc(x.description||x.body||'')}</p>${x.link?`<a href="${esc(x.link)}"${/^https?:\/\//i.test(x.link)?' target="_blank" rel="noopener"':''}>${esc(x.link_text||'Learn More')}</a>`:''}</div>`;
-    grid.appendChild(card);
+    card.className='photo-card devdaha-managed-cms-card';
+    card.dataset.devdahaItemId=String(x.id);
+    card.dataset.devdahaItemType=String(x.type||'');
+    card.tabIndex=0;
+
+    const media=document.createElement('div');
+    media.className='photo-wrap';
+    const img=document.createElement('img');
+    img.src=x.media.url;
+    img.alt=x.media.alt_text||x.title||'School photo';
+    img.loading='lazy';
+    img.addEventListener('error',()=>{ card.remove(); },{once:true});
+    media.appendChild(img);
+
+    const info=document.createElement('div');
+    info.className='photo-info';
+    const span=document.createElement('span');
+    span.className='tag';
+    span.textContent=String(x.category||x.type||'Gallery').replaceAll('-',' ');
+    const h2=document.createElement('h2');
+    h2.textContent=x.title||'Untitled';
+    info.append(span,h2);
+    const body=String(x.description||x.body||'').trim();
+    if(body){
+      const p=document.createElement('p');
+      p.textContent=body;
+      info.appendChild(p);
+    }
+    if(x.link){
+      const a=document.createElement('a');
+      a.href=x.link;
+      a.textContent=x.link_text||'Learn More';
+      if(/^https?:\/\//i.test(x.link)){a.target='_blank';a.rel='noopener';}
+      info.appendChild(a);
+    }
+    card.append(media,info);
+    frag.appendChild(card);
   });
-  sec.appendChild(grid);
-  if(originalGrid?.parentElement){
-    originalGrid.parentElement.insertBefore(sec,originalGrid.nextSibling);
-  }else{
-    (document.querySelector('main')||document.body).appendChild(sec);
-  }
+  // Newest admin-uploaded item is physically the first card in the existing grid.
+  originalGrid.prepend(frag);
 }
 function highlightsTime(x){
   for(const k of ['updated_at','updatedAt','created_at','createdAt','date']){
@@ -259,8 +308,8 @@ function highlightsTime(x){
 function renderHeroHighlights(payload){
   const box=document.getElementById('hero-highlights-preview');
   if(!box)return;
-  const items=(payload?.items||[]).slice().sort((a,b)=>highlightsTime(b)-highlightsTime(a));
-  const latest=payload?.latest||items[0];
+  const items=(payload?.items||[]).filter(x=>x.type==='highlight'&&x.media?.url).slice().sort((a,b)=>highlightsTime(b)-highlightsTime(a));
+  const latest=items[0];
   if(!latest){box.classList.remove('is-visible');box.innerHTML='';return;}
   const media=latest.media?.url?`<div class="hero-highlight-media"><img src="${esc(latest.media.url)}" alt="${esc(latest.media.alt_text||latest.title||'School highlight')}" loading="lazy"></div>`:'';
   const raw=String(latest.description||latest.body||'').trim();
@@ -271,9 +320,9 @@ function renderHeroHighlights(payload){
 function renderHighlightsPage(payload){
   const host=document.getElementById('public-highlights-list');
   if(!host)return;
-  const items=(payload?.items||[]).slice().sort((a,b)=>highlightsTime(b)-highlightsTime(a));
+  const items=(payload?.items||[]).filter(x=>x.type==='highlight'&&x.media?.url).slice().sort((a,b)=>highlightsTime(b)-highlightsTime(a));
   host.innerHTML='';
-  if(!items.length){host.innerHTML='<div class="devdaha-highlight-empty"><strong>No highlights published yet.</strong><div>Featured gallery items, events and achievements will appear here automatically.</div></div>';return;}
+  if(!items.length){host.innerHTML='<div class="devdaha-highlight-empty"><strong>No highlights published yet.</strong><div>Highlights will appear here after the administration uploads and publishes them from the Admin Panel.</div></div>';return;}
   const grid=document.createElement('div');grid.className='devdaha-highlight-list';
   items.forEach(x=>{
     const article=document.createElement('article');article.className='devdaha-highlight-card';article.dataset.devdahaItemId=String(x.id);article.dataset.devdahaItemType=String(x.type||'');
