@@ -89,9 +89,10 @@ const safeJson = (v, fallback = {}) => { try { return typeof v === 'string' ? JS
 const col = name => db.collection(name);
 const toId = id => String(id);
 const cleanName = name => path.basename(String(name || 'file'));
-const PUBLIC_MEDIA_BASE = process.env.NODE_ENV === 'production'
-  ? String(process.env.PUBLIC_BASE_URL || 'https://devdaha-school-backend.onrender.com').replace(/\/$/, '')
-  : '';
+const PUBLIC_MEDIA_BASE = String(
+  process.env.PUBLIC_BASE_URL ||
+  (process.env.NODE_ENV === 'production' ? 'https://devdaha-school-backend.onrender.com' : '')
+).replace(/\/$/, '');
 const extForMime = mime => ({'image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp','image/gif':'.gif','image/svg+xml':'.svg','video/mp4':'.mp4','video/webm':'.webm','video/quicktime':'.mov','application/pdf':'.pdf','audio/mpeg':'.mp3','audio/wav':'.wav','text/plain':'.txt'})[mime] || path.extname(cleanName(mime));
 const mapMedia = row => {
   if (!row) return null;
