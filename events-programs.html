@@ -982,8 +982,7 @@ button:hover,a.button:hover,.home-btn:hover,.download-btn:hover,.back:hover{tran
 (function(){
   function initPhotoViewer(){
     const selectors='.photo-grid .photo-card img, .gallery-grid .photo-card img';
-    const images=Array.from(document.querySelectorAll(selectors));
-    if(!images.length || document.getElementById('photoFullscreenViewer')) return;
+    if(document.getElementById('photoFullscreenViewer')) return;
 
     const viewer=document.createElement('div');
     viewer.id='photoFullscreenViewer';
@@ -1007,6 +1006,14 @@ button:hover,a.button:hover,.home-btn:hover,.download-btn:hover,.back:hover{tran
     function refreshImages(){
       return Array.from(document.querySelectorAll(selectors));
     }
+    function enhanceImages(){
+      refreshImages().forEach(function(img){
+        img.style.cursor='zoom-in';
+        if(img.dataset.photoZoomReady==='1') return;
+        img.dataset.photoZoomReady='1';
+        img.setAttribute('tabindex','0');
+      });
+    }
     function show(index){
       const list=refreshImages();
       if(!list.length) return;
@@ -1026,28 +1033,44 @@ button:hover,a.button:hover,.home-btn:hover,.download-btn:hover,.back:hover{tran
       bigImage.removeAttribute('src');
       current=-1;
     }
-    images.forEach(function(img){
-      img.addEventListener('click',function(){
-        const list=refreshImages();
-        show(list.indexOf(img));
-      });
-      img.setAttribute('tabindex','0');
-      img.addEventListener('keydown',function(e){
-        if(e.key==='Enter' || e.key===' '){e.preventDefault(); img.click();}
-      });
+
+    // Event delegation keeps newly uploaded/admin-rendered photos zoomable too.
+    document.addEventListener('click',function(e){
+      const img=e.target && e.target.closest ? e.target.closest(selectors) : null;
+      if(!img) return;
+      const list=refreshImages();
+      const index=list.indexOf(img);
+      if(index===-1) return;
+      e.preventDefault();
+      show(index);
     });
-    prev.addEventListener('click',function(e){e.stopPropagation();show(current-1);});
-    next.addEventListener('click',function(e){e.stopPropagation();show(current+1);});
-    close.addEventListener('click',function(e){e.stopPropagation();hide();});
-    viewer.addEventListener('click',function(e){if(e.target===viewer) hide();});
     document.addEventListener('keydown',function(e){
+      const active=e.target;
+      if(active && active.matches && active.matches(selectors) && (e.key==='Enter' || e.key===' ')){
+        e.preventDefault();
+        const list=refreshImages();
+        show(list.indexOf(active));
+        return;
+      }
       if(!viewer.classList.contains('is-open')) return;
       if(e.key==='ArrowLeft'){e.preventDefault();show(current-1);}
       else if(e.key==='ArrowRight'){e.preventDefault();show(current+1);}
       else if(e.key==='Escape'){e.preventDefault();hide();}
     });
+
+    prev.addEventListener('click',function(e){e.stopPropagation();show(current-1);});
+    next.addEventListener('click',function(e){e.stopPropagation();show(current+1);});
+    close.addEventListener('click',function(e){e.stopPropagation();hide();});
+    viewer.addEventListener('click',function(e){if(e.target===viewer) hide();});
+
+    enhanceImages();
+    // Watch for photos inserted later by the admin/CMS rendering code.
+    if('MutationObserver' in window){
+      const observer=new MutationObserver(function(){ enhanceImages(); });
+      observer.observe(document.body,{childList:true,subtree:true});
+    }
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initPhotoViewer); else initPhotoViewer();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initPhotoViewer,{once:true}); else initPhotoViewer();
 })();
 </script>
 
