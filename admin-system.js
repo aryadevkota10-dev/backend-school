@@ -83,19 +83,25 @@ function injectStyle(){
     .devdaha-highlight-card p{overflow-wrap:anywhere;white-space:pre-wrap;}
     .devdaha-highlight-card-link{display:inline-flex;margin-top:15px;align-items:center;gap:7px;padding:9px 13px;border-radius:999px;background:#0b3f78;color:#fff;font:800 .7rem/1 Manrope,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;}
     .devdaha-highlight-empty{padding:36px 24px;border:1px dashed #cfdbe7;border-radius:20px;background:#fbfdff;text-align:center;color:#687b8f;}
-    #hero-highlights-preview{position:absolute;right:clamp(1rem,4vw,3.5rem);top:50%;transform:translateY(-50%);width:min(340px,30vw);min-width:260px;z-index:4;display:none;pointer-events:auto;}
+    #hero-highlights-preview{position:absolute;right:clamp(1rem,4.2vw,4.25rem);top:52%;transform:translateY(-50%);width:min(340px,29vw);min-width:270px;max-width:360px;z-index:4;display:none;pointer-events:auto;}
     #hero-highlights-preview.is-visible{display:block;}
-    .hero-highlight-dialog{overflow:hidden;border:1px solid rgba(236,207,131,.45);border-radius:22px;background:linear-gradient(180deg,rgba(10,13,8,.84),rgba(10,13,8,.68));box-shadow:0 25px 75px rgba(0,0,0,.34);backdrop-filter:blur(18px);}
+    .hero-highlight-dialog{display:block;overflow:hidden;text-decoration:none;color:inherit;border:1px solid rgba(236,207,131,.45);border-radius:22px;background:linear-gradient(180deg,rgba(10,13,8,.86),rgba(10,13,8,.70));box-shadow:0 25px 75px rgba(0,0,0,.34),0 0 0 1px rgba(255,255,255,.03) inset;backdrop-filter:blur(18px);cursor:pointer;transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease;}
+    .hero-highlight-dialog:hover,.hero-highlight-dialog:focus-visible{transform:translateY(-4px);border-color:rgba(236,207,131,.82);box-shadow:0 30px 82px rgba(0,0,0,.42),0 0 0 1px rgba(236,207,131,.08) inset;outline:none;}
+    .hero-highlight-dialog:active{transform:translateY(-1px) scale(.992);}
     .hero-highlight-media{height:170px;background:rgba(255,255,255,.05);overflow:hidden;}
-    .hero-highlight-media img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92) brightness(.9);}
+    .hero-highlight-media img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92) brightness(.9);transition:transform .6s cubic-bezier(.22,1,.36,1);}
+    .hero-highlight-dialog:hover .hero-highlight-media img,.hero-highlight-dialog:focus-visible .hero-highlight-media img{transform:scale(1.045);}
     .hero-highlight-copy{padding:16px 17px 17px;}
     .hero-highlight-kicker{font:800 .61rem/1 Manrope,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#eccf83;}
     .hero-highlight-source{margin-top:7px;color:#cfc6ae;font:600 .62rem/1.2 Manrope,Arial,sans-serif;}
     .hero-highlight-copy h3{margin:8px 0 6px;color:#f2ead9;font:600 1.35rem/1.08 Fraunces,Georgia,serif;}
     .hero-highlight-copy p{margin:0;color:#cfc6ae;font:400 .8rem/1.58 Manrope,Arial,sans-serif;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
     .hero-highlight-action{display:inline-flex;margin-top:12px;padding:8px 11px;border-radius:999px;background:#c9a24a;color:#0a0d08;font:800 .64rem/1 Manrope,Arial,sans-serif;letter-spacing:.07em;text-transform:uppercase;}
-    @media(max-width:1050px){.devdaha-managed-gallery-grid,.devdaha-highlight-list{grid-template-columns:repeat(2,minmax(0,1fr));}#hero-highlights-preview{width:min(320px,32vw);}}
-    @media(max-width:760px){.devdaha-managed-gallery-grid,.devdaha-highlight-list{grid-template-columns:1fr;}.devdaha-managed-gallery-grid .photo-wrap{height:230px;}.devdaha-highlight-card-media{height:220px;}}
+    .hero-highlight-dialog.is-updating{animation:heroHighlightRefresh .55s ease;}
+    @keyframes heroHighlightRefresh{0%{opacity:.62;transform:translateY(0) scale(.988)}100%{opacity:1;transform:translateY(0) scale(1)}}
+    @media(max-width:1100px){.devdaha-managed-gallery-grid,.devdaha-highlight-list{grid-template-columns:repeat(2,minmax(0,1fr));}#hero-highlights-preview{width:min(320px,31vw);min-width:250px;right:1.4rem;}}
+    @media(max-width:900px){#hero-highlights-preview{top:auto;bottom:7.1rem;left:auto;right:1rem;width:min(330px,calc(100vw - 2rem));min-width:0;max-width:none;transform:none;}.hero-highlight-media{height:145px;}}
+    @media(max-width:760px){.devdaha-managed-gallery-grid,.devdaha-highlight-list{grid-template-columns:1fr;}.devdaha-managed-gallery-grid .photo-wrap{height:230px;}.devdaha-highlight-card-media{height:220px;}#hero-highlights-preview{left:.85rem;right:.85rem;bottom:7.1rem;width:auto;}.hero-highlight-media{height:132px;}.hero-highlight-copy{padding:13px 14px 14px}.hero-highlight-copy h3{font-size:1.16rem}.hero-highlight-copy p{font-size:.74rem;-webkit-line-clamp:2}.hero-highlight-action{display:none;}}
     /* Earlier desktop navigation compresses too late on zoom. Switch to the mobile menu before labels collide. */
     @media(max-width:1180px){
       #site-nav .devdaha-main-row{width:calc(100% - 32px);gap:14px;}
@@ -114,7 +120,7 @@ function injectStyle(){
   `;
   document.head.appendChild(extra);
 }
-async function publicLoad(){try{const data=await getJSON('/api/public/content?page='+encodeURIComponent(PAGE_KEY));const ov=data.overrides||{};Object.keys(ov).forEach(p=>{const el=findOverrideTarget(p,ov[p]);if(el)applyOverride(el,ov[p])});const mm=data.marquee?.top;if(mm&&mm.active&&document.querySelector('#marquee-track')){const track=document.querySelector('#marquee-track');if(mm.text){track.dataset.marqueeText=mm.text;try{localStorage.setItem('devdahaTopMarqueeText',mm.text)}catch{}}}const nm=data.marquee?.notice;const wrap=document.querySelector('.notice-marquee-wrap');if(nm&&wrap){const label=wrap.querySelector('.notice-label'),track=wrap.querySelector('.notice-track');if(label)label.textContent=nm.label||'Notice';if(track&&nm.text){track.innerHTML='';const s=document.createElement('span');s.className='notice-item';s.textContent=nm.text;track.appendChild(s);const c=s.cloneNode(true);c.setAttribute('aria-hidden','true');track.appendChild(c)}if(!nm.active)wrap.style.display='none'}applyPublicNavigation(data);applyPublicSettings(data);renderPublicBlocks(data);renderPublicItems(data);renderPublicNotices(data);renderPublicDownloads(data);if(PAGE_KEY==='Devdaha.html'||PAGE_KEY==='highlights.html'){try{const h=await getJSON('/api/public/highlights');if(PAGE_KEY==='Devdaha.html')renderHeroHighlights(h);else renderHighlightsPage(h)}catch(e){console.warn('Devdaha highlights unavailable.',e)}}}catch(e){console.warn('Devdaha CMS unavailable; original static content remains active.',e)}}
+async function publicLoad(){try{const data=await getJSON('/api/public/content?page='+encodeURIComponent(PAGE_KEY));const ov=data.overrides||{};Object.keys(ov).forEach(p=>{const el=findOverrideTarget(p,ov[p]);if(el)applyOverride(el,ov[p])});const mm=data.marquee?.top;if(mm&&mm.active&&document.querySelector('#marquee-track')){const track=document.querySelector('#marquee-track');if(mm.text){track.dataset.marqueeText=mm.text;try{localStorage.setItem('devdahaTopMarqueeText',mm.text)}catch{}}}const nm=data.marquee?.notice;const wrap=document.querySelector('.notice-marquee-wrap');if(nm&&wrap){const label=wrap.querySelector('.notice-label'),track=wrap.querySelector('.notice-track');if(label)label.textContent=nm.label||'Notice';if(track&&nm.text){track.innerHTML='';const s=document.createElement('span');s.className='notice-item';s.textContent=nm.text;track.appendChild(s);const c=s.cloneNode(true);c.setAttribute('aria-hidden','true');track.appendChild(c)}if(!nm.active)wrap.style.display='none'}applyPublicNavigation(data);applyPublicSettings(data);renderPublicBlocks(data);renderPublicItems(data);renderPublicNotices(data);renderPublicDownloads(data);if(PAGE_KEY==='Devdaha.html'){startHeroHighlightsAutoRefresh();try{const h=await getJSON('/api/public/highlights');renderHeroHighlights(h)}catch(e){console.warn('Devdaha highlights unavailable.',e)}}else if(PAGE_KEY==='highlights.html'){try{const h=await getJSON('/api/public/highlights');renderHighlightsPage(h)}catch(e){console.warn('Devdaha highlights unavailable.',e)}}}catch(e){console.warn('Devdaha CMS unavailable; original static content remains active.',e)}}
 function renderPublicBlocks(data){const arr=data.blocks||[];if(!arr.length)return;const old=document.getElementById('devdaha-managed-blocks');if(old)old.remove();const sec=document.createElement('section');sec.id='devdaha-managed-blocks';sec.className='devdaha-managed-blocks';arr.forEach(b=>{const el=document.createElement('article');el.className='devdaha-managed-block';el.innerHTML=`<h2>${esc(b.title)}</h2><p>${esc(b.body)}</p>${b.link?`<a href="${esc(b.link)}">${esc(b.link_text||'Learn More')}</a>`:''}`;sec.appendChild(el)});(document.querySelector('main')||document.body).appendChild(sec)}
 function applyPublicNavigation(data){const items=(data.navigation||[]).filter(x=>Number(x.visible)!==0).sort((a,b)=>(a.sort_order??0)-(b.sort_order??0));if(!items.length)return;const page=PAGE_KEY.toLowerCase();function normalizeHref(href,label){let h=String(href||'#');if(page!=='devdaha.html'){if(h==='#hero')return 'Devdaha.html#hero';if(h==='#facilities')return 'Devdaha.html#facilities';if(h==='#magazine')return 'school-magazine.html';if(h==='#gallery')return 'Devdaha.html#gallery';if(h==='#suggestion-box')return 'Devdaha.html#suggestion-box';if(h==='#footer')return 'Devdaha.html#footer';}return h}function sync(root){if(!root)return;const links=[...root.querySelectorAll('a')].filter(a=>!a.closest('.devdaha-admin-link'));const used=new Set();items.forEach(item=>{const id=String(item.id);let a=links.find(x=>x.dataset.cmsNavId===id);if(!a)a=links.find(x=>!used.has(x)&&((x.getAttribute('href')||'')===(item.href||'')||(x.textContent||'').trim().toLowerCase()===(item.label||'').trim().toLowerCase()));if(a){a.dataset.cmsNavId=id;a.textContent=item.label||'';a.href=normalizeHref(item.href,item.label)||'#';used.add(a)}})}sync(document.querySelector('#site-nav .nav-links'));sync(document.querySelector('#mobile-menu'))} 
 
@@ -307,18 +313,39 @@ function highlightsTime(x){
   }
   return Number(x?.id)||0;
 }
+let heroHighlightPollTimer=null;
+let heroHighlightLastSignature='';
+let heroHighlightRefreshBusy=false;
 function renderHeroHighlights(payload){
   const box=document.getElementById('hero-highlights-preview');
   if(!box)return;
   const items=(payload?.items||[]).filter(x=>x.type==='highlight'&&x.media?.url).slice().sort((a,b)=>highlightsTime(b)-highlightsTime(a));
   const latest=items[0];
-  if(!latest){box.classList.remove('is-visible');box.innerHTML='';return;}
-  const media=latest.media?.url?`<div class="hero-highlight-media"><img src="${esc(latest.media.url)}" alt="${esc(latest.media.alt_text||latest.title||'School highlight')}" loading="lazy"></div>`:'';
+  if(!latest){heroHighlightLastSignature='';box.classList.remove('is-visible');box.innerHTML='';return;}
+  const signature=[latest.id,latest.updated_at,latest.created_at,latest.date,latest.media?.url,latest.title].map(v=>String(v??'')).join('|');
+  if(signature===heroHighlightLastSignature && box.classList.contains('is-visible'))return;
+  heroHighlightLastSignature=signature;
   const raw=String(latest.description||latest.body||'').trim();
   const excerpt=raw.length>155?raw.slice(0,152).trimEnd()+'…':raw;
-  box.innerHTML=`<div class="hero-highlight-dialog">${media}<div class="hero-highlight-copy"><div class="hero-highlight-kicker">Latest Highlight</div><div class="hero-highlight-source">${esc(latest.source_label||latest.page||'School highlight')}</div><h3>${esc(latest.title||'School Highlight')}</h3><p>${esc(excerpt)}</p><a class="hero-highlight-action" href="highlights.html">View Highlights</a></div></div>`;
+  const media=latest.media?.url?`<div class="hero-highlight-media"><img src="${esc(latest.media.url)}" alt="${esc(latest.media.alt_text||latest.title||'School highlight')}" loading="lazy"></div>`:'';
+  box.innerHTML=`<a class="hero-highlight-dialog" href="highlights.html" aria-label="Open latest school highlight: ${esc(latest.title||'School Highlight')}">${media}<div class="hero-highlight-copy"><div class="hero-highlight-kicker">Latest Highlight</div><div class="hero-highlight-source">${esc(latest.source_label||latest.page||'School highlight')}</div><h3>${esc(latest.title||'School Highlight')}</h3><p>${esc(excerpt)}</p><span class="hero-highlight-action" aria-hidden="true">View Highlights</span></div></a>`;
   box.classList.add('is-visible');
+  const card=box.querySelector('.hero-highlight-dialog');
+  if(card){card.classList.remove('is-updating');void card.offsetWidth;card.classList.add('is-updating');setTimeout(()=>card.classList.remove('is-updating'),600);}
 }
+async function refreshHeroHighlights(){
+  if(PAGE_KEY!=='Devdaha.html'||heroHighlightRefreshBusy||document.hidden)return;
+  heroHighlightRefreshBusy=true;
+  try{const h=await getJSON('/api/public/highlights');renderHeroHighlights(h);}catch(e){console.warn('Devdaha highlights refresh unavailable.',e)}finally{heroHighlightRefreshBusy=false;}
+}
+function startHeroHighlightsAutoRefresh(){
+  if(PAGE_KEY!=='Devdaha.html'||heroHighlightPollTimer)return;
+  refreshHeroHighlights();
+  heroHighlightPollTimer=setInterval(refreshHeroHighlights,12000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshHeroHighlights();});
+  window.addEventListener('focus',refreshHeroHighlights);
+}
+
 function renderHighlightsPage(payload){
   const host=document.getElementById('public-highlights-list');
   if(!host)return;
