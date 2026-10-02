@@ -2,12 +2,14 @@
 'use strict';
 const PAGE_KEY=location.pathname.split('/').pop()||'Devdaha.html';
 const qs=new URLSearchParams(location.search);
+const API_BASE=(window.DEVDAHA_API_BASE || (['devdahaebss.edu.np','www.devdahaebss.edu.np'].includes(location.hostname) ? 'https://devdaha-school-backend.onrender.com' : '')).replace(/\/$/,'');
+const apiUrl=path=>/^https?:\/\//i.test(path)?path:`${API_BASE}${String(path).startsWith('/')?'':'/'}${path}`;
 const VISUAL_EDIT_MODE=qs.get('adminMode')==='1'||qs.get('visualEditor')==='1'||window.self!==window.top;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const api=async(path,options={})=>{
   if(location.protocol==='file:') throw new Error('Backend not running. Start the Devdaha CMS server, then open http://localhost:3000/admin-login.html');
   let r;
-  try{r=await fetch(path,{credentials:'same-origin',cache:'no-store',...options});}catch(e){throw new Error('Cannot reach the CMS backend. Start the server and open the site through http://localhost:3000 (not by double-clicking the HTML file).');}
+  try{r=await fetch(apiUrl(path),{credentials:'same-origin',cache:'no-store',...options});}catch(e){throw new Error('Cannot reach the CMS backend. Start the server and open the site through http://localhost:3000 (not by double-clicking the HTML file).');}
   let data={}; try{data=await r.json()}catch{}
   if(!r.ok) throw new Error(data.error||`Request failed (${r.status})`);
   return data;
