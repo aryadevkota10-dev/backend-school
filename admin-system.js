@@ -54,8 +54,66 @@ function injectStyle(){
   @media(max-width:620px){.devdaha-gallery-managed-grid{grid-template-columns:1fr}.devdaha-gallery-managed-grid .photo-wrap{height:230px}.devdaha-managed-magazines{grid-template-columns:1fr}}
   `;
   document.head.appendChild(st);
+  const extra=document.createElement('style');
+  extra.id='devdaha-gallery-layout-fix-style';
+  extra.textContent=`
+    /* Managed CMS gallery items sit beside the original grid, never inside it. */
+    .devdaha-managed-gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;width:100%;margin:24px 0 0;}
+    .devdaha-managed-gallery-grid .photo-card{min-width:0;overflow:hidden;}
+    .devdaha-managed-gallery-grid .photo-wrap{height:240px;overflow:hidden;background:#eef3f8;}
+    .devdaha-managed-gallery-grid .photo-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+    .devdaha-managed-gallery-grid .photo-info{padding:18px 18px 20px;min-width:0;}
+    .devdaha-managed-gallery-grid .photo-info h2{overflow-wrap:anywhere;word-break:normal;}
+    .devdaha-managed-gallery-grid .photo-info p{overflow-wrap:anywhere;white-space:pre-wrap;}
+    .devdaha-highlight-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;}
+    .devdaha-highlight-card{overflow:hidden;background:#fff;border:1px solid #dbe5ee;border-top:3px solid #d4af37;border-radius:22px;box-shadow:0 18px 48px rgba(8,43,87,.09);transition:transform .3s ease,box-shadow .3s ease;}
+    .devdaha-highlight-card:hover{transform:translateY(-6px);box-shadow:0 26px 58px rgba(8,43,87,.14);}
+    .devdaha-highlight-card-media{height:230px;background:#edf3f8;overflow:hidden;}
+    .devdaha-highlight-card-media img{width:100%;height:100%;object-fit:cover;display:block;}
+    .devdaha-highlight-card-body{padding:20px;}
+    .devdaha-highlight-card-kicker{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;font:800 .68rem/1 Manrope,Arial,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#9a7519;}
+    .devdaha-highlight-card-kicker span{padding:6px 8px;border-radius:999px;background:#fff7dc;border:1px solid #ead28a;}
+    .devdaha-highlight-card h2{margin:0;color:#0b3f78;font:600 1.5rem/1.08 Fraunces,Georgia,serif;}
+    .devdaha-highlight-card p{margin:11px 0 0;color:#687b8f;line-height:1.72;white-space:pre-wrap;overflow-wrap:anywhere;}
+
+    .devdaha-highlight-card img{display:block;width:100%;height:100%;object-fit:cover;}
+    .devdaha-highlight-card-body{min-width:0;}
+    .devdaha-highlight-card h2{overflow-wrap:anywhere;word-break:normal;}
+    .devdaha-highlight-card p{overflow-wrap:anywhere;white-space:pre-wrap;}
+    .devdaha-highlight-card-link{display:inline-flex;margin-top:15px;align-items:center;gap:7px;padding:9px 13px;border-radius:999px;background:#0b3f78;color:#fff;font:800 .7rem/1 Manrope,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;}
+    .devdaha-highlight-empty{padding:36px 24px;border:1px dashed #cfdbe7;border-radius:20px;background:#fbfdff;text-align:center;color:#687b8f;}
+    #hero-highlights-preview{position:absolute;right:clamp(1rem,4vw,3.5rem);top:50%;transform:translateY(-50%);width:min(340px,30vw);min-width:260px;z-index:4;display:none;pointer-events:auto;}
+    #hero-highlights-preview.is-visible{display:block;}
+    .hero-highlight-dialog{overflow:hidden;border:1px solid rgba(236,207,131,.45);border-radius:22px;background:linear-gradient(180deg,rgba(10,13,8,.84),rgba(10,13,8,.68));box-shadow:0 25px 75px rgba(0,0,0,.34);backdrop-filter:blur(18px);}
+    .hero-highlight-media{height:170px;background:rgba(255,255,255,.05);overflow:hidden;}
+    .hero-highlight-media img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92) brightness(.9);}
+    .hero-highlight-copy{padding:16px 17px 17px;}
+    .hero-highlight-kicker{font:800 .61rem/1 Manrope,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#eccf83;}
+    .hero-highlight-source{margin-top:7px;color:#cfc6ae;font:600 .62rem/1.2 Manrope,Arial,sans-serif;}
+    .hero-highlight-copy h3{margin:8px 0 6px;color:#f2ead9;font:600 1.35rem/1.08 Fraunces,Georgia,serif;}
+    .hero-highlight-copy p{margin:0;color:#cfc6ae;font:400 .8rem/1.58 Manrope,Arial,sans-serif;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+    .hero-highlight-action{display:inline-flex;margin-top:12px;padding:8px 11px;border-radius:999px;background:#c9a24a;color:#0a0d08;font:800 .64rem/1 Manrope,Arial,sans-serif;letter-spacing:.07em;text-transform:uppercase;}
+    @media(max-width:1050px){.devdaha-managed-gallery-grid,.devdaha-highlight-list{grid-template-columns:repeat(2,minmax(0,1fr));}#hero-highlights-preview{width:min(320px,32vw);}}
+    @media(max-width:760px){.devdaha-managed-gallery-grid,.devdaha-highlight-list{grid-template-columns:1fr;}.devdaha-managed-gallery-grid .photo-wrap{height:230px;}.devdaha-highlight-card-media{height:220px;}}
+    /* Earlier desktop navigation compresses too late on zoom. Switch to the mobile menu before labels collide. */
+    @media(max-width:1180px){
+      #site-nav .devdaha-main-row{width:calc(100% - 32px);gap:14px;}
+      #site-nav .nav-mark{min-width:0!important;flex:1 1 auto!important;max-width:calc(100% - 62px)!important;overflow:hidden!important;}
+      #site-nav .school-wordmark-single .brand-line-main{font-size:15px!important;letter-spacing:.065em!important;}
+      #site-nav .school-wordmark-single .brand-line-sub{font-size:8px!important;letter-spacing:.12em!important;}
+      #site-nav .nav-links{display:none!important;}
+      #site-nav .nav-cta{display:none!important;}
+      #site-nav #hamburger{display:flex!important;}
+      #mobile-menu{display:block!important;visibility:hidden!important;opacity:0!important;transform:translate3d(0,-18px,0) scale(.985)!important;pointer-events:none!important;transition:opacity .28s ease,transform .34s cubic-bezier(.22,.8,.2,1),visibility 0s linear .34s!important;}
+      #mobile-menu.open,#mobile-menu[aria-hidden="false"]{visibility:visible!important;opacity:1!important;transform:translate3d(0,0,0) scale(1)!important;pointer-events:auto!important;transition:opacity .28s ease,transform .34s cubic-bezier(.22,.8,.2,1),visibility 0s linear 0s!important;}
+      #mobile-menu .mobile-menu-group-items{display:none!important;}
+      #mobile-menu .mobile-menu-group.open .mobile-menu-group-items{display:block!important;}
+    }
+    @media(max-width:760px){#hero-highlights-preview{left:1rem;right:1rem;top:auto;bottom:6.9rem;width:auto;min-width:0;transform:none;}.hero-highlight-media{height:135px;}}
+  `;
+  document.head.appendChild(extra);
 }
-async function publicLoad(){try{const data=await getJSON('/api/public/content?page='+encodeURIComponent(PAGE_KEY));const ov=data.overrides||{};Object.keys(ov).forEach(p=>{const el=findOverrideTarget(p,ov[p]);if(el)applyOverride(el,ov[p])});const mm=data.marquee?.top;if(mm&&mm.active&&document.querySelector('#marquee-track')){const track=document.querySelector('#marquee-track');if(mm.text){track.dataset.marqueeText=mm.text;try{localStorage.setItem('devdahaTopMarqueeText',mm.text)}catch{}}}const nm=data.marquee?.notice;const wrap=document.querySelector('.notice-marquee-wrap');if(nm&&wrap){const label=wrap.querySelector('.notice-label'),track=wrap.querySelector('.notice-track');if(label)label.textContent=nm.label||'Notice';if(track&&nm.text){track.innerHTML='';const s=document.createElement('span');s.className='notice-item';s.textContent=nm.text;track.appendChild(s);const c=s.cloneNode(true);c.setAttribute('aria-hidden','true');track.appendChild(c)}if(!nm.active)wrap.style.display='none'}applyPublicNavigation(data);applyPublicSettings(data);renderPublicBlocks(data);renderPublicItems(data);renderPublicNotices(data);renderPublicDownloads(data)}catch(e){console.warn('Devdaha CMS unavailable; original static content remains active.',e)}}
+async function publicLoad(){try{const data=await getJSON('/api/public/content?page='+encodeURIComponent(PAGE_KEY));const ov=data.overrides||{};Object.keys(ov).forEach(p=>{const el=findOverrideTarget(p,ov[p]);if(el)applyOverride(el,ov[p])});const mm=data.marquee?.top;if(mm&&mm.active&&document.querySelector('#marquee-track')){const track=document.querySelector('#marquee-track');if(mm.text){track.dataset.marqueeText=mm.text;try{localStorage.setItem('devdahaTopMarqueeText',mm.text)}catch{}}}const nm=data.marquee?.notice;const wrap=document.querySelector('.notice-marquee-wrap');if(nm&&wrap){const label=wrap.querySelector('.notice-label'),track=wrap.querySelector('.notice-track');if(label)label.textContent=nm.label||'Notice';if(track&&nm.text){track.innerHTML='';const s=document.createElement('span');s.className='notice-item';s.textContent=nm.text;track.appendChild(s);const c=s.cloneNode(true);c.setAttribute('aria-hidden','true');track.appendChild(c)}if(!nm.active)wrap.style.display='none'}applyPublicNavigation(data);applyPublicSettings(data);renderPublicBlocks(data);renderPublicItems(data);renderPublicNotices(data);renderPublicDownloads(data);if(PAGE_KEY==='Devdaha.html'||PAGE_KEY==='highlights.html'){try{const h=await getJSON('/api/public/highlights');if(PAGE_KEY==='Devdaha.html')renderHeroHighlights(h);else renderHighlightsPage(h)}catch(e){console.warn('Devdaha highlights unavailable.',e)}}}catch(e){console.warn('Devdaha CMS unavailable; original static content remains active.',e)}}
 function renderPublicBlocks(data){const arr=data.blocks||[];if(!arr.length)return;const old=document.getElementById('devdaha-managed-blocks');if(old)old.remove();const sec=document.createElement('section');sec.id='devdaha-managed-blocks';sec.className='devdaha-managed-blocks';arr.forEach(b=>{const el=document.createElement('article');el.className='devdaha-managed-block';el.innerHTML=`<h2>${esc(b.title)}</h2><p>${esc(b.body)}</p>${b.link?`<a href="${esc(b.link)}">${esc(b.link_text||'Learn More')}</a>`:''}`;sec.appendChild(el)});(document.querySelector('main')||document.body).appendChild(sec)}
 function applyPublicNavigation(data){const items=(data.navigation||[]).filter(x=>Number(x.visible)!==0).sort((a,b)=>(a.sort_order??0)-(b.sort_order??0));if(!items.length)return;const page=PAGE_KEY.toLowerCase();function normalizeHref(href,label){let h=String(href||'#');if(page!=='devdaha.html'){if(h==='#hero')return 'Devdaha.html#hero';if(h==='#facilities')return 'Devdaha.html#facilities';if(h==='#magazine')return 'school-magazine.html';if(h==='#gallery')return 'Devdaha.html#gallery';if(h==='#suggestion-box')return 'Devdaha.html#suggestion-box';if(h==='#footer')return 'Devdaha.html#footer';}return h}function sync(root){if(!root)return;const links=[...root.querySelectorAll('a')].filter(a=>!a.closest('.devdaha-admin-link'));const used=new Set();items.forEach(item=>{const id=String(item.id);let a=links.find(x=>x.dataset.cmsNavId===id);if(!a)a=links.find(x=>!used.has(x)&&((x.getAttribute('href')||'')===(item.href||'')||(x.textContent||'').trim().toLowerCase()===(item.label||'').trim().toLowerCase()));if(a){a.dataset.cmsNavId=id;a.textContent=item.label||'';a.href=normalizeHref(item.href,item.label)||'#';used.add(a)}})}sync(document.querySelector('#site-nav .nav-links'));sync(document.querySelector('#mobile-menu'))} 
 
@@ -170,20 +228,62 @@ function renderPublicItems(data){
   renderPublicMagazines(data.magazines||[]);
   if(PAGE_KEY==='school-magazine.html'||PAGE_KEY==='weekly-eca.html')return;
   const managedAll=[...(data.galleries||[]),...(data.events||[]),...(data.achievements||[]),...(data.eca||[])];
-  if(PAGE_KEY==='testimonials.html'){
-    renderPublicTestimonials(testimonials);
-  }
+  if(PAGE_KEY==='testimonials.html') renderPublicTestimonials(testimonials);
   if(!managedAll.length)return;
   const old=document.getElementById('devdaha-managed-items');if(old)old.remove();
+  const originalGrid=document.querySelector('.photo-grid,.gallery-grid');
   const sec=document.createElement('section');sec.id='devdaha-managed-items';sec.className='devdaha-managed-media';
-  const grid=document.createElement('div');grid.className='devdaha-gallery-managed-grid';
+  const grid=document.createElement('div');grid.className='devdaha-managed-gallery-grid';
   managedAll.forEach(x=>{
-    const card=document.createElement('article');card.className='photo-card';card.dataset.devdahaItemId=String(x.id);card.dataset.devdahaItemType=String(x.type||'');card.tabIndex=0;
-    const media=x.media?.url?`<div class="photo-wrap"><img src="${esc(x.media.url)}" alt="${esc(x.media.alt_text||x.title||'School media')}"></div>`:'';
-    card.innerHTML=`${media}<div class="photo-info"><span>${esc((x.type||'').replaceAll('-',' '))}</span><h2>${esc(x.title)}</h2><p>${esc(x.description||x.body||'')}</p>${x.link?`<a href="${esc(x.link)}">${esc(x.link_text||'Learn More')}</a>`:''}</div>`;
+    const card=document.createElement('article');
+    card.className='photo-card';
+    card.dataset.devdahaItemId=String(x.id);card.dataset.devdahaItemType=String(x.type||'');card.tabIndex=0;
+    const media=x.media?.url?`<div class="photo-wrap"><img src="${esc(x.media.url)}" alt="${esc(x.media.alt_text||x.title||'School media')}" loading="lazy"></div>`:'';
+    const label=String(x.category||x.type||'Gallery').replaceAll('-',' ');
+    card.innerHTML=`${media}<div class="photo-info"><span>${esc(label)}</span><h2>${esc(x.title||'Untitled')}</h2><p>${esc(x.description||x.body||'')}</p>${x.link?`<a href="${esc(x.link)}"${/^https?:\/\//i.test(x.link)?' target="_blank" rel="noopener"':''}>${esc(x.link_text||'Learn More')}</a>`:''}</div>`;
     grid.appendChild(card);
   });
-  sec.appendChild(grid);(document.querySelector('.photo-grid,.gallery-grid')||document.querySelector('main')||document.body).appendChild(sec);
+  sec.appendChild(grid);
+  if(originalGrid?.parentElement){
+    originalGrid.parentElement.insertBefore(sec,originalGrid.nextSibling);
+  }else{
+    (document.querySelector('main')||document.body).appendChild(sec);
+  }
+}
+function highlightsTime(x){
+  for(const k of ['updated_at','updatedAt','created_at','createdAt','date']){
+    const v=x?.[k]; if(!v)continue; const t=Date.parse(v); if(Number.isFinite(t))return t;
+  }
+  return Number(x?.id)||0;
+}
+function renderHeroHighlights(payload){
+  const box=document.getElementById('hero-highlights-preview');
+  if(!box)return;
+  const items=(payload?.items||[]).slice().sort((a,b)=>highlightsTime(b)-highlightsTime(a));
+  const latest=payload?.latest||items[0];
+  if(!latest){box.classList.remove('is-visible');box.innerHTML='';return;}
+  const media=latest.media?.url?`<div class="hero-highlight-media"><img src="${esc(latest.media.url)}" alt="${esc(latest.media.alt_text||latest.title||'School highlight')}" loading="lazy"></div>`:'';
+  const raw=String(latest.description||latest.body||'').trim();
+  const excerpt=raw.length>155?raw.slice(0,152).trimEnd()+'…':raw;
+  box.innerHTML=`<div class="hero-highlight-dialog">${media}<div class="hero-highlight-copy"><div class="hero-highlight-kicker">Latest Highlight</div><div class="hero-highlight-source">${esc(latest.source_label||latest.page||'School highlight')}</div><h3>${esc(latest.title||'School Highlight')}</h3><p>${esc(excerpt)}</p><a class="hero-highlight-action" href="highlights.html">View Highlights</a></div></div>`;
+  box.classList.add('is-visible');
+}
+function renderHighlightsPage(payload){
+  const host=document.getElementById('public-highlights-list');
+  if(!host)return;
+  const items=(payload?.items||[]).slice().sort((a,b)=>highlightsTime(b)-highlightsTime(a));
+  host.innerHTML='';
+  if(!items.length){host.innerHTML='<div class="devdaha-highlight-empty"><strong>No highlights published yet.</strong><div>Featured gallery items, events and achievements will appear here automatically.</div></div>';return;}
+  const grid=document.createElement('div');grid.className='devdaha-highlight-list';
+  items.forEach(x=>{
+    const article=document.createElement('article');article.className='devdaha-highlight-card';article.dataset.devdahaItemId=String(x.id);article.dataset.devdahaItemType=String(x.type||'');
+    const media=x.media?.url?`<div class="devdaha-highlight-card-media"><img src="${esc(x.media.url)}" alt="${esc(x.media.alt_text||x.title||'School highlight')}" loading="lazy"></div>`:'';
+    const copy=String(x.description||x.body||'').trim();
+    const text=copy.length>360?copy.slice(0,357).trimEnd()+'…':copy;
+    article.innerHTML=`${media}<div class="devdaha-highlight-card-body"><div class="devdaha-highlight-card-kicker"><span>${esc(x.source_label||'School Highlight')}</span>${x.featured?'<span>Featured</span>':''}</div><h2>${esc(x.title||'School Highlight')}</h2><p>${esc(text)}</p>${x.link?`<a class="devdaha-highlight-card-link" href="${esc(x.link)}"${/^https?:\/\//i.test(x.link)?' target="_blank" rel="noopener"':''}>${esc(x.link_text||'Learn More')}</a>`:''}</div>`;
+    grid.appendChild(article);
+  });
+  host.appendChild(grid);
 }
 function renderPublicTestimonials(items){
   const grid=document.querySelector('.testimonial-grid');
