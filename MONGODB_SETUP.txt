@@ -6,7 +6,7 @@ DEVDAHA SCHOOL CMS — MONGODB SETUP
    MONGODB_URI=...
    MONGODB_DB=devdaha_school_cms
    SESSION_SECRET=<32+ random characters>
-   PUBLIC_BASE_URL=http://localhost:3000 (or your production HTTPS URL)
+   PUBLIC_BASE_URL=https://devdaha-school-backend.onrender.com (your production API/backend URL)
 
 3. Configure SMTP so Forgot Password can send reset links:
    SMTP_HOST=...
