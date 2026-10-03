@@ -1,6 +1,7 @@
 (function(){
 'use strict';
 const PAGE_KEY=location.pathname.split('/').pop()||'Devdaha.html';
+const DEVDAHA_HOME_PAGE=(PAGE_KEY==='Devdaha.html'||PAGE_KEY==='index.html'||location.pathname==='/'||location.pathname==='');
 const qs=new URLSearchParams(location.search);
 const API_BASE=(window.DEVDAHA_API_BASE || (['localhost','127.0.0.1'].includes(location.hostname) ? '' : 'https://devdaha-school-backend.onrender.com')).replace(/\/$/,'');
 const apiUrl=path=>/^https?:\/\//i.test(path)?path:`${API_BASE}${String(path).startsWith('/')?'':'/'}${path}`;
@@ -132,7 +133,37 @@ function injectStyle(){
   `;
   document.head.appendChild(extra);
 }
-async function publicLoad(){try{const data=await getJSON('/api/public/content?page='+encodeURIComponent(PAGE_KEY)+'&_t='+Date.now());const ov=data.overrides||{};Object.keys(ov).forEach(p=>{const el=findOverrideTarget(p,ov[p]);if(el)applyOverride(el,ov[p])});const mm=data.marquee?.top;if(mm&&mm.active&&document.querySelector('#marquee-track')){const track=document.querySelector('#marquee-track');if(mm.text){track.dataset.marqueeText=mm.text;try{localStorage.setItem('devdahaTopMarqueeText',mm.text)}catch{}}}const nm=data.marquee?.notice;const wrap=document.querySelector('.notice-marquee-wrap');if(nm&&wrap){const label=wrap.querySelector('.notice-label'),track=wrap.querySelector('.notice-track');if(label)label.textContent=nm.label||'Notice';if(track&&nm.text){track.innerHTML='';const s=document.createElement('span');s.className='notice-item';s.textContent=nm.text;track.appendChild(s);const c=s.cloneNode(true);c.setAttribute('aria-hidden','true');track.appendChild(c)}if(!nm.active)wrap.style.display='none'}applyPublicNavigation(data);applyPublicSettings(data);renderPublicBlocks(data);renderPublicItems(data);renderPublicNotices(data);renderPublicDownloads(data);devdahaCmsPublicSignature=publicContentSignature(data);startPublicCmsRealtime();if(PAGE_KEY==='Devdaha.html'){startHeroHighlightsAutoRefresh();try{const h=await getJSON('/api/public/highlights');renderHeroHighlights(h)}catch(e){console.warn('Devdaha highlights unavailable.',e)}}else if(PAGE_KEY==='highlights.html'){try{const h=await getJSON('/api/public/highlights');renderHighlightsPage(h)}catch(e){console.warn('Devdaha highlights unavailable.',e)}}}catch(e){console.warn('Devdaha CMS unavailable; original static content remains active.',e)}}
+async function loadHeroHighlightsStandalone(){
+  if(!DEVDAHA_HOME_PAGE) return;
+  try{
+    const h=await getJSON('/api/public/highlights?_t='+Date.now());
+    renderHeroHighlights(h);
+  }catch(e){
+    console.warn('Hero highlights unavailable.',e);
+    const box=document.getElementById('hero-highlights-preview');
+    if(box && !box.dataset.hasLoadedHighlight){ box.style.display='none'; }
+  }
+}
+async function publicLoad(){
+  // Hero highlights are loaded independently so a failure in another CMS section never prevents the hero preview.
+  if(DEVDAHA_HOME_PAGE) loadHeroHighlightsStandalone();
+  try{
+    const data=await getJSON('/api/public/content?page='+encodeURIComponent(PAGE_KEY)+'&_t='+Date.now());
+    const ov=data.overrides||{};
+    Object.keys(ov).forEach(p=>{const el=findOverrideTarget(p,ov[p]);if(el)applyOverride(el,ov[p])});
+    const mm=data.marquee?.top;
+    if(mm&&mm.active&&document.querySelector('#marquee-track')){const track=document.querySelector('#marquee-track');if(mm.text){track.dataset.marqueeText=mm.text;try{localStorage.setItem('devdahaTopMarqueeText',mm.text)}catch{}}}
+    const nm=data.marquee?.notice;const wrap=document.querySelector('.notice-marquee-wrap');
+    if(nm&&wrap){const label=wrap.querySelector('.notice-label'),track=wrap.querySelector('.notice-track');if(label)label.textContent=nm.label||'Notice';if(track&&nm.text){track.innerHTML='';const ss=document.createElement('span');ss.className='notice-item';ss.textContent=nm.text;track.appendChild(ss);const c=ss.cloneNode(true);c.setAttribute('aria-hidden','true');track.appendChild(c)}if(!nm.active)wrap.style.display='none'}
+    applyPublicNavigation(data);applyPublicSettings(data);renderPublicBlocks(data);renderPublicItems(data);renderPublicNotices(data);renderPublicDownloads(data);devdahaCmsPublicSignature=publicContentSignature(data);startPublicCmsRealtime();
+    if(DEVDAHA_HOME_PAGE){startHeroHighlightsAutoRefresh();loadHeroHighlightsStandalone();}
+    else if(PAGE_KEY==='highlights.html'){try{const h=await getJSON('/api/public/highlights?_t='+Date.now());renderHighlightsPage(h)}catch(e){console.warn('Devdaha highlights unavailable.',e)}}
+  }catch(e){
+    console.warn('Devdaha CMS unavailable; original static content remains active.',e);
+    // Do not block the hero highlight preview when another public CMS call fails.
+    if(DEVDAHA_HOME_PAGE) loadHeroHighlightsStandalone();
+  }
+}
 let devdahaCmsPublicPollTimer=null;
 let devdahaCmsPublicSignature='';
 let devdahaCmsPublicPollBusy=false;
@@ -430,32 +461,63 @@ function highlightMediaPageMarkup(x){
   if(type==='pdf')return `<div class="devdaha-highlight-card-media devdaha-highlight-card-media-file"><iframe src="${url}" title="${label}" loading="lazy"></iframe><a class="devdaha-highlight-open-media" href="${url}" target="_blank" rel="noopener">Open PDF</a></div>`;
   return `<div class="devdaha-highlight-card-media devdaha-highlight-card-media-file"><div class="devdaha-highlight-media-icon">MEDIA</div><div class="devdaha-highlight-media-name">${label}</div><a class="devdaha-highlight-open-media" href="${url}" target="_blank" rel="noopener">Open media</a></div>`;
 }
+function normalizeHeroHighlightItem(x){
+  if(!x) return null;
+  const media=x.media||{};
+  let mediaUrl=media.url||x.image_url||x.imageUrl||x.media_url||x.mediaUrl||'';
+  const mediaId=media.id||x.image_id||x.file_id||x.media_id||x.imageId||x.mediaId||'';
+  if(!mediaUrl && mediaId) mediaUrl=apiUrl('/api/media/'+encodeURIComponent(String(mediaId)));
+  if(!mediaUrl) return null;
+  const visible=!(x.visible===0||x.visible===false||String(x.visible)==='0'||String(x.visible).toLowerCase()==='false');
+  const published=!(x.published===0||x.published===false||String(x.published)==='0'||String(x.published).toLowerCase()==='false');
+  return {...x,media:{...media,url:mediaUrl,id:mediaId||media.id||''},visible,published};
+}
 function renderHeroHighlights(payload){
   const box=document.getElementById('hero-highlights-preview');
-  if(!box)return;
-  const items=(payload?.items||[]).filter(x=>x.type==='highlight'&&x.media?.url).slice().sort((a,b)=>highlightsTime(b)-highlightsTime(a));
-  const latest=items[0];
-  if(!latest){heroHighlightLastSignature='';box.classList.remove('is-visible');box.innerHTML='';return;}
+  if(!box) return;
+  const items=(payload?.items||payload?.highlights||[])
+    .map(normalizeHeroHighlightItem)
+    .filter(Boolean)
+    .filter(x=>x.type==='highlight'&&x.visible!==false&&x.published!==false)
+    .sort((a,b)=>highlightsTime(b)-highlightsTime(a));
+  const latest=items[0]||normalizeHeroHighlightItem(payload?.latest);
+  if(!latest){
+    heroHighlightLastSignature='';
+    box.dataset.hasLoadedHighlight='0';
+    box.classList.remove('is-visible');
+    box.innerHTML='';
+    box.style.display='none';
+    return;
+  }
   const signature=[latest.id,latest.updated_at,latest.created_at,latest.date,latest.media?.url,latest.media?.mime_type,latest.title].map(v=>String(v??'')).join('|');
   if(signature===heroHighlightLastSignature && box.classList.contains('is-visible'))return;
   heroHighlightLastSignature=signature;
+  box.dataset.hasLoadedHighlight='1';
   const raw=String(latest.description||latest.body||'').trim();
   const excerpt=raw.length>155?raw.slice(0,152).trimEnd()+'…':raw;
   const media=highlightMediaHeroMarkup(latest);
-  box.innerHTML=`<a class="hero-highlight-dialog" href="highlights.html" aria-label="Open latest school highlight: ${esc(latest.title||'School Highlight')}">${media}<div class="hero-highlight-copy"><div class="hero-highlight-kicker">Latest Highlight</div><div class="hero-highlight-source">${esc(latest.source_label||latest.page||'School highlight')}</div><h3>${esc(latest.title||'School Highlight')}</h3><p>${esc(excerpt)}</p><span class="hero-highlight-action" aria-hidden="true">View Highlights</span></div></a>`;
+  box.innerHTML=`<a class="hero-highlight-dialog" href="highlights.html" aria-label="Open latest school highlight: ${esc(latest.title||'School Highlight')}">${media}<div class="hero-highlight-copy"><div class="hero-highlight-kicker">Latest Highlight</div><div class="hero-highlight-source">${esc(latest.source_label||'School Highlight')}</div><h3>${esc(latest.title||'School Highlight')}</h3><p>${esc(excerpt)}</p><span class="hero-highlight-action" aria-hidden="true">View Highlights</span></div></a>`;
   box.classList.add('is-visible');
+  box.style.display='block';
+  box.style.visibility='visible';
+  box.style.opacity='1';
+  box.style.pointerEvents='auto';
   const card=box.querySelector('.hero-highlight-dialog');
   if(card){card.classList.remove('is-updating');void card.offsetWidth;card.classList.add('is-updating');setTimeout(()=>card.classList.remove('is-updating'),600);}
 }
+
 async function refreshHeroHighlights(){
-  if(PAGE_KEY!=='Devdaha.html'||heroHighlightRefreshBusy||document.hidden)return;
+  if(!DEVDAHA_HOME_PAGE||heroHighlightRefreshBusy||document.hidden)return;
   heroHighlightRefreshBusy=true;
-  try{const h=await getJSON('/api/public/highlights');renderHeroHighlights(h);}catch(e){console.warn('Devdaha highlights refresh unavailable.',e)}finally{heroHighlightRefreshBusy=false;}
+  try{
+    const h=await getJSON('/api/public/highlights?_t='+Date.now());
+    renderHeroHighlights(h);
+  }catch(e){console.warn('Devdaha highlights refresh unavailable.',e)}finally{heroHighlightRefreshBusy=false}
 }
 function startHeroHighlightsAutoRefresh(){
-  if(PAGE_KEY!=='Devdaha.html'||heroHighlightPollTimer)return;
+  if(!DEVDAHA_HOME_PAGE||heroHighlightPollTimer)return;
   refreshHeroHighlights();
-  heroHighlightPollTimer=setInterval(refreshHeroHighlights,12000);
+  heroHighlightPollTimer=setInterval(refreshHeroHighlights,5000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshHeroHighlights();});
   window.addEventListener('focus',refreshHeroHighlights);
   window.addEventListener('pageshow',refreshHeroHighlights);
