@@ -251,6 +251,64 @@ app.get('/api/admin/overrides',requireAdmin,async(req,res)=>{const rows=await co
 app.put('/api/admin/overrides',requireAdmin,async(req,res)=>{const page=String(req.body.page||''),selector=String(req.body.selector||''),data=req.body.data||{};if(!page||!selector||typeof data!=='object')return res.status(400).json({error:'page, selector and data are required.'});const result=await col('page_overrides').updateOne({page,selector},{$set:{page,selector,data_json:data,updated_at:now()}},{upsert:true});if(result.matchedCount===0&&result.upsertedCount===0)await col('page_overrides').insertOne({id:uid(),page,selector,data_json:data,updated_at:now()});await audit(req,'upsert','page_override',`${page}:${selector}`);res.json({ok:true})});
 app.delete('/api/admin/overrides',requireAdmin,async(req,res)=>{const page=String(req.body.page||''),selector=String(req.body.selector||'');await col('page_overrides').deleteOne({page,selector});await audit(req,'delete','page_override',`${page}:${selector}`);res.json({ok:true})});
 
+// Dedicated highlight CMS endpoints. These intentionally use the same content_items collection
+// but avoid the generic page/type form path so the Highlights Manager is reliable on deployed sites.
+app.get('/api/admin/highlights',requireAdmin,async(req,res)=>{
+  try{
+    const rows=await col('content_items').find({type:'highlight'}).sort({created_at:-1,updated_at:-1,date:-1}).toArray();
+    res.json(await Promise.all(rows.map(row=>itemWithMedia(row,req))));
+  }catch(e){console.error('Admin highlights load failed:',e);res.status(500).json({error:'Unable to load highlights.'});}
+});
+app.post('/api/admin/highlights',requireAdmin,async(req,res)=>{
+  try{
+    const mediaId=String(req.body?.image_id||req.body?.file_id||req.body?.media_id||'').trim();
+    if(!mediaId) return res.status(400).json({error:'Upload/select highlight media before saving.'});
+    const media=await col('media').findOne({$or:[{id:mediaId},{stored_name:mediaId}]});
+    if(!media) return res.status(400).json({error:'The selected highlight media was not found. Upload it again and save.'});
+    const body={...req.body,type:'highlight',page:'highlights.html',image_id:media.id};
+    const x=normalizeItem(body); const t=now(); x.created_at=t; x.updated_at=t;
+    await col('content_items').insertOne(x);
+    await audit(req,'create','content_item',x.id,{type:'highlight',page:'highlights.html',media_id:media.id});
+    res.json(await itemWithMedia(x,req));
+  }catch(e){console.error('Admin highlight create failed:',e);res.status(500).json({error:'Unable to save highlight.'});}
+});
+app.put('/api/admin/highlights/:id',requireAdmin,async(req,res)=>{
+  try{
+    const id=String(req.params.id),old=await col('content_items').findOne({id,type:'highlight'});
+    if(!old)return res.status(404).json({error:'Highlight not found.'});
+    const mediaId=String(req.body?.image_id||req.body?.file_id||req.body?.media_id||old.image_id||'').trim();
+    if(mediaId){
+      const media=await col('media').findOne({$or:[{id:mediaId},{stored_name:mediaId}]});
+      if(!media)return res.status(400).json({error:'The selected highlight media was not found. Upload it again and save.'});
+      req.body.image_id=media.id;
+    }
+    const x=normalizeItem({...req.body,type:'highlight',page:'highlights.html'},old); x.id=id; x.type='highlight'; x.page='highlights.html'; x.created_at=old.created_at; x.updated_at=now();
+    if(!x.image_id)return res.status(400).json({error:'A highlight must have uploaded media.'});
+    await col('content_items').replaceOne({id},x);
+    await audit(req,'update','content_item',id,{type:'highlight',page:'highlights.html'});
+    res.json(await itemWithMedia(x,req));
+  }catch(e){console.error('Admin highlight update failed:',e);res.status(500).json({error:'Unable to update highlight.'});}
+});
+app.delete('/api/admin/highlights/:id',requireAdmin,async(req,res)=>{
+  try{
+    const id=String(req.params.id),old=await col('content_items').findOne({id,type:'highlight'});
+    if(!old)return res.status(404).json({error:'Highlight not found.'});
+    await col('recycle_bin').insertOne({entity_type:'content_item',entity_id:id,payload:old,deleted_at:now()});
+    await col('content_items').deleteOne({id});
+    await audit(req,'delete','content_item',id,{type:'highlight'});
+    res.json({ok:true});
+  }catch(e){console.error('Admin highlight delete failed:',e);res.status(500).json({error:'Unable to delete highlight.'});}
+});
+app.put('/api/admin/highlights/:id/visibility',requireAdmin,async(req,res)=>{
+  try{
+    const id=String(req.params.id),old=await col('content_items').findOne({id,type:'highlight'});
+    if(!old)return res.status(404).json({error:'Highlight not found.'});
+    const visible=bool(req.body?.visible),published=bool(req.body?.published);
+    await col('content_items').updateOne({id},{$set:{visible:visible?1:0,published:published?1:0,updated_at:now()}});
+    const x=await col('content_items').findOne({id});
+    res.json(await itemWithMedia(x,req));
+  }catch(e){console.error('Admin highlight visibility update failed:',e);res.status(500).json({error:'Unable to update highlight visibility.'});}
+});
 app.get('/api/admin/items',requireAdmin,async(req,res)=>{const q={};if(req.query.type)q.type=String(req.query.type);if(req.query.page)q.page=String(req.query.page);if(req.query.q){const rx=new RegExp(String(req.query.q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');q.$or=[{title:rx},{body:rx},{description:rx}]};const rows=await col('content_items').find(q).sort({featured:-1,sort_order:1,updated_at:-1}).toArray();res.json(await Promise.all(rows.map(item=>itemWithMedia(item,req)))) });
 app.post('/api/admin/items',requireAdmin,async(req,res)=>{const x=normalizeItem(req.body);const t=now();x.created_at=t;x.updated_at=t;await col('content_items').insertOne(x);await audit(req,'create','content_item',x.id,{type:x.type,page:x.page});res.json(await itemWithMedia(x,req))});
 app.put('/api/admin/items/:id',requireAdmin,async(req,res)=>{const old=await col('content_items').findOne({id:String(req.params.id)});if(!old)return res.status(404).json({error:'Item not found.'});const x=normalizeItem(req.body,old);x.id=old.id;x.created_at=old.created_at;x.updated_at=now();await col('content_items').replaceOne({id:x.id},x);await audit(req,'update','content_item',x.id);res.json(await itemWithMedia(x,req))});
